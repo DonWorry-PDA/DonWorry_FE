@@ -1,5 +1,82 @@
 @import "tailwindcss";
 
+@theme {
+  /* ─── Brand ─── */
+  --color-primary: #0046ff;
+  --color-primary-tint: #eef3ff;
+
+  /* ─── Text ─── */
+  --color-ink: #191f28;
+  --color-ink-sub: #5b6573;
+  --color-ink-hint: #8b95a1;
+  --color-disabled: #c4cad4;
+
+  /* ─── Status: Success (안정) ─── */
+  --color-success: #069a53;
+  --color-success-bg: #e9f7f0;
+
+  /* ─── Status: Warning (보완 필요) ─── */
+  --color-warning: #dd7a06;
+  --color-warning-text: #9a5a02;
+  --color-warning-bg: #fdf3e5;
+
+  /* ─── Status: Danger (위험/오류) ─── */
+  --color-danger: #df3550;
+  --color-danger-text: #8a2738;
+  --color-danger-bg: #fcedf0;
+
+  /* ─── Surface & Page ─── */
+  --color-surface: #f7f8fa;
+  --color-surface-muted: #f2f4f7;
+  --color-page: #f2f4f6;
+
+  /* ─── Borders & Dividers ─── */
+  --color-line: #e7eaee;
+  --color-divider: #f0f2f5;
+  --color-track: #edf0f4;
+
+  /* ─── UI Chrome ─── */
+  --color-nav: #9aa3b0;
+  --color-sep: #d4d9e1;
+  --color-dot-off: #dde2e9;
+  --color-radio: #cfd5de;
+
+  /* ─── Font Families ─── */
+  --font-sans: 'Noto Sans KR', sans-serif;
+  --font-inter: 'Inter', 'Noto Sans KR', sans-serif;
+
+  /* ─── Font Sizes ─── */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.3;
+  --text-sub: 0.8125rem;
+  --text-sub--line-height: 1.6;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.6;
+  --text-md: 0.9375rem;
+  --text-md--line-height: 1.5;
+  --text-btn: 1.0625rem;
+  --text-btn--line-height: 1;
+  --text-card: 1.125rem;
+  --text-card--line-height: 1.3;
+  --text-heading: 1.40625rem;
+  --text-heading--line-height: 1.47;
+  --text-display: 1.5rem;
+  --text-display--line-height: 1.2;
+
+  /* ─── Shadow ─── */
+  --shadow-card: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  --shadow-float: 0 5px 20px 0 rgba(0, 0, 0, 0.10);
+
+  /* ─── Border Radius ─── */
+  --radius-dot: 7px;
+  --radius-badge: 9px;
+  --radius-icon: 10px;
+  --radius-btn: 12px;
+  --radius-card: 14px;
+  --radius-card-lg: 16px;
+  --radius-card-xl: 20px;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -46,16 +123,4 @@ button {
 .children-container {
   height: calc(100% - 67px);
   overflow: scroll;
-}
-
-/* fonts */
-
-/* navBar */
-.fonts-navBar {
-  font-family: 'Noto Sans KR';
-  font-size: 0.75rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 130%;
-  letter-spacing: -0.03125rem;
 }
