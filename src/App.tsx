@@ -1,9 +1,15 @@
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import LoginPage from './login/LoginPage'
+import OnboardingPage from './onboarding/OnboardingPage'
+
+const router = createBrowserRouter([
+  { path: '/', element: <Navigate to="/onboarding" replace /> },
+  { path: '/onboarding', element: <OnboardingPage /> },
+  { path: '/login', element: <LoginPage /> },
+])
+
 function App() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-bold">DonWorry</h1>
-    </div>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App

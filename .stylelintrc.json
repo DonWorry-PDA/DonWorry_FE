@@ -1,0 +1,17 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-config-recess-order"],
+  "ignoreFiles": ["**/*.tsx", "**/*.ts", "**/*.jsx", "**/*.js", "dist/**"],
+  "rules": {
+    "import-notation": "string",
+    "custom-property-pattern": "^[a-z][a-z0-9-]+$",
+    "number-max-precision": 5,
+    "color-function-notation": "legacy",
+    "alpha-value-notation": "number",
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["theme", "layer", "apply", "tailwind", "config", "plugin", "source", "utility", "variant"]
+      }
+    ]
+  }
+}
