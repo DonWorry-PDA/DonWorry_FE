@@ -1,11 +1,39 @@
-import LoginForm from './components/LoginForm'
+import PinDots from './components/PinDots'
+import PinKeypad from './components/PinKeypad'
+import { usePinInput } from './hooks/usePinInput'
 
 function LoginPage() {
+  const { pin, attempts, isError, isLocked, appendDigit, deleteDigit, reset } = usePinInput()
+
   return (
-    <div className="flex w-full flex-col px-6 pt-20">
-      <h1 className="mb-2 text-heading font-bold text-ink">안녕하세요</h1>
-      <p className="mb-10 text-body text-ink-sub">돈워리에 로그인해주세요</p>
-      <LoginForm />
+    <div className="flex min-h-screen flex-col bg-white">
+      {/* 헤더 + 인사말 */}
+      <div>
+        <p className="px-6 pt-12 text-center text-sub text-ink-sub">신한 은퇴솔루션</p>
+        <div className="mt-10 px-6 text-center">
+          <h1 className="text-heading font-bold text-ink">
+            김영수님,
+            <br />
+            다시 만나서 반가워요
+          </h1>
+          <p className="mt-2 text-body text-ink-sub">간편 비밀번호 6자리를 입력해주세요.</p>
+        </div>
+      </div>
+
+      {/* PIN 점 + 에러 메시지 — 남은 공간에서 세로 중앙 */}
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <PinDots count={pin.length} />
+        <div className="mt-3 h-5 text-center">
+          {isLocked ? (
+            <p className="text-sub text-danger">비밀번호 5회 오류로 잠겼습니다.</p>
+          ) : isError ? (
+            <p className="text-sub text-danger">비밀번호가 일치하지 않아요 ({attempts}/5)</p>
+          ) : null}
+        </div>
+      </div>
+
+      {/* 키패드 */}
+      <PinKeypad onDigit={appendDigit} onDelete={deleteDigit} onReset={reset} />
     </div>
   )
 }

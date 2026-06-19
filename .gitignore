@@ -34,3 +34,9 @@ CLAUDE.md
 
 # MCP config (contains access tokens)
 .mcp.json
+
+# .github skills
+.github/skills
+
+# docs
+docs
