@@ -12,7 +12,7 @@ function SplashPage() {
   }, [navigate])
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-white px-6 pt-16">
+    <div className="flex min-h-screen flex-col bg-white px-6 pt-16">
       <div>
         <h1 className="text-heading font-bold text-ink">
           은퇴 후의 삶,
@@ -26,7 +26,7 @@ function SplashPage() {
       <img
         src="/images/splash-illustration.png"
         alt=""
-        className="w-full object-contain"
+        className="mt-10 w-full object-contain"
       />
     </div>
   )
