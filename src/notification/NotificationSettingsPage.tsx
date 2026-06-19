@@ -92,7 +92,7 @@ function SettingRow({
           <p className="text-sub text-ink-hint">{item.subtitle}</p>
         </div>
       </div>
-      <Toggle checked={item.enabled} onChange={onToggle} />
+      <Toggle checked={item.enabled} onChange={onToggle} aria-label={`${item.title} 알림 활성화`} />
     </div>
   )
 }

@@ -12,7 +12,7 @@ function AppBar({ title, onBack, rightAction }: AppBarProps) {
     <header className="flex h-[52px] shrink-0 items-center gap-2 px-5 w-full">
       <div className="shrink-0 size-7 flex items-center justify-center">
         {onBack && (
-          <button onClick={onBack}>
+          <button onClick={onBack} aria-label="뒤로 가기">
             <BackArrowIc className="text-ink" width={22} height={22} />
           </button>
         )}

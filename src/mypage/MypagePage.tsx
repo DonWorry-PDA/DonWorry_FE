@@ -19,7 +19,7 @@ function MypagePage() {
       <header className="flex h-[52px] items-center pl-5 pr-[14px]">
         <h1 className="flex-1 text-card font-bold text-ink">마이페이지</h1>
         <button
-          className="flex size-7 items-center justify-center"
+          className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >
           <NotificationIc className="text-ink" width={22} height={22} />

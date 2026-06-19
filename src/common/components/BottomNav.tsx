@@ -40,6 +40,7 @@ function BottomNav() {
           <button
             key={path}
             onClick={() => navigate(path)}
+            aria-current={active ? 'page' : undefined}
             className="flex flex-1 flex-col items-center justify-center gap-1"
             style={{ WebkitTapHighlightColor: 'transparent' }}
           >
