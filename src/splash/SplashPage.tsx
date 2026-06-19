@@ -1,15 +1,7 @@
-import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function SplashPage() {
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate('/login', { replace: true })
-    }, 2000)
-    return () => clearTimeout(timer)
-  }, [navigate])
 
   return (
     <div className="flex min-h-screen flex-col bg-white px-6 pt-16">
@@ -28,6 +20,12 @@ function SplashPage() {
         alt=""
         className="mt-10 w-full object-contain"
       />
+      <button
+        onClick={() => navigate('/login', { replace: true })}
+        className="mb-10 mt-auto w-full rounded-btn bg-primary py-4 text-btn font-bold text-white"
+      >
+        시작하기
+      </button>
     </div>
   )
 }
