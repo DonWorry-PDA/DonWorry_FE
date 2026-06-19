@@ -23,7 +23,16 @@ export function usePinInput(): UsePinInputReturn {
   const [isLocked, setIsLocked] = useState(false)
 
   function appendDigit(digit: string) {
-    if (isError || isLocked || pin.length >= 6) return
+    if (isLocked) return
+
+    // 에러 상태에서 첫 입력 시 에러 해제 후 새로 시작
+    if (isError) {
+      setIsError(false)
+      setPin(digit)
+      return
+    }
+
+    if (pin.length >= 6) return
     const next = pin + digit
     if (next.length < 6) {
       setPin(next)
@@ -34,7 +43,7 @@ export function usePinInput(): UsePinInputReturn {
       return
     }
     const nextAttempts = attempts + 1
-    setPin(next)
+    setPin('')
     setAttempts(nextAttempts)
     setIsError(true)
     if (nextAttempts >= MAX_ATTEMPTS) setIsLocked(true)

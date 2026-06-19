@@ -4,15 +4,14 @@ interface Props {
 
 function PinDots({ count }: Props) {
   return (
-    <div className="flex gap-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div
-          key={i}
-          className={`size-3.5 rounded-full transition-colors duration-150 ${
-            i < count ? 'bg-primary' : 'bg-dot-off'
-          }`}
-        />
-      ))}
+    <div className="flex w-full items-center justify-between px-10">
+      {Array.from({ length: 6 }).map((_, i) =>
+        i < count ? (
+          <div key={i} className="size-3.5 rounded-full bg-primary transition-colors duration-150" />
+        ) : (
+          <div key={i} className="h-0.5 w-6 rounded-full bg-disabled" />
+        ),
+      )}
     </div>
   )
 }
