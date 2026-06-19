@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import { NotificationItemIc } from '../common/assets/icons'
@@ -6,9 +7,19 @@ import type { NotificationItem } from './types/notification'
 
 function NotificationPage() {
   const navigate = useNavigate()
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
+
+  const markAllRead = () => {
+    setNotifications((prev) =>
+      prev.map((group) => ({
+        ...group,
+        items: group.items.map((item) => ({ ...item, isUnread: false })),
+      })),
+    )
+  }
 
   const readAllButton = (
-    <button>
+    <button onClick={markAllRead}>
       <span className="text-sub text-primary font-normal text-center leading-tight">
         모두
         <br />
@@ -18,11 +29,19 @@ function NotificationPage() {
   )
 
   return (
-    <div className="flex flex-col bg-white min-h-screen">
+    <div className="flex flex-col bg-white h-dvh">
       <AppBar title="알림" onBack={() => navigate(-1)} rightAction={readAllButton} />
 
-      <main className="flex flex-col px-5 pt-1">
-        {MOCK_NOTIFICATIONS.map((group) => (
+      <main className="flex-1 overflow-y-auto flex flex-col px-5 pt-1">
+        <button
+          onClick={() => navigate('/notification/settings')}
+          className="flex items-center justify-between py-3 border-b border-divider"
+        >
+          <span className="text-body font-medium text-ink">알림 설정</span>
+          <span className="text-disabled text-lg">›</span>
+        </button>
+
+        {notifications.map((group) => (
           <div key={group.label}>
             <div className="pb-[10px] pt-2">
               <span className="text-sub font-semibold text-ink-hint">{group.label}</span>

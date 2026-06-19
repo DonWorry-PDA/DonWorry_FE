@@ -9,3 +9,11 @@ export type NotificationGroup = {
   label: string
   items: NotificationItem[]
 }
+
+export type NotificationSetting = {
+  id: string
+  icon: string
+  title: string
+  subtitle: string
+  enabled: boolean
+}
