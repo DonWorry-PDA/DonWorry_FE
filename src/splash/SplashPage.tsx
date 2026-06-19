@@ -20,9 +20,7 @@ function SplashPage() {
           <span className="text-primary">신한</span>이 함께 설계합니다
         </h1>
         <p className="mt-3 text-body text-ink-sub">
-          안정적인 노후를 위한
-          <br />
-          한 걸음, 지금 시작하세요.
+          안정적인 노후를 위한 한 걸음, 지금 시작하세요.
         </p>
       </div>
       <img
