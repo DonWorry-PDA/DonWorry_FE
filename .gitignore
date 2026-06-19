@@ -32,5 +32,8 @@ CLAUDE.md
 .env.local
 .env.*.local
 
+# MCP config (contains access tokens)
+.mcp.json
+
 # .github skills
 .github/skills
