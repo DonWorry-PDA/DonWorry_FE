@@ -31,3 +31,6 @@ CLAUDE.md
 .env
 .env.local
 .env.*.local
+
+# MCP config (contains access tokens)
+.mcp.json

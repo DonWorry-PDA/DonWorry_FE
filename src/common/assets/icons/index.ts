@@ -1,0 +1,7 @@
+export { default as NotificationIc } from './notification.svg?react'
+export { default as NotificationItemIc } from './notificationItemIc.svg?react'
+export { default as BackArrowIc } from './backArrowIc.svg?react'
+export { default as NavHomeIc } from './navHomeIc.svg?react'
+export { default as NavAssetIc } from './navAssetIc.svg?react'
+export { default as NavCalendarIc } from './navCalendarIc.svg?react'
+export { default as NavMypageIc } from './navMypageIc.svg?react'
