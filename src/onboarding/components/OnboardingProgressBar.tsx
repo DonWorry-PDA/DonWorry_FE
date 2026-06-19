@@ -7,7 +7,7 @@ function OnboardingProgressBar({ current, total }: Props) {
   const widthPct = Math.round((current / total) * 100)
 
   return (
-    <div className="w-full">
+    <div className="w-full" role="status" aria-live="polite" aria-label={`온보딩 진행: ${current} / ${total} 단계`}>
       <p className="px-6 pb-3 text-sub text-ink-sub">
         {current}/{total} 단계
       </p>
