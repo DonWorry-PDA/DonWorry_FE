@@ -1,4 +1,4 @@
-import { BackArrowIc, NavHomeIc, NotificationIc } from '../../../common/assets/icons'
+import { BackArrowIc } from '../../../common/assets/icons'
 
 interface Props {
   onNext: () => void
@@ -8,38 +8,82 @@ interface Props {
 function AssetAuth({ onNext, onPrev }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      {/* AppBar */}
       <div className="flex items-center justify-between px-6 pt-12 pb-4">
         <div className="flex items-center gap-3">
           <button type="button" onClick={onPrev} className="text-ink">
             <BackArrowIc width={24} height={24} />
           </button>
-          <span className="text-body text-ink-sub">자산 연결 방법 선택 · 인증하기 2/3</span>
+          <span className="text-card font-bold text-ink">자산연결</span>
         </div>
-        <div className="flex gap-4 text-ink">
-          <NotificationIc width={24} height={24} />
-          <NavHomeIc width={24} height={24} />
+        <div className="flex items-center gap-3">
+          <button type="button" aria-label="고객센터" className="text-ink">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M8.5 14.5s1.5 1.5 3.5 1.5 3.5-1.5 3.5-1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="9.5" cy="10.5" r="1" fill="currentColor" />
+              <circle cx="14.5" cy="10.5" r="1" fill="currentColor" />
+            </svg>
+          </button>
+          <button type="button" aria-label="닫기" className="text-ink">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
+      </div>
+
+      {/* 단계 표시 */}
+      <div className="flex items-center justify-between border-b border-line px-6 py-3">
+        <span className="text-body text-ink-sub">자산연결방법 선택</span>
+        <span className="rounded-full bg-surface-muted px-3 py-0.5 text-sub text-ink-sub">2/3</span>
       </div>
 
       <div className="flex flex-1 flex-col px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">
-          이용 중인 금융상품<br />연결을 위해 인증할게요
+          이용 중이신 금융상품<br />연결을 위해 인증할게요
         </h1>
 
-        <div className="mt-8 rounded-card-lg bg-primary p-5 text-white">
-          <p className="text-card font-bold">김영수</p>
+        {/* 인증서 카드 */}
+        <div className="relative mt-8 overflow-hidden rounded-card-xl bg-primary p-6 text-white">
+          <div
+            className="pointer-events-none absolute right-0 top-0 select-none text-[120px] font-black leading-none text-white/10"
+            aria-hidden="true"
+          >
+            신
+          </div>
+
+          <p className="text-card font-bold">김준수</p>
+
           <div className="mt-3 flex items-center gap-2">
-            <div className="size-6 rounded-full bg-white/30" />
+            <div className="flex size-6 items-center justify-center rounded-full border border-white/50">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7.5c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                <path d="M5 5.5l2 2-2 2" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <span className="text-body">신한인증서</span>
           </div>
-          <p className="mt-2 text-sub opacity-70">인증일 28.02.29</p>
+
+          <p className="mt-4 text-body">만료일 28.02.29</p>
+
+          <span className="mt-2 inline-block rounded-badge bg-white/20 px-2.5 py-0.5 text-sub">
+            D-620
+          </span>
         </div>
+
+        <button
+          type="button"
+          className="mt-6 flex w-full items-center justify-center gap-0.5 text-body text-ink-sub"
+        >
+          다른방법으로 인증하기
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
       </div>
 
-      <div className="flex flex-col items-center gap-3 px-6 pb-10">
-        <button type="button" className="text-body text-ink-sub underline">
-          다른 방법으로 인증하기
-        </button>
+      <div className="px-6 pb-10">
         <button
           type="button"
           onClick={onNext}
