@@ -14,9 +14,9 @@ function AssetAuth({ onNext, onPrev }: Props) {
           <button type="button" onClick={onPrev} className="text-ink">
             <BackArrowIc width={24} height={24} />
           </button>
-          <span className="text-card font-bold text-ink">자산연결</span>
+          <span className="text-card text-ink font-bold">자산연결</span>
         </div>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <button type="button" aria-label="고객센터" className="text-ink">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.5" />
@@ -30,24 +30,26 @@ function AssetAuth({ onNext, onPrev }: Props) {
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* 단계 표시 */}
-      <div className="flex items-center justify-between border-b border-line px-6 py-3">
+      <div className="border-line flex items-center justify-between border-b px-6 py-3">
         <span className="text-body text-ink-sub">자산연결방법 선택</span>
-        <span className="rounded-full bg-surface-muted px-3 py-0.5 text-sub text-ink-sub">2/3</span>
+        <span className="bg-surface-muted text-sub text-ink-sub rounded-full px-3 py-0.5">2/3</span>
       </div>
 
       <div className="flex flex-1 flex-col px-6 pt-8">
-        <h1 className="text-heading font-bold text-ink">
-          이용 중이신 금융상품<br />연결을 위해 인증할게요
+        <h1 className="text-heading text-ink font-bold">
+          이용 중이신 금융상품
+          <br />
+          연결을 위해 인증할게요
         </h1>
 
         {/* 인증서 카드 */}
-        <div className="relative mt-8 overflow-hidden rounded-card-xl bg-primary p-6 text-white">
+        <div className="rounded-card-xl bg-primary relative mt-8 overflow-hidden p-6 text-white">
           <div
-            className="pointer-events-none absolute right-0 top-0 select-none text-[120px] font-black leading-none text-white/10"
+            className="pointer-events-none absolute top-0 right-0 text-[120px] leading-none font-black text-white/10 select-none"
             aria-hidden="true"
           >
             신
@@ -58,27 +60,44 @@ function AssetAuth({ onNext, onPrev }: Props) {
           <div className="mt-3 flex items-center gap-2">
             <div className="flex size-6 items-center justify-center rounded-full border border-white/50">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M3 7.5c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-                <path d="M5 5.5l2 2-2 2" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M3 7.5c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4"
+                  stroke="white"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M5 5.5l2 2-2 2"
+                  stroke="white"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
             <span className="text-body">신한인증서</span>
           </div>
 
-          <p className="mt-4 text-body">만료일 28.02.29</p>
+          <p className="text-body mt-4">만료일 28.02.29</p>
 
-          <span className="mt-2 inline-block rounded-badge bg-white/20 px-2.5 py-0.5 text-sub">
+          <span className="rounded-badge text-sub mt-2 inline-block bg-white/20 px-2.5 py-0.5">
             D-620
           </span>
         </div>
 
         <button
           type="button"
-          className="mt-6 flex w-full items-center justify-center gap-0.5 text-body text-ink-sub"
+          className="text-body text-ink-sub mt-6 flex w-full items-center justify-center gap-0.5"
         >
           다른방법으로 인증하기
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M6 4l4 4-4 4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
       </div>
@@ -87,7 +106,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
         <button
           type="button"
           onClick={onNext}
-          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white"
+          className="rounded-btn bg-primary text-btn w-full py-4 font-bold text-white"
         >
           인증하기
         </button>
