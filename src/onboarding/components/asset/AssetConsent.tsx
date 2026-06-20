@@ -14,7 +14,7 @@ interface Props {
 
 function AssetConsent({ onNext, onPrev }: Props) {
   const [checked, setChecked] = useState<Record<string, boolean>>(
-    Object.fromEntries(CONSENT_ITEMS.map(item => [item.id, true]))
+    Object.fromEntries(CONSENT_ITEMS.map(item => [item.id, false]))
   )
 
   const allChecked = CONSENT_ITEMS.every(item => checked[item.id])

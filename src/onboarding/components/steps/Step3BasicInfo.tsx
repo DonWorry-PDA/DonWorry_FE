@@ -23,11 +23,6 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
     onNext()
   }
 
-  function handleSkip() {
-    updateAnswers({ age: null, retiredYear: null })
-    onNext()
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <div className="px-6 pt-12">
@@ -77,20 +72,13 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-3 px-6 pb-10">
+      <div className="px-6 pb-10">
         <button
           type="button"
           onClick={handleNext}
           className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white"
         >
           다음
-        </button>
-        <button
-          type="button"
-          onClick={handleSkip}
-          className="text-body text-ink-sub underline"
-        >
-          나중에 입력할게요
         </button>
       </div>
     </div>
