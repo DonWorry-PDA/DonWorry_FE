@@ -85,7 +85,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
           </span>
         </div>
 
-        <button
+        {/* <button
           type="button"
           className="text-body text-ink-sub mt-6 flex w-full items-center justify-center gap-0.5"
         >
@@ -99,7 +99,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
               strokeLinejoin="round"
             />
           </svg>
-        </button>
+        </button> */}
       </div>
 
       <div className="px-6 pb-10">
