@@ -5,11 +5,13 @@ import OnboardingPage from './onboarding/OnboardingPage'
 import MypagePage from './mypage/MypagePage'
 import NotificationPage from './notification/NotificationPage'
 import NotificationSettingsPage from './notification/NotificationSettingsPage'
+import SurveyPage from './survey/SurveyPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/onboarding', element: <OnboardingPage /> },
+  { path: '/survey', element: <SurveyPage /> },
   { path: '/mypage', element: <MypagePage /> },
   { path: '/notification', element: <NotificationPage /> },
   { path: '/notification/settings', element: <NotificationSettingsPage /> },
