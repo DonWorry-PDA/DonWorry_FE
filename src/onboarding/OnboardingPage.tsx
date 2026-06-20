@@ -40,7 +40,7 @@ function OnboardingContent() {
       {currentStep === 3 && <Step3BasicInfo {...stepProps} />}
       {currentStep === 4 && <Step4Living {...stepProps} />}
       {currentStep === 5 && <Step5PensionDefer {...stepProps} />}
-      {currentStep === 6 && <AssetIntro onNext={handleNext} />}
+      {currentStep === 6 && <AssetIntro onNext={handleNext} onPrev={handlePrev} />}
       {currentStep === 7 && <AssetAuth {...stepProps} />}
       {currentStep === 8 && <AssetConsent {...stepProps} />}
       {currentStep === 9 && <AssetLoading onNext={handleNext} />}
