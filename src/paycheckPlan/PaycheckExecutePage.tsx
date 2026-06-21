@@ -1,0 +1,98 @@
+import { useNavigate } from 'react-router-dom'
+import AppBar from '../common/components/AppBar'
+import Button from '../common/components/Button'
+import Badge from '../common/components/Badge'
+import InfoBox from '../common/components/InfoBox'
+import { mockExecutionSummary } from './mock/paycheckPlan'
+
+function ArrowUpIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M7 11V3M3 7l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function ArrowDownIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M7 3v8M3 7l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function PaycheckExecutePage() {
+  const navigate = useNavigate()
+  const summary = mockExecutionSummary
+
+  return (
+    <div className="flex flex-col h-full">
+      <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+
+      <div className="flex-1 overflow-y-auto px-5 pt-4">
+        <Badge tone="primary" className="mb-3">{summary.planName}</Badge>
+
+        <h2 className="text-heading font-bold text-ink mb-1 mt-3">
+          이 설계안을 실행하면
+          <br />
+          <span className="text-primary">매달 받는 돈이 늘어요</span>
+        </h2>
+
+        {/* 충당률 변화 카드 */}
+        <div className="border border-line rounded-card px-4 py-3 flex items-center justify-between mb-4 mt-4">
+          <div>
+            <p className="text-sub text-ink-hint mb-0.5">지금 충당률</p>
+            <p className="font-inter text-card font-bold text-warning">{summary.coverageFrom}%</p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-ink-hint">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <div className="text-right">
+            <p className="text-sub text-ink-hint mb-0.5">실행 후</p>
+            <p className="font-inter text-card font-bold text-success">{summary.coverageTo}%</p>
+          </div>
+        </div>
+
+        <InfoBox tone="success" className="mb-5">
+          매달 받는 돈이 {summary.cashflowFrom}만원 →{' '}
+          <span className="font-semibold">{summary.cashflowTo}만원</span>으로 늘어날 것으로 예상돼요.
+        </InfoBox>
+
+        <p className="text-sub text-ink-hint mb-3">실행 내용 · {summary.items.length}가지</p>
+
+        <div className="flex flex-col gap-3 mb-4">
+          {summary.items.map((item) => (
+            <div key={item.id} className="flex items-center gap-3">
+              <div
+                className={`size-8 rounded-icon flex items-center justify-center shrink-0 ${
+                  item.action === 'sell' ? 'bg-danger-bg text-danger' : 'bg-success-bg text-success'
+                }`}
+              >
+                {item.action === 'sell' ? <ArrowDownIcon /> : <ArrowUpIcon />}
+              </div>
+              <div className="flex-1">
+                <p className="text-body font-semibold text-ink">{item.name}</p>
+                <p className="text-sub text-ink-hint">{item.description}</p>
+              </div>
+              <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount.toLocaleString()}만</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between py-3 border-t border-divider mb-4">
+          <p className="text-body text-ink-sub">예상 수수료·세금</p>
+          <p className="font-inter text-body font-medium text-ink">약 {summary.estimatedFee}만원</p>
+        </div>
+
+        <InfoBox className="mb-6">{summary.notice}</InfoBox>
+      </div>
+
+      <div className="px-5 pb-4 shrink-0 flex flex-col gap-2">
+        <Button onClick={() => {}}>실행 시작하기</Button>
+        <button className="text-body text-ink-hint text-center py-1">나중에 하기 · 임시저장</button>
+      </div>
+    </div>
+  )
+}
+
+export default PaycheckExecutePage
