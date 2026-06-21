@@ -13,6 +13,10 @@ import PaycheckComparePage from './paycheckPlan/PaycheckComparePage'
 import PaycheckPlanDetailPage from './paycheckPlan/PaycheckPlanDetailPage'
 import PaycheckExecutePage from './paycheckPlan/PaycheckExecutePage'
 import PaycheckConsultPage from './paycheckPlan/PaycheckConsultPage'
+import ConsultHistoryPage from './mypage/ConsultHistoryPage'
+import TermsAgreePage from './accountOpen/TermsAgreePage'
+import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
+import AccountOpenCompletePage from './accountOpen/AccountOpenCompletePage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -29,6 +33,10 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/plans/:planId', element: <PaycheckPlanDetailPage /> },
   { path: '/paycheck-plan/execute', element: <PaycheckExecutePage /> },
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
+  { path: '/mypage/consult-history', element: <ConsultHistoryPage /> },
+  { path: '/account-open', element: <TermsAgreePage /> },
+  { path: '/account-open/identity', element: <IdentityVerifyPage /> },
+  { path: '/account-open/complete', element: <AccountOpenCompletePage /> },
 ])
 
 function App() {
