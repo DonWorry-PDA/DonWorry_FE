@@ -21,4 +21,5 @@ export type ConsultRecord = {
   dateTime: string
   location: string
   actionLabel?: string
+  actionPath?: string
 }

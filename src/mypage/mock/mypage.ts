@@ -21,6 +21,7 @@ export const MOCK_CONSULT_RECORDS: ConsultRecord[] = [
     dateTime: '2026.06.19 14:00',
     location: '신한투자증권 대면 상담',
     actionLabel: '상담 준비사항 보기',
+    actionPath: '/mypage/consult-history/1/prep',
   },
   {
     id: '2',
@@ -29,6 +30,7 @@ export const MOCK_CONSULT_RECORDS: ConsultRecord[] = [
     dateTime: '2026.05.22 10:30',
     location: '비대면 상담',
     actionLabel: '상담 요약 보기',
+    actionPath: '/mypage/consult-history/2/summary',
   },
   {
     id: '3',

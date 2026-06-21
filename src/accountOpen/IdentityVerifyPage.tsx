@@ -2,6 +2,14 @@ import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import { MOCK_USER_PROFILE } from '../mypage/mock/mypage'
+import type { UserIdentityInfo } from './types/accountOpen'
+
+const MOCK_IDENTITY: UserIdentityInfo = {
+  name: MOCK_USER_PROFILE.name,
+  idNumberMasked: '601015 — ●●●●●●●',
+  phone: '010-1234-5678',
+}
 
 const STEPS = [
   { step: 1, label: '인증' },
@@ -56,16 +64,31 @@ function IdentityVerifyPage() {
             ))}
           </div>
 
-          {/* 입력 필드 */}
-          <FieldRow label="이름" value="김영수" hasDivider />
-          <FieldRow label="주민등록번호" value="601015 — ●●●●●●●" hasDivider />
-          <FieldRow label="휴대폰 번호" value="010-1234-5678" />
+          {/* 사용자 정보 (사전 입력) */}
+          <FieldRow label="이름" value={MOCK_IDENTITY.name} hasDivider />
+          <FieldRow label="주민등록번호" value={MOCK_IDENTITY.idNumberMasked} hasDivider />
+          <FieldRow label="휴대폰 번호" value={MOCK_IDENTITY.phone} />
         </div>
       </main>
 
       {/* 하단 CTA */}
       <div className="shrink-0 px-5 pb-8 pt-3">
-        <Button onClick={() => navigate('/account-open/complete')}>인증번호 받기</Button>
+        <Button
+          onClick={() =>
+            navigate('/account-open/complete', {
+              state: {
+                accountNumber: '123-456-789012',
+                openedAt: new Date().toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }).replace(/\.\s?/g, '.').replace(/\.$/, ''),
+              },
+            })
+          }
+        >
+          인증번호 받기
+        </Button>
       </div>
     </div>
   )

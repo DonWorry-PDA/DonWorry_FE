@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, type NavigateFunction } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import BottomNav from '../common/components/BottomNav'
 import { MOCK_CONSULT_RECORDS } from './mock/mypage'
@@ -55,9 +55,16 @@ function ConsultHistoryPage() {
           </div>
 
           {/* 상담 카드 목록 */}
-          {MOCK_CONSULT_RECORDS.map((record) => (
-            <ConsultHistoryCard key={record.id} record={record} />
-          ))}
+          {MOCK_CONSULT_RECORDS.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-10">
+              <p className="text-md font-medium text-ink">상담 내역이 없어요</p>
+              <p className="text-sub text-ink-hint">예약하신 상담이 여기에 표시됩니다</p>
+            </div>
+          ) : (
+            MOCK_CONSULT_RECORDS.map((record) => (
+              <ConsultHistoryCard key={record.id} record={record} navigate={navigate} />
+            ))
+          )}
         </div>
       </main>
 
@@ -66,7 +73,7 @@ function ConsultHistoryPage() {
   )
 }
 
-function ConsultHistoryCard({ record }: { record: ConsultRecord }) {
+function ConsultHistoryCard({ record, navigate }: { record: ConsultRecord; navigate: NavigateFunction }) {
   const statusLabel = record.status === 'reserved' ? '예약 완료' : '상담 완료'
 
   return (
@@ -84,7 +91,10 @@ function ConsultHistoryCard({ record }: { record: ConsultRecord }) {
       </div>
 
       {record.actionLabel && (
-        <button className="bg-surface rounded-btn text-md text-primary w-full py-[0.875rem] text-center font-semibold">
+        <button
+          className="bg-surface rounded-btn text-md text-primary w-full py-[0.875rem] text-center font-semibold"
+          onClick={() => record.actionPath && navigate(record.actionPath)}
+        >
           {record.actionLabel}
         </button>
       )}

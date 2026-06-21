@@ -1,7 +1,8 @@
 import { Fragment } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import type { AccountOpenResult } from './types/accountOpen'
 
 type StepState = 'completed' | 'active' | 'inactive'
 
@@ -13,6 +14,10 @@ const STEPS: { step: number; label: string; state: StepState }[] = [
 
 function AccountOpenCompletePage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const result = state as AccountOpenResult | null
+
+  if (!result) return <Navigate to="/account-open" replace />
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -55,8 +60,8 @@ function AccountOpenCompletePage() {
         <div className="mt-[0.625rem] rounded-card border border-line p-[1.1875rem]">
           <div className="flex flex-col items-center gap-1">
             <span className="text-sub font-bold text-primary">신한 은퇴솔루션 계좌</span>
-            <span className="font-inter text-btn font-bold text-ink">123-456-789012</span>
-            <span className="mt-1 text-caption text-ink-hint">개설일 2026.06.12</span>
+            <span className="font-inter text-btn font-bold text-ink">{result?.accountNumber}</span>
+            <span className="mt-1 text-caption text-ink-hint">개설일 {result?.openedAt}</span>
           </div>
         </div>
       </main>
