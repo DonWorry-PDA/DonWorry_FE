@@ -2,37 +2,34 @@ import type { SurveyQuestionData } from '../types/survey'
 
 export const questions: SurveyQuestionData[] = [
   {
-    question: '모아둔 돈이 한달 새\n5% 줄어든다면요?',
-    subtitle: '정답은 없어요. 평소 마음에 가까운 것을 골라주세요.',
+    question: '어느 정도까지\n줄어도 괜찮으세요?',
+    description: [
+      '노후에 투자한 돈에서 매달 생활비를 꺼내 쓴다고 생각해 보세요.',
+      '시장이 나빠지면 한동안 꺼내 쓸 수 있는 돈이 줄어들 수 있어요.',
+    ],
     options: [
-      { label: '잠이 안 올 것 같아요', subLabel: '원금이 줄어드는 건 피하고 싶어요' },
-      { label: '신경 쓰이지만 기다릴 수 있어요', subLabel: '생활비만 안 흔들리면 괜찮아요' },
-      { label: '크게 개의치 않아요', subLabel: '장기적으로 오르면 된다고 생각해요' },
+      { label: '한 푼도 줄면 안 돼요', score: 0 },
+      { label: '10% 정도는 괜찮아요', score: 1 },
+      { label: '20%까지는 견딜 수 있어요', score: 2 },
+      { label: '30% 넘게 출렁여도 기다릴 수 있어요', score: 3 },
     ],
   },
   {
-    question: '둘 중 어느 쪽이\n더 마음 편하세요?',
+    question: '어떤 방식이 더 마음 편하세요?',
+    description: ['매달 받는 금액의 안정성과 수익 가능성, 어느 쪽이 더 중요한지 골라주세요.'],
     options: [
-      { label: '적게 벌어도 일정한 쪽', subLabel: '예: 매달 60만원이 꼬박꼬박' },
-      { label: '중간쯤', subLabel: '예: 보통 70만원, 적은 달은 55만원' },
-      { label: '출렁여도 더 벌 가능성이 있는 쪽', subLabel: '예: 많은 달 90만원, 적은 달 40만원' },
+      { label: '매달 딱 정해진 금액이 좋아요', score: 0 },
+      { label: '웬만하면 일정하되, 더 받을 기회면 조금 출렁여도 돼요', score: 1 },
+      { label: '평균적으로 더 받을 수 있다면 매달 들쭉날쭉해도 괜찮아요', score: 2 },
     ],
   },
   {
-    question: '돈을 굴리는\n가장 큰 이유는 무엇인가요?',
+    question: '남은 자산에 대한 생각에\n가장 가까운 것은요?',
+    description: ['원금을 얼마나 지킬지 정하는 데 참고해요.'],
     options: [
-      { label: '매달 생활비를 만들고 싶어요' },
-      { label: '물가만큼은 지키고 싶어요', subLabel: '가진 돈의 가치가 줄지 않게' },
-      { label: '자산을 더 키우고 싶어요' },
-    ],
-  },
-  {
-    question: '자산을 가족에게\n남기고 싶은 마음이 있으세요?',
-    subtitle: '원금을 얼마나 지킬지 정하는 데 참고해요.',
-    options: [
-      { label: '가능한 한 남기고 싶어요', subLabel: '원금은 최대한 지켜요' },
-      { label: '쓸 만큼 쓰고, 남으면 좋고요' },
-      { label: '제 생활이 우선이에요', subLabel: '원금을 조금씩 쓰는 것도 괜찮아요' },
+      { label: '되도록 자녀에게 많이 남기고 싶어요', consumptionRate: 30 },
+      { label: '제가 쓸 만큼 쓰고, 남으면 물려줄게요', consumptionRate: 65 },
+      { label: '제 노후에 다 쓰는 게 우선이에요', consumptionRate: 100 },
     ],
   },
 ]
