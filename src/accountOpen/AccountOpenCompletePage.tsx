@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -21,12 +22,12 @@ function AccountOpenCompletePage() {
         {/* 단계 표시 */}
         <div className="flex items-center justify-between pb-5 pt-[0.375rem]">
           {STEPS.map(({ step, label, state }, index) => (
-            <>
-              <StepItem key={step} step={step} label={label} state={state} />
+            <Fragment key={step}>
+              <StepItem step={step} label={label} state={state} />
               {index < STEPS.length - 1 && (
-                <div key={`line-${step}`} className="h-px w-[1.875rem] bg-primary" />
+                <div className="h-px w-[1.875rem] bg-primary" />
               )}
-            </>
+            </Fragment>
           ))}
         </div>
 

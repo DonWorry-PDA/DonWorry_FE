@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -23,12 +23,12 @@ function IdentityVerifyPage() {
         {/* 단계 표시 */}
         <div className="flex items-center justify-between px-5 pb-5 pt-[0.375rem]">
           {STEPS.map(({ step, label }, index) => (
-            <>
-              <StepItem key={step} step={step} label={label} active={step === 1} />
+            <Fragment key={step}>
+              <StepItem step={step} label={label} active={step === 1} />
               {index < STEPS.length - 1 && (
-                <div key={`line-${step}`} className="h-px w-[1.875rem] bg-line" />
+                <div className="h-px w-[1.875rem] bg-line" />
               )}
-            </>
+            </Fragment>
           ))}
         </div>
 
