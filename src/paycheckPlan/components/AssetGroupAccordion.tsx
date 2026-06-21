@@ -19,11 +19,11 @@ function AssetGroupAccordion({ category, checkedIds, onToggleItem, onToggleGroup
     <div className="border-b border-divider">
       <div className="flex items-center justify-between py-4">
         <Checkbox
-          checked={allChecked || someChecked}
+          checked={allChecked}
           onChange={() => onToggleGroup(category.id)}
           label={category.name}
         />
-        <button onClick={() => setOpen((o) => !o)} aria-label={open ? '접기' : '펼치기'} className="p-1">
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? '접기' : '펼치기'} className="p-1">
           <svg
             width="16"
             height="16"

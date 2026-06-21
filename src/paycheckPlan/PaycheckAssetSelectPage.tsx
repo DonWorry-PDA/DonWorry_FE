@@ -26,7 +26,11 @@ function PaycheckAssetSelectPage() {
   const toggleItem = (id: string) => {
     setCheckedIds((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next
     })
   }
@@ -35,8 +39,8 @@ function PaycheckAssetSelectPage() {
     const category = mockAssetCategories.find((c) => c.id === categoryId)
     if (!category) return
     const groupIds = category.items.map((i) => i.id)
-    const groupAllChecked = groupIds.every((id) => checkedIds.has(id))
     setCheckedIds((prev) => {
+      const groupAllChecked = groupIds.every((id) => prev.has(id))
       const next = new Set(prev)
       groupIds.forEach((id) => (groupAllChecked ? next.delete(id) : next.add(id)))
       return next

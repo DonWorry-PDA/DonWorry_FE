@@ -60,10 +60,10 @@ function PaycheckComparePage() {
       </div>
 
       <div className="px-5 py-4 shrink-0 flex gap-3">
-        <Button variant="outline" onClick={() => navigate('/paycheck-plan/plans/stable')}>
+        <Button variant="outline" onClick={() => navigate(`/paycheck-plan/plans/${mockComparisonTable.leftPlanId}`)}>
           {leftPlanName} 보기
         </Button>
-        <Button onClick={() => navigate('/paycheck-plan/plans/balanced')}>
+        <Button onClick={() => navigate(`/paycheck-plan/plans/${mockComparisonTable.rightPlanId}`)}>
           {rightPlanName} 보기
         </Button>
       </div>

@@ -50,6 +50,8 @@ export type ComparisonRow = {
 }
 
 export type ComparisonTable = {
+  leftPlanId: string
+  rightPlanId: string
   leftPlanName: string
   rightPlanName: string
   rows: ComparisonRow[]

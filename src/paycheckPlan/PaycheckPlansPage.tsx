@@ -45,7 +45,7 @@ function PaycheckPlansPage() {
             <SalaryPlanCard
               key={plan.planId}
               plan={plan}
-              onClick={() => navigate(`/paycheck-plan/plans/${plan.planId}`)}
+              onClick={plan.status !== 'locked' ? () => navigate(`/paycheck-plan/plans/${plan.planId}`) : undefined}
             />
           ))}
         </div>

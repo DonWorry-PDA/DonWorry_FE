@@ -7,11 +7,13 @@ type CheckboxProps = {
 }
 
 function Checkbox({ checked, onChange, label, subLabel, 'aria-label': ariaLabel }: CheckboxProps) {
+  const accessibleLabel = ariaLabel ?? label ?? '체크박스'
   return (
     <button
+      type="button"
       role="checkbox"
       aria-checked={checked}
-      aria-label={ariaLabel ?? label}
+      aria-label={accessibleLabel}
       onClick={() => onChange(!checked)}
       className="flex items-center gap-3 text-left"
     >

@@ -73,7 +73,7 @@ export const mockPlans: Plan[] = [
     tagline: '생활비는 안전하게 지키고, 남는 여유자금만 성장에 써요.',
     status: 'locked',
     expectedIncome: 195,
-    coverage: 126,
+    coverage: 89,
     riskLevel: '높음',
     lockedReason: '지금은 제한',
   },
@@ -110,12 +110,14 @@ export const mockPlansUnlocked: Plan[] = [
     badge: '열림',
     status: 'available',
     expectedIncome: 195,
-    coverage: 126,
+    coverage: 89,
     riskLevel: '높음',
   },
 ]
 
 export const mockComparisonTable: ComparisonTable = {
+  leftPlanId: 'stable',
+  rightPlanId: 'balanced',
   leftPlanName: '안정 월급형',
   rightPlanName: '균형 월급형',
   rows: [

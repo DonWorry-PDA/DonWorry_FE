@@ -23,7 +23,8 @@ function WarningIcon() {
 function PaycheckPlanDetailPage() {
   const navigate = useNavigate()
   const { planId } = useParams<{ planId: string }>()
-  const detail = mockPlanDetails[planId ?? 'balanced'] ?? mockPlanDetails['balanced']
+  const detail = planId ? mockPlanDetails[planId] : null
+  if (!detail) return <div className="flex items-center justify-center h-full text-body text-ink-hint">설계안을 찾을 수 없어요</div>
 
   return (
     <div className="flex flex-col h-full">
@@ -55,7 +56,7 @@ function PaycheckPlanDetailPage() {
               </div>
               <div className="bg-surface rounded-card p-4">
                 <p className="text-sub text-ink-hint mb-1">원금 평가액</p>
-                <p className="font-inter text-card font-bold text-ink">{detail.principalValue.toLocaleString()}만원</p>
+                <p className="font-inter text-card font-bold text-ink">{detail.principalValue.toLocaleString('ko-KR')}만원</p>
                 <p className="text-sub text-ink-hint mt-1">시장 따라 움직여요 · 팔지 않으면 월급은 유지</p>
               </div>
             </div>
