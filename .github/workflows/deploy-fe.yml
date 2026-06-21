@@ -5,6 +5,10 @@ on:
     branches: [develop]
   workflow_dispatch:
 
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true
+
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET: donworry-frontend
@@ -18,8 +22,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Verify branch (workflow_dispatch 안전 가드)
+        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/develop'
+        run: |
+          echo "::error::수동 배포는 develop 브랜치에서만 실행할 수 있습니다. (현재: ${{ github.ref }})"
+          exit 1
+
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
