@@ -1,0 +1,82 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import AppBar from '../common/components/AppBar'
+import Button from '../common/components/Button'
+import SelectChip from '../common/components/SelectChip'
+import ConsultCard from './components/ConsultCard'
+import { mockConsultCards, mockTimeSlots } from './mock/paycheckPlan'
+import type { ConsultType } from './types/paycheckPlan'
+
+function PaycheckConsultPage() {
+  const navigate = useNavigate()
+  const [selectedType, setSelectedType] = useState<ConsultType>('pb')
+  const [sendChecked, setSendChecked] = useState(true)
+  const [selectedTime, setSelectedTime] = useState('10:30')
+
+  return (
+    <div className="flex flex-col h-full">
+      <AppBar title="전문가와 같이 보기" onBack={() => navigate(-1)} />
+
+      <div className="flex-1 overflow-y-auto px-5 pt-4">
+        <h2 className="text-heading font-bold text-ink mb-1">
+          진단 결과를 보니,
+          <br />
+          이런 상담이 도움이 되겠어요
+        </h2>
+        <p className="text-body text-ink-sub mb-5">가입을 권하는 게 아니라, 진단에서 나온 것만 연결해드려요.</p>
+
+        <div className="flex flex-col gap-3 mb-6">
+          {mockConsultCards.map((card) => (
+            <ConsultCard
+              key={card.type}
+              card={card}
+              selected={selectedType === card.type}
+              sendChecked={sendChecked}
+              onSendToggle={setSendChecked}
+              onClick={() => setSelectedType(card.type)}
+            />
+          ))}
+        </div>
+
+        <div className="mb-1">
+          <p className="text-sub text-ink-hint mb-4">예약</p>
+
+          <div className="flex items-center justify-between py-3 border-t border-divider">
+            <span className="text-body text-ink-sub">지점</span>
+            <button className="text-body font-medium text-ink flex items-center gap-1">
+              신한은행 서소문 PWM센터
+              <span className="text-ink-hint">›</span>
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between py-3 border-t border-divider mb-4">
+            <span className="text-body text-ink-sub">날짜</span>
+            <button className="text-body font-medium text-ink flex items-center gap-1">
+              6월 19일 (금)
+              <span className="text-ink-hint">›</span>
+            </button>
+          </div>
+
+          <div className="flex gap-2">
+            {mockTimeSlots.map((slot) => (
+              <SelectChip
+                key={slot.time}
+                selected={selectedTime === slot.time}
+                onClick={() => setSelectedTime(slot.time)}
+              >
+                {slot.period} {slot.time}
+              </SelectChip>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-5 pb-4 shrink-0 flex flex-col gap-1.5">
+        <Button onClick={() => {}}>상담 예약하기</Button>
+        <p className="text-sub text-ink-hint text-center">예약 변경·취소는 마이페이지에서 할 수 있어요</p>
+      </div>
+    </div>
+  )
+}
+
+export default PaycheckConsultPage
