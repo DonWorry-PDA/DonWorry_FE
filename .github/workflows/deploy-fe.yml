@@ -24,8 +24,10 @@ jobs:
     steps:
       - name: Verify branch (workflow_dispatch 안전 가드)
         if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/develop'
+        env:
+          CURRENT_REF: ${{ github.ref }}
         run: |
-          echo "::error::수동 배포는 develop 브랜치에서만 실행할 수 있습니다. (현재: ${{ github.ref }})"
+          printf '%s\n' "::error::수동 배포는 develop 브랜치에서만 실행할 수 있습니다. (현재: ${CURRENT_REF})"
           exit 1
 
       - name: Checkout
