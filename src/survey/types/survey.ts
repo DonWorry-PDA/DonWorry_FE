@@ -1,10 +1,10 @@
 export type SurveyOption = {
   label: string
-  subLabel?: string
+  score?: number
 }
 
 export type SurveyQuestionData = {
   question: string
-  subtitle?: string
+  description?: string[]
   options: SurveyOption[]
 }
