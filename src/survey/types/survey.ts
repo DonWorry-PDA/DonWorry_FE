@@ -1,7 +1,6 @@
 export type SurveyOption = {
   label: string
   score?: number
-  consumptionRate?: number
 }
 
 export type SurveyQuestionData = {

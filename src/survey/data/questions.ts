@@ -27,9 +27,9 @@ export const questions: SurveyQuestionData[] = [
     question: '남은 자산에 대한 생각에\n가장 가까운 것은요?',
     description: ['원금을 얼마나 지킬지 정하는 데 참고해요.'],
     options: [
-      { label: '되도록 자녀에게 많이 남기고 싶어요', consumptionRate: 30 },
-      { label: '제가 쓸 만큼 쓰고, 남으면 물려줄게요', consumptionRate: 65 },
-      { label: '제 노후에 다 쓰는 게 우선이에요', consumptionRate: 100 },
+      { label: '되도록 자녀에게 많이 남기고 싶어요', score: 0 },
+      { label: '제가 쓸 만큼 쓰고, 남으면 물려줄게요', score: 1 },
+      { label: '제 노후에 다 쓰는 게 우선이에요', score: 2 },
     ],
   },
 ]
