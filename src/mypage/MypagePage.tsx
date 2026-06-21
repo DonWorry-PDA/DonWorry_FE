@@ -85,7 +85,7 @@ function MypagePage() {
         <MenuRow
           title="상담 내역"
           subtitle="6월 19일 PB 상담 예약됨"
-          onPress={() => {}}
+          onPress={() => navigate('/mypage/consult-history')}
         />
         <MenuRow title="약관 및 동의 내역" onPress={() => {}} />
 

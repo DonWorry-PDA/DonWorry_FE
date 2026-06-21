@@ -11,3 +11,14 @@ export type LinkedAccount = {
   detail: string
   amountKrw: number
 }
+
+export type ConsultStatus = 'reserved' | 'completed'
+
+export type ConsultRecord = {
+  id: string
+  title: string
+  status: ConsultStatus
+  dateTime: string
+  location: string
+  actionLabel?: string
+}

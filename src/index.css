@@ -121,6 +121,7 @@
     font: inherit;
     background: none;
     border: none;
+    cursor: pointer;
   }
 
   .children-container {
