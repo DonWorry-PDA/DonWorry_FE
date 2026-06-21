@@ -24,10 +24,18 @@ function SurveyQuestion({ step, total, data, selectedIndex, onSelect }: Props) {
         {step}/{total}단계 · 투자 성향 질문
       </p>
 
-      {/* 질문 */}
+      {/* 질문 + 설명 */}
       <div className="px-6 pt-6">
         <h2 className="whitespace-pre-line text-heading font-bold text-ink">{data.question}</h2>
-        {data.subtitle && <p className="mt-2 text-body text-ink-sub">{data.subtitle}</p>}
+        {data.description && (
+          <div className="mt-2 flex flex-col gap-1">
+            {data.description.map((line, i) => (
+              <p key={i} className="text-body text-ink-sub">
+                {line}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 선택지 */}
@@ -52,12 +60,7 @@ function SurveyQuestion({ step, total, data, selectedIndex, onSelect }: Props) {
               </div>
 
               {/* 텍스트 */}
-              <div>
-                <p className="text-body font-semibold text-ink">{option.label}</p>
-                {option.subLabel && (
-                  <p className="mt-0.5 text-sub text-ink-sub">{option.subLabel}</p>
-                )}
-              </div>
+              <p className="text-body font-semibold text-ink">{option.label}</p>
             </button>
           )
         })}
