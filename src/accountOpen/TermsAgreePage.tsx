@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 
 const TERMS_ITEMS = [
   {
@@ -159,11 +160,11 @@ function TermsAgreePage() {
       </main>
 
       {/* 하단 CTA */}
-      <div className="shrink-0 px-5 pb-8 pt-3">
+      <StickyFooter>
         <Button disabled={!requiredChecked} onClick={() => navigate('/account-open/identity')}>
           동의하고 계속
         </Button>
-      </div>
+      </StickyFooter>
 
       {/* 약관 내용 바텀시트 */}
       {viewingTerm && (

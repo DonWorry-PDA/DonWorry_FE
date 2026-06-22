@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
 import AllocationStackBar from './components/AllocationStackBar'
 import CenterMessage from './components/CenterMessage'
@@ -93,12 +94,14 @@ function PaycheckPlanDetailPage() {
         </div>
       </div>
 
-      <div className="px-5 py-4 shrink-0 flex gap-3">
-        <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute')}>
-          진행하기
-        </Button>
-        <Button onClick={() => navigate('/paycheck-plan/consult')}>전문가와 같이 보기</Button>
-      </div>
+      <StickyFooter>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute')}>
+            진행하기
+          </Button>
+          <Button onClick={() => navigate('/paycheck-plan/consult')}>전문가와 같이 보기</Button>
+        </div>
+      </StickyFooter>
     </div>
   )
 }

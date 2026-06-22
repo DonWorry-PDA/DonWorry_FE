@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import { MOCK_USER_PROFILE } from '../mypage/mock/mypage'
 import type { UserIdentityInfo } from './types/accountOpen'
 
@@ -72,7 +73,7 @@ function IdentityVerifyPage() {
       </main>
 
       {/* 하단 CTA */}
-      <div className="shrink-0 px-5 pb-8 pt-3">
+      <StickyFooter>
         <Button
           onClick={() =>
             navigate('/account-open/complete', {
@@ -89,7 +90,7 @@ function IdentityVerifyPage() {
         >
           인증번호 받기
         </Button>
-      </div>
+      </StickyFooter>
     </div>
   )
 }

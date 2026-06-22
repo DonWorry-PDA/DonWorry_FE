@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import type { AccountOpenResult } from './types/accountOpen'
 
 type StepState = 'completed' | 'active' | 'inactive'
@@ -67,9 +68,9 @@ function AccountOpenCompletePage() {
       </main>
 
       {/* 하단 CTA */}
-      <div className="shrink-0 px-5 pb-8 pt-3">
+      <StickyFooter>
         <Button onClick={() => navigate('/')}>자산관리 시작하기</Button>
-      </div>
+      </StickyFooter>
     </div>
   )
 }

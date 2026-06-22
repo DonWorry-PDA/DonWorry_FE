@@ -7,7 +7,13 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   fullWidth?: boolean
 }
 
-function Button({ variant = 'primary', fullWidth = true, className = '', children, ...props }: ButtonProps) {
+function Button({
+  variant = 'primary',
+  fullWidth = true,
+  className = '',
+  children,
+  ...props
+}: ButtonProps) {
   const base = 'h-[54px] rounded-btn text-btn font-bold transition-opacity disabled:opacity-40'
   const width = fullWidth ? 'w-full' : ''
 
@@ -17,7 +23,11 @@ function Button({ variant = 'primary', fullWidth = true, className = '', childre
   }
 
   return (
-    <button type="button" className={`${base} ${width} ${variants[variant]} ${className}`} {...props}>
+    <button
+      type="button"
+      className={`${base} ${width} ${variants[variant]} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   )

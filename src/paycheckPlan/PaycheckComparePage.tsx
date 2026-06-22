@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
 import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
@@ -102,21 +103,23 @@ function PaycheckComparePage() {
         )}
       </div>
 
-      <div className="px-5 py-4 shrink-0 grid grid-cols-2 gap-3">
-        <Button
-          variant="outline"
-          className="min-w-0 px-2 truncate"
-          onClick={() => navigate(`/paycheck-plan/plans/${leftPlanId}`)}
-        >
-          {leftPlanName} 보기
-        </Button>
-        <Button
-          className="min-w-0 px-2 truncate"
-          onClick={() => navigate(`/paycheck-plan/plans/${rightPlanId}`)}
-        >
-          {rightPlanName} 보기
-        </Button>
-      </div>
+      <StickyFooter>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            variant="outline"
+            className="min-w-0 px-2 truncate"
+            onClick={() => navigate(`/paycheck-plan/plans/${leftPlanId}`)}
+          >
+            {leftPlanName} 보기
+          </Button>
+          <Button
+            className="min-w-0 px-2 truncate"
+            onClick={() => navigate(`/paycheck-plan/plans/${rightPlanId}`)}
+          >
+            {rightPlanName} 보기
+          </Button>
+        </div>
+      </StickyFooter>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import Badge from '../common/components/Badge'
 import InfoBox from '../common/components/InfoBox'
 import { mockExecutionSummary } from './mock/paycheckPlan'
@@ -87,10 +88,12 @@ function PaycheckExecutePage() {
         <InfoBox className="mb-6">{summary.notice}</InfoBox>
       </div>
 
-      <div className="px-5 pb-4 shrink-0 flex flex-col gap-2">
-        <Button onClick={() => {}}>실행 시작하기</Button>
-        <button className="text-body text-ink-hint text-center py-1">나중에 하기 · 임시저장</button>
-      </div>
+      <StickyFooter>
+        <div className="flex flex-col gap-2">
+          <Button onClick={() => {}}>실행 시작하기</Button>
+          <button className="text-body text-ink-hint text-center py-1">나중에 하기 · 임시저장</button>
+        </div>
+      </StickyFooter>
     </div>
   )
 }

@@ -18,7 +18,7 @@ const variantAnim: Record<Variant, string> = {
   zoom: 'splash-zoom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both',
 }
 
-function SplashScreen({ onFinish, minDuration = 2200, variant = 'spin' }: SplashScreenProps) {
+function SplashScreen({ onFinish, minDuration = 3200, variant = 'spin' }: SplashScreenProps) {
   const [fadingOut, setFadingOut] = useState(false)
   const onFinishRef = useRef(onFinish)
   useEffect(() => { onFinishRef.current = onFinish }, [onFinish])

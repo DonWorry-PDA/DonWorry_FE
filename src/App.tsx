@@ -17,6 +17,9 @@ import StabilityPage from './stability/StabilityPage'
 import HomePage from './home/HomePage'
 import CalendarPage from './calendar/CalendarPage'
 import ConsultHistoryPage from './mypage/ConsultHistoryPage'
+import ConsultPrepPage from './mypage/ConsultPrepPage'
+import ConsultSummaryPage from './mypage/ConsultSummaryPage'
+import AccountConnectPage from './mypage/AccountConnectPage'
 import TermsAgreePage from './accountOpen/TermsAgreePage'
 import TermsHistoryPage from './mypage/TermsHistoryPage'
 import TermsDetailPage from './terms/TermsDetailPage'
@@ -42,6 +45,9 @@ const router = createBrowserRouter([
   { path: '/stability', element: <StabilityPage /> },
   { path: '/calendar', element: <CalendarPage /> },
   { path: '/mypage/consult-history', element: <ConsultHistoryPage /> },
+  { path: '/mypage/consult-history/:id/prep', element: <ConsultPrepPage /> },
+  { path: '/mypage/consult-history/:id/summary', element: <ConsultSummaryPage /> },
+  { path: '/mypage/connect-account', element: <AccountConnectPage /> },
   { path: '/mypage/terms', element: <TermsHistoryPage /> },
   { path: '/terms/:termId', element: <TermsDetailPage /> },
   { path: '/account-open', element: <TermsAgreePage /> },
