@@ -1,30 +1,59 @@
+// src/onboarding/OnboardingPage.tsx
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import OnboardingSlide from './components/OnboardingSlide'
+import { OnboardingContextProvider } from './contexts/OnboardingContext'
+import { useStepNavigation } from './hooks/useStepNavigation'
+import Step1Situation from './components/steps/Step1Situation'
+import Step2Pension from './components/steps/Step2Pension'
+import Step3BasicInfo from './components/steps/Step3BasicInfo'
+import Step4Living from './components/steps/Step4Living'
+import Step5PensionDefer from './components/steps/Step5PensionDefer'
+import AssetIntro from './components/asset/AssetIntro'
+import AssetAuth from './components/asset/AssetAuth'
+import AssetConsent from './components/asset/AssetConsent'
+import AssetLoading from './components/asset/AssetLoading'
+import AssetResult from './components/asset/AssetResult'
 
-const slides = [
-  {
-    title: '은퇴 후도 걱정 없이',
-    description: '내 자산을 한눈에 파악하고\n스마트하게 관리하세요',
-  },
-  {
-    title: '맞춤 목표 설정',
-    description: '나만의 은퇴 목표를 세우고\n단계별로 달성해 나가세요',
-  },
-]
-
-function OnboardingPage() {
+function OnboardingContent() {
+  const [currentStep, setCurrentStep] = useState(1)
   const navigate = useNavigate()
+  const { getNextStep, getPrevStep } = useStepNavigation()
+
+  function handleNext() {
+    setCurrentStep(s => getNextStep(s))
+  }
+
+  function handlePrev() {
+    if (currentStep === 1) {
+      navigate(-1)
+      return
+    }
+    setCurrentStep(s => getPrevStep(s))
+  }
+
+  const stepProps = { onNext: handleNext, onPrev: handlePrev }
 
   return (
-    <div className="flex w-full flex-col items-center justify-between pb-10 pt-20">
-      <OnboardingSlide {...slides[0]} />
-      <button
-        onClick={() => navigate('/login')}
-        className="mt-16 w-[calc(100%-48px)] rounded-btn bg-primary py-4 text-btn font-bold text-white"
-      >
-        시작하기
-      </button>
-    </div>
+    <>
+      {currentStep === 1 && <Step1Situation {...stepProps} />}
+      {currentStep === 2 && <Step2Pension {...stepProps} />}
+      {currentStep === 3 && <Step3BasicInfo {...stepProps} />}
+      {currentStep === 4 && <Step4Living {...stepProps} />}
+      {currentStep === 5 && <Step5PensionDefer {...stepProps} />}
+      {currentStep === 6 && <AssetIntro onNext={handleNext} onPrev={handlePrev} />}
+      {currentStep === 7 && <AssetAuth {...stepProps} />}
+      {currentStep === 8 && <AssetConsent {...stepProps} />}
+      {currentStep === 9 && <AssetLoading onNext={handleNext} />}
+      {currentStep === 10 && <AssetResult />}
+    </>
+  )
+}
+
+function OnboardingPage() {
+  return (
+    <OnboardingContextProvider>
+      <OnboardingContent />
+    </OnboardingContextProvider>
   )
 }
 
