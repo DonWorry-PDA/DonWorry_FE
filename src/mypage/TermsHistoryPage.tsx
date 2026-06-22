@@ -1,17 +1,9 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
-
-const AGREED_DATE = '2026.06.12'
-
-const REQUIRED_TERMS = [
-  { id: 'service', label: '연금SOL사 서비스 이용약관' },
-  { id: 'privacy', label: '개인정보 수집·이용 동의' },
-  { id: 'biometric', label: '고유식별정보 처리 동의' },
-  { id: 'electronic', label: '전자금융거래 이용약관' },
-] as const
+import InfoBox from '../common/components/InfoBox'
+import { useTermsAgreement } from './hooks/useTermsAgreement'
 
 function ChevronRightIcon() {
   return (
@@ -29,8 +21,10 @@ function ChevronRightIcon() {
 
 function TermsHistoryPage() {
   const navigate = useNavigate()
-  const [thirdParty, setThirdParty] = useState(false)
-  const [marketing, setMarketing] = useState(true)
+  const { terms, mutationError, dismissMutationError, toggleConsent } = useTermsAgreement()
+
+  const requiredTerms = terms.filter(t => t.required)
+  const optionalTerms = terms.filter(t => !t.required)
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -42,12 +36,28 @@ function TermsHistoryPage() {
           동의한 약관과 처리 방침을 한곳에서 확인하고, 선택 항목은 직접 켜고 끌 수 있어요.
         </p>
 
+        {mutationError && (
+          <div className="flex items-center gap-2 px-5 pb-2">
+            <InfoBox tone="danger" className="flex-1">
+              {mutationError}
+            </InfoBox>
+            <button
+              type="button"
+              onClick={dismissMutationError}
+              className="shrink-0 text-danger-text text-body leading-none"
+              aria-label="오류 닫기"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* 필수 동의 항목 */}
         <div className="px-5 pb-0.5 pt-4">
           <span className="text-caption font-semibold text-ink-hint">필수 동의 항목</span>
         </div>
         <div className="px-5">
-          {REQUIRED_TERMS.map((term, idx) => (
+          {requiredTerms.map((term, idx) => (
             <div key={term.id}>
               <button
                 type="button"
@@ -56,11 +66,13 @@ function TermsHistoryPage() {
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
                   <p className="text-left text-md font-bold text-ink">{term.label}</p>
-                  <p className="text-left text-caption text-ink-hint">동의 · {AGREED_DATE}</p>
+                  <p className="text-left text-caption text-ink-hint">
+                    동의 · {term.agreedAt}
+                  </p>
                 </div>
                 <ChevronRightIcon />
               </button>
-              {idx < REQUIRED_TERMS.length - 1 && <div className="h-px bg-divider" />}
+              {idx < requiredTerms.length - 1 && <div className="h-px bg-divider" />}
             </div>
           ))}
         </div>
@@ -70,25 +82,25 @@ function TermsHistoryPage() {
           <span className="text-caption font-semibold text-ink-hint">선택 동의 항목</span>
         </div>
         <div className="px-5">
-          <div className="flex items-center gap-3 py-[15px]">
-            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <p className="text-md font-bold text-ink">개인정보 제3자 제공 동의</p>
-              <p className="text-caption text-ink-hint">
-                {thirdParty ? '동의' : '미동의'} · {AGREED_DATE}
-              </p>
+          {optionalTerms.map((term, idx) => (
+            <div key={term.id}>
+              <div className="flex items-center gap-3 py-[15px]">
+                <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                  <p className="text-md font-bold text-ink">{term.label}</p>
+                  <p className="text-caption text-ink-hint">
+                    {term.agreed ? '동의' : '미동의'} · {term.agreedAt}
+                  </p>
+                </div>
+                <Toggle
+                  checked={term.agreed}
+                  onChange={agreed => toggleConsent(term.id, agreed)}
+                  size="md"
+                  aria-label={`${term.label} ${term.agreed ? '동의됨' : '미동의'}`}
+                />
+              </div>
+              {idx < optionalTerms.length - 1 && <div className="h-px bg-divider" />}
             </div>
-            <Toggle checked={thirdParty} onChange={setThirdParty} size="md" />
-          </div>
-          <div className="h-px bg-divider" />
-          <div className="flex items-center gap-3 py-[15px]">
-            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <p className="text-md font-bold text-ink">마케팅 정보 수신 동의</p>
-              <p className="text-caption text-ink-hint">
-                {marketing ? '동의' : '미동의'} · {AGREED_DATE}
-              </p>
-            </div>
-            <Toggle checked={marketing} onChange={setMarketing} size="md" />
-          </div>
+          ))}
         </div>
 
         {/* 안내 박스 */}

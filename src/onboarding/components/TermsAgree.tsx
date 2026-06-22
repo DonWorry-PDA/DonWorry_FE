@@ -30,10 +30,19 @@ const defaultChecked: CheckedState = {
   marketing: false,
 }
 
+function isCheckedState(value: unknown): value is CheckedState {
+  if (typeof value !== 'object' || value === null) return false
+  const obj = value as Record<string, unknown>
+  return TERMS.every(t => typeof obj[t.id] === 'boolean')
+}
+
 function loadChecked(): CheckedState {
   try {
     const stored = sessionStorage.getItem(STORAGE_KEY)
-    if (stored) return JSON.parse(stored) as CheckedState
+    if (stored) {
+      const parsed: unknown = JSON.parse(stored)
+      if (isCheckedState(parsed)) return parsed
+    }
   } catch {}
   return defaultChecked
 }
@@ -99,7 +108,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
     <div className="relative flex min-h-screen flex-col bg-white">
       {/* 네비게이션 바 */}
       <div className="relative flex h-[52px] shrink-0 items-center px-3">
-        <button type="button" onClick={onPrev} className="flex size-8 items-center justify-center">
+        <button type="button" onClick={onPrev} aria-label="뒤로 가기" className="flex size-8 items-center justify-center">
           <BackArrowIc width={22} height={22} />
         </button>
         <span className="absolute left-1/2 -translate-x-1/2 text-md font-bold text-ink">약관 동의</span>
@@ -132,7 +141,13 @@ function TermsAgree({ onNext, onPrev }: Props) {
           {TERMS.map((term, idx) => (
             <div key={term.id}>
               <div className="flex items-center gap-3 py-[13px]">
-                <button type="button" onClick={() => toggleOne(term.id)}>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={checked[term.id]}
+                  aria-label={term.label}
+                  onClick={() => toggleOne(term.id)}
+                >
                   <CheckboxIcon checked={checked[term.id]} />
                 </button>
                 <span className="min-w-0 flex-1 text-body font-semibold text-ink-sub">

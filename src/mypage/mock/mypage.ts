@@ -1,4 +1,4 @@
-import type { ConsultRecord, LinkedAccount, UserProfile } from '../types/mypage'
+import type { ConsultRecord, LinkedAccount, TermAgreement, UserProfile } from '../types/mypage'
 
 export const MOCK_USER_PROFILE: UserProfile = {
   name: '김영수',
@@ -11,6 +11,15 @@ export const MOCK_LINKED_ACCOUNTS: LinkedAccount[] = [
   { id: '1', name: '신한은행 예금', detail: '110-***-2940', amountKrw: 50000000 },
   { id: '2', name: '신한투자증권', detail: 'ETF · 주식', amountKrw: 50000000 },
   { id: '3', name: 'IRP · 연금저축', detail: '2개 계좌', amountKrw: 150000000 },
+]
+
+export const MOCK_TERMS_AGREEMENTS: TermAgreement[] = [
+  { id: 'service', label: '연금SOL사 서비스 이용약관', required: true, agreed: true, agreedAt: '2026.06.12' },
+  { id: 'privacy', label: '개인정보 수집·이용 동의', required: true, agreed: true, agreedAt: '2026.06.12' },
+  { id: 'biometric', label: '고유식별정보 처리 동의', required: true, agreed: true, agreedAt: '2026.06.12' },
+  { id: 'electronic', label: '전자금융거래 이용약관', required: true, agreed: true, agreedAt: '2026.06.12' },
+  { id: 'thirdParty', label: '개인정보 제3자 제공 동의', required: false, agreed: false, agreedAt: '2026.06.12' },
+  { id: 'marketing', label: '마케팅 정보 수신 동의', required: false, agreed: true, agreedAt: '2026.06.12' },
 ]
 
 export const MOCK_CONSULT_RECORDS: ConsultRecord[] = [
