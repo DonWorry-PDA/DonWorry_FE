@@ -1,33 +1,27 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
+import usePostLogin from './usePostLogin'
+import { UsePinInputReturn } from '../types/login'
 
-const CORRECT_PIN = '123456'
 const MAX_ATTEMPTS = 5
 
-interface UsePinInputReturn {
-  pin: string
-  attempts: number
-  isError: boolean
-  isLocked: boolean
-  appendDigit: (digit: string) => void
-  deleteDigit: () => void
-  reset: () => void
-  clearError: () => void
-}
-
-export function usePinInput(): UsePinInputReturn {
+export function usePinInput(userId: number): UsePinInputReturn {
   const navigate = useNavigate()
+  const { mutate: postLogin, isPending } = usePostLogin()
+
   const [pin, setPin] = useState('')
   const [attempts, setAttempts] = useState(0)
   const [isError, setIsError] = useState(false)
+  const [isServerError, setIsServerError] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
 
   function appendDigit(digit: string) {
-    if (isLocked) return
+    if (isLocked || isPending) return
 
-    // 에러 상태에서 첫 입력 시 에러 해제 후 새로 시작
-    if (isError) {
+    if (isError || isServerError) {
       setIsError(false)
+      setIsServerError(false)
       setPin(digit)
       return
     }
@@ -38,20 +32,34 @@ export function usePinInput(): UsePinInputReturn {
       setPin(next)
       return
     }
-    if (next === CORRECT_PIN) {
-      navigate('/onboarding')
-      return
-    }
-    const nextAttempts = attempts + 1
+
     setPin('')
-    setAttempts(nextAttempts)
-    setIsError(true)
-    if (nextAttempts >= MAX_ATTEMPTS) setIsLocked(true)
+    postLogin(
+      { userId, pin: next },
+      {
+        onSuccess: ({ onboardingCompleted }) => {
+          navigate(onboardingCompleted ? '/' : '/onboarding')
+        },
+        onError: (error) => {
+          // 401(인증 실패)만 시도 횟수에 반영하고, 네트워크/서버 오류는 별도 처리
+          if (isAxiosError(error) && error.response?.status === 401) {
+            setAttempts((prev) => {
+              const next = prev + 1
+              if (next >= MAX_ATTEMPTS) setIsLocked(true)
+              return next
+            })
+            setIsError(true)
+          } else {
+            setIsServerError(true)
+          }
+        },
+      },
+    )
   }
 
   function deleteDigit() {
-    if (isError || isLocked) return
-    setPin(p => p.slice(0, -1))
+    if (isError || isServerError || isLocked) return
+    setPin((p) => p.slice(0, -1))
   }
 
   function reset() {
@@ -61,7 +69,18 @@ export function usePinInput(): UsePinInputReturn {
   function clearError() {
     setPin('')
     setIsError(false)
+    setIsServerError(false)
   }
 
-  return { pin, attempts, isError, isLocked, appendDigit, deleteDigit, reset, clearError }
+  return {
+    pin,
+    attempts,
+    isError,
+    isServerError,
+    isLocked,
+    appendDigit,
+    deleteDigit,
+    reset,
+    clearError,
+  }
 }
