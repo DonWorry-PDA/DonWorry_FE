@@ -3,18 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
+import Modal from '../common/components/Modal'
 import { MOCK_LINKED_ACCOUNTS, MOCK_USER_PROFILE } from './mock/mypage'
 import { formatKrw } from '../common/utils/formatKrw'
 import type { LinkedAccount } from './types/mypage'
 
+type LogoutStep = 'idle' | 'confirm' | 'done'
+
 function MypagePage() {
   const navigate = useNavigate()
   const [largeFontEnabled, setLargeFontEnabled] = useState(true)
+  const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
 
   const profile = MOCK_USER_PROFILE
 
   return (
-    <div className="flex flex-col bg-white h-dvh">
+    <div className="relative flex flex-col bg-white h-dvh">
       {/* 헤더 */}
       <header className="flex h-[52px] items-center pl-5 pr-[14px]">
         <h1 className="flex-1 text-card font-bold text-ink">마이페이지</h1>
@@ -55,7 +59,7 @@ function MypagePage() {
         ))}
 
         {/* 계좌 더 연결하기 */}
-        <button className="flex w-full items-center gap-3 py-[13px]">
+        <button className="flex w-full items-center gap-3 py-[13px]" onClick={() => navigate('/mypage/connect-account')}>
           <div className="bg-primary-tint flex size-10 shrink-0 items-center justify-center rounded-icon">
             <span className="text-card font-bold text-primary">＋</span>
           </div>
@@ -90,12 +94,86 @@ function MypagePage() {
         <MenuRow title="약관 및 동의 내역" onPress={() => navigate('/mypage/terms')} />
 
         {/* 로그아웃 */}
-        <button className="flex w-full items-center py-[15px]">
+        <button
+          className="flex w-full items-center py-[15px]"
+          onClick={() => setLogoutStep('confirm')}
+        >
           <p className="text-md font-medium text-ink-sub">로그아웃</p>
         </button>
       </main>
 
       <BottomNav />
+
+      {/* 로그아웃 확인 모달 */}
+      {logoutStep === 'confirm' && (
+        <Modal>
+          <div className="flex flex-col items-center gap-[7.5px] px-[22px] pb-[18px] pt-[26px]">
+            <div className="bg-primary-tint flex size-14 items-center justify-center rounded-[28px]">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="11" stroke="#0046FF" strokeWidth="2" />
+                <path d="M9.5 9.5L16.5 16.5M16.5 9.5L9.5 16.5" stroke="#0046FF" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div className="flex flex-col items-center pt-[7.5px]">
+              <p className="text-[17px] font-extrabold text-ink text-center tracking-[-0.3px]">
+                로그아웃 할까요?
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="text-sub text-ink-hint text-center leading-[1.65]">
+                저장된 자산·상담 정보는 그대로 보관돼요.
+                <br />
+                다시 로그인하면 이어서 볼 수 있어요.
+              </p>
+            </div>
+            <div className="flex w-full gap-[9px] pt-[12.5px]">
+              <button
+                className="flex h-[50px] flex-1 items-center justify-center rounded-[13px] border border-line text-btn font-bold text-ink"
+                onClick={() => setLogoutStep('idle')}
+              >
+                취소
+              </button>
+              <button
+                className="bg-primary flex h-[50px] flex-1 items-center justify-center rounded-[13px] text-btn font-bold text-white"
+                onClick={() => setLogoutStep('done')}
+              >
+                로그아웃
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* 로그아웃 완료 모달 */}
+      {logoutStep === 'done' && (
+        <Modal>
+          <div className="flex flex-col items-center gap-2 px-[22px] pb-[18px] pt-[26px]">
+            <div className="bg-primary-tint flex size-14 items-center justify-center rounded-[28px]">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path d="M6 14.5L11.5 20L22 8" stroke="#0046FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div className="flex flex-col items-center pt-[7px]">
+              <p className="text-[17px] font-extrabold text-ink text-center tracking-[-0.3px] leading-[1.4]">
+                연금SOL사에서
+                <br />
+                로그아웃됐어요
+              </p>
+            </div>
+            <div className="flex flex-col items-center pb-3">
+              <p className="text-sub text-ink-hint text-center leading-[1.65]">
+                이용해주셔서 감사해요. 홈에서 다시 만나요.
+              </p>
+            </div>
+            <button
+              className="bg-primary flex h-[50px] w-full items-center justify-center rounded-[13px] text-btn font-bold text-white"
+              onClick={() => navigate('/login')}
+            >
+              확인
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }
