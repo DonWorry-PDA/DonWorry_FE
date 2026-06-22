@@ -13,8 +13,8 @@ function SurveyPage() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<(number | null)[]>(Array(TOTAL).fill(null))
 
-  const { data: savedSurvey } = useGetSurvey()
-  const { mutate: postSurvey, isPending } = usePostSurvey()
+  const { data: savedSurvey, isLoading: isSurveyLoading } = useGetSurvey()
+  const { mutate: postSurvey, isPending, isError } = usePostSurvey()
 
   useEffect(() => {
     if (savedSurvey) {
@@ -52,6 +52,14 @@ function SurveyPage() {
     }
   }
 
+  if (isSurveyLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-body text-ink-hint">불러오는 중...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* 헤더 */}
@@ -85,6 +93,11 @@ function SurveyPage() {
         >
           {isPending ? '저장 중...' : '다음'}
         </button>
+        {isError && (
+          <p className="mt-3 text-center text-sub text-danger">
+            저장에 실패했어요. 다시 시도해주세요.
+          </p>
+        )}
       </div>
     </div>
   )
