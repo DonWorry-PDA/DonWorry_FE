@@ -199,4 +199,13 @@
   .splash-ring {
     display: none !important;
   }
+  .splash-wordmark,
+  .splash-tagline,
+  .splash-dots {
+    animation: none !important;
+  }
+  .splash-dot {
+    animation: none !important;
+    opacity: 1;
+  }
 }
