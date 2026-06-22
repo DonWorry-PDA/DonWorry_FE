@@ -50,7 +50,9 @@ function SalaryPlanCard({ plan, onClick }: SalaryPlanCardProps) {
           </div>
           <div>
             <p className="text-sub text-ink-hint mb-0.5">충당</p>
-            <p className="font-inter text-md font-bold text-ink">{plan.coverage}%</p>
+            <p className="font-inter text-md font-bold text-ink">
+              {plan.coverage === null ? '충분' : `${plan.coverage}%`}
+            </p>
           </div>
           <div>
             <p className="text-sub text-ink-hint mb-0.5">위험도</p>

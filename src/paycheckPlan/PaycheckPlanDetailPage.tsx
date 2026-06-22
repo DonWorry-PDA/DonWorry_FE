@@ -3,7 +3,9 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import InfoBox from '../common/components/InfoBox'
 import AllocationStackBar from './components/AllocationStackBar'
-import { mockPlanDetails } from './mock/paycheckPlan'
+import CenterMessage from './components/CenterMessage'
+import useGetRecommendation from './hooks/useGetRecommendation'
+import { findPlan, mapPlanDetail } from './utils/planMapper'
 
 function WarningIcon() {
   return (
@@ -23,8 +25,30 @@ function WarningIcon() {
 function PaycheckPlanDetailPage() {
   const navigate = useNavigate()
   const { planId } = useParams<{ planId: string }>()
-  const detail = planId ? mockPlanDetails[planId] : null
-  if (!detail) return <div className="flex items-center justify-center h-full text-body text-ink-hint">설계안을 찾을 수 없어요</div>
+  const { data, isLoading } = useGetRecommendation()
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="설계안" onBack={() => navigate(-1)} />
+        <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
+      </div>
+    )
+  }
+
+  // 캐시된 설계안이 있으면 백그라운드 재요청 실패(isError)와 무관하게 그대로 보여준다.
+  // 정말 해당 안이 없을 때만(!plan) 안내한다.
+  const plan = data && planId ? findPlan(data, planId) : undefined
+  if (!plan) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="설계안" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안을 찾을 수 없어요</CenterMessage>
+      </div>
+    )
+  }
+
+  const detail = mapPlanDetail(plan)
 
   return (
     <div className="flex flex-col h-full">
