@@ -38,7 +38,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
       { userId, pin: next },
       {
         onSuccess: ({ onboardingCompleted }) => {
-          navigate(onboardingCompleted ? '/' : '/onboarding')
+          navigate(onboardingCompleted ? '/home' : '/onboarding')
         },
         onError: (error) => {
           // 401(인증 실패)만 시도 횟수에 반영하고, 네트워크/서버 오류는 별도 처리
@@ -53,7 +53,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
             setIsServerError(true)
           }
         },
-      },
+      }
     )
   }
 
