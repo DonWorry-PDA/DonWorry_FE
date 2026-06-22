@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import SelectChip from '../common/components/SelectChip'
 import ConsultCard from './components/ConsultCard'
 import { mockConsultCards, mockTimeSlots } from './mock/paycheckPlan'
@@ -71,10 +72,12 @@ function PaycheckConsultPage() {
         </div>
       </div>
 
-      <div className="px-5 pb-4 shrink-0 flex flex-col gap-1.5">
-        <Button onClick={() => {}}>상담 예약하기</Button>
-        <p className="text-sub text-ink-hint text-center">예약 변경·취소는 마이페이지에서 할 수 있어요</p>
-      </div>
+      <StickyFooter>
+        <div className="flex flex-col gap-1.5">
+          <Button onClick={() => {}}>상담 예약하기</Button>
+          <p className="text-sub text-ink-hint text-center">예약 변경·취소는 마이페이지에서 할 수 있어요</p>
+        </div>
+      </StickyFooter>
     </div>
   )
 }

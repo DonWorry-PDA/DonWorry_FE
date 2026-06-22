@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackArrowIc } from '../common/assets/icons'
+import StickyFooter from '../common/components/StickyFooter'
 import SurveyQuestion from './components/SurveyQuestion'
 import { questions } from './data/questions'
 import useGetSurvey from './hooks/useGetSurvey'
@@ -61,7 +62,7 @@ function SurveyPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       {/* 헤더 */}
       <header className="flex h-[52px] shrink-0 items-center px-5">
         <button onClick={handleBack} className="flex size-7 items-center justify-center">
@@ -83,7 +84,7 @@ function SurveyPage() {
       />
 
       {/* 다음 버튼 */}
-      <div className="px-6 pb-10 pt-6">
+      <StickyFooter>
         <button
           onClick={handleNext}
           disabled={currentAnswer === null || isPending}
@@ -98,7 +99,7 @@ function SurveyPage() {
             저장에 실패했어요. 다시 시도해주세요.
           </p>
         )}
-      </div>
+      </StickyFooter>
     </div>
   )
 }

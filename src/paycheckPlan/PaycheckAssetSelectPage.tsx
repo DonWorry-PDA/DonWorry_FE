@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import Checkbox from '../common/components/Checkbox'
 import StepProgress from './components/StepProgress'
 import AssetGroupAccordion from './components/AssetGroupAccordion'
@@ -75,14 +76,14 @@ function PaycheckAssetSelectPage() {
         ))}
       </div>
 
-      <div className="px-5 py-4 shrink-0">
+      <StickyFooter>
         <Button
           onClick={() => navigate('/paycheck-plan/diagnosis')}
           disabled={checkedIds.size === 0}
         >
           월급 설계하기
         </Button>
-      </div>
+      </StickyFooter>
     </div>
   )
 }

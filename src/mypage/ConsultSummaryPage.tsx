@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import { MOCK_CONSULT_RECORDS } from './mock/mypage'
 
 const SUMMARY_DATA = {
@@ -98,7 +99,7 @@ function ConsultSummaryPage() {
         </div>
 
         {/* 내 메모 */}
-        <div className="px-5 pt-6 pb-7 flex flex-col gap-[9px]">
+        <div className="px-5 pt-6 pb-4 flex flex-col gap-[9px]">
           <div className="flex items-baseline justify-between">
             <span className="text-sub font-semibold text-ink-hint">내 메모</span>
             <span className="text-caption text-disabled">나만 볼 수 있어요</span>
@@ -110,16 +111,18 @@ function ConsultSummaryPage() {
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
           />
-
-          <Button onClick={handleSave} disabled={!memo.trim()}>
-            메모 저장
-          </Button>
         </div>
       </main>
 
+      <StickyFooter>
+        <Button onClick={handleSave} disabled={!memo.trim()}>
+          메모 저장
+        </Button>
+      </StickyFooter>
+
       {/* 저장 완료 토스트 */}
       <div
-        className={`absolute bottom-[14px] left-5 right-5 flex items-center gap-[9px] bg-[#23282f] rounded-[13px] px-4 py-[15px] shadow-float transition-all duration-300 ${
+        className={`absolute bottom-[14px] left-5 right-5 z-50 flex items-center gap-[9px] bg-[#23282f] rounded-[13px] px-4 py-[15px] shadow-float transition-all duration-300 ${
           showToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
         }`}
       >

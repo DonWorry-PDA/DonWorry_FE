@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackArrowIc } from '../../common/assets/icons'
+import StickyFooter from '../../common/components/StickyFooter'
 
 interface Props {
   onNext: () => void
@@ -105,7 +106,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-white">
+    <div className="relative flex h-dvh flex-col bg-white">
       {/* 네비게이션 바 */}
       <div className="relative flex h-[52px] shrink-0 items-center px-3">
         <button type="button" onClick={onPrev} aria-label="뒤로 가기" className="flex size-8 items-center justify-center">
@@ -191,7 +192,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
       </div>
 
       {/* 하단 버튼 */}
-      <div className="shrink-0 border-t border-divider px-5 pb-[18px] pt-[15px]">
+      <StickyFooter>
         <button
           type="button"
           onClick={handleProceed}
@@ -200,7 +201,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
         >
           동의하고 시작하기
         </button>
-      </div>
+      </StickyFooter>
     </div>
   )
 }

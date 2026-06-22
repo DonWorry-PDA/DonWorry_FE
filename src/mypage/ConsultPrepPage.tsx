@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
+import StickyFooter from '../common/components/StickyFooter'
 
 type CheckItem = {
   id: string
@@ -136,14 +137,18 @@ function ConsultPrepPage() {
           </div>
         </div>
 
-        {/* 하단 액션 */}
-        <div className="px-5 pt-6 pb-7 flex flex-col gap-[0.875rem]">
+        {/* 이번 상담 주제 하단 여백 */}
+        <div className="h-4" />
+      </main>
+
+      <StickyFooter>
+        <div className="flex flex-col gap-[0.875rem]">
           <button className="border border-line rounded-card w-full h-[3.375rem] text-btn font-bold text-ink">
             예약 변경·취소
           </button>
           <p className="text-sub text-ink-hint text-center">상담 시작 10분 전 알림을 보내드려요</p>
         </div>
-      </main>
+      </StickyFooter>
     </div>
   )
 }

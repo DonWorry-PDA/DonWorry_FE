@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 
 type Institution = {
   id: string
@@ -196,25 +197,24 @@ function AccountConnectPage() {
         )}
 
         {/* 안내 문구 */}
-        <div className="px-5 pt-[18px]">
+        <div className="px-5 pt-[18px] pb-4">
           <div className="bg-[#f1f5fb] rounded-card px-4 py-[14px]">
             <p className="text-caption text-ink-sub leading-[1.65]">
               기관을 연결하면 자산정보 조회에 동의하게 돼요. 연결은 마이페이지에서 언제든 해제할 수 있어요.
             </p>
           </div>
         </div>
-
-        {/* CTA 버튼 */}
-        <div className="px-5 pt-[18px] pb-[26px]">
-          <Button disabled={!hasSelection} onClick={handleConnect}>
-            {hasSelection ? `${selected.size}개 기관 연결하기` : '기관을 선택해주세요'}
-          </Button>
-        </div>
       </main>
+
+      <StickyFooter>
+        <Button disabled={!hasSelection} onClick={handleConnect}>
+          {hasSelection ? `${selected.size}개 기관 연결하기` : '기관을 선택해주세요'}
+        </Button>
+      </StickyFooter>
 
       {/* 연결 완료 토스트 */}
       <div
-        className={`absolute bottom-[14px] left-5 right-5 flex items-center gap-[9px] rounded-[13px] bg-[#23282f] px-4 py-[15px] shadow-float transition-all duration-300 ${
+        className={`absolute bottom-[14px] left-5 right-5 z-50 flex items-center gap-[9px] rounded-[13px] bg-[#23282f] px-4 py-[15px] shadow-float transition-all duration-300 ${
           showToast ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0'
         }`}
       >

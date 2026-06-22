@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
 import { mockAnalysis } from './mock/paycheckPlan'
 
@@ -42,7 +43,7 @@ function PaycheckDiagnosisPage() {
         </InfoBox>
       </div>
 
-      <div className="px-5 pb-4 shrink-0">
+      <StickyFooter>
         <InfoBox className="mb-4">
           <p className="text-body font-semibold text-ink mb-0.5">
             부족한 {additionalNeededCashflow}만원, 월급으로 만들어볼까요?
@@ -61,7 +62,7 @@ function PaycheckDiagnosisPage() {
             설계안 보기
           </Button>
         </div>
-      </div>
+      </StickyFooter>
     </div>
   )
 }

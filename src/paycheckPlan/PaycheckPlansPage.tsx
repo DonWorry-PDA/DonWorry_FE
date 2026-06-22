@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
 import SalaryPlanCard from './components/SalaryPlanCard'
 import CenterMessage from './components/CenterMessage'
@@ -71,11 +72,11 @@ function PaycheckPlansPage() {
             </InfoBox>
           </div>
 
-          <div className="px-5 py-4 shrink-0">
+          <StickyFooter>
             <Button onClick={() => navigate('/paycheck-plan/compare')}>
               {plans.length >= 3 ? '세 설계안 비교하기' : '두 설계안 나란히 비교하기'}
             </Button>
-          </div>
+          </StickyFooter>
         </>
       )}
     </div>
