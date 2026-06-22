@@ -42,6 +42,14 @@
   --color-dot-off: #dde2e9;
   --color-radio: #cfd5de;
 
+  /* ─── Calendar Event Categories ─── */
+  --color-event-dividend: #0046ff;
+  --color-event-pension: #df3550;
+  --color-event-payment: #16b364;
+  --color-event-maturity: #8e5bff;
+  --color-event-interest: #e8a317;
+  --color-event-etc: #c4cad4;
+
   /* ─── Font Families ─── */
   --font-sans: 'Noto Sans KR', sans-serif;
   --font-inter: 'Inter', 'Noto Sans KR', sans-serif;

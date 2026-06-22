@@ -15,6 +15,7 @@ import PaycheckExecutePage from './paycheckPlan/PaycheckExecutePage'
 import PaycheckConsultPage from './paycheckPlan/PaycheckConsultPage'
 import StabilityPage from './stability/StabilityPage'
 import HomePage from './home/HomePage'
+import CalendarPage from './calendar/CalendarPage'
 import ConsultHistoryPage from './mypage/ConsultHistoryPage'
 import TermsAgreePage from './accountOpen/TermsAgreePage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
   { path: '/home', element: <HomePage /> },
   { path: '/stability', element: <StabilityPage /> },
+  { path: '/calendar', element: <CalendarPage /> },
   { path: '/mypage/consult-history', element: <ConsultHistoryPage /> },
   { path: '/account-open', element: <TermsAgreePage /> },
   { path: '/account-open/identity', element: <IdentityVerifyPage /> },
