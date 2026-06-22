@@ -17,31 +17,31 @@ import type { StabilityData, StabilityItem, StabilityStatus } from './types/stab
 //   ],
 // }
 
-// const MOCK_DATA: StabilityData = {
-//   percentage: 112,
-//   status: 'stable',
-//   monthlyShortfallKrw: null,
-//   items: [
-//     { id: 1, label: '생활비 충당률', status: 'stable' },
-//     { id: 2, label: '의료비 대비력', status: 'stable' },
-//     { id: 3, label: '유동성·비상금', status: 'stable' },
-//     { id: 4, label: '부채 부담률', status: 'stable' },
-//     { id: 5, label: '위험자산 의존도', status: 'stable' },
-//   ],
-// }
-
 const MOCK_DATA: StabilityData = {
-  percentage: 32,
-  status: 'danger',
-  monthlyShortfallKrw: 1_500_000,
+  percentage: 112,
+  status: 'stable',
+  monthlyShortfallKrw: null,
   items: [
-    { id: 1, label: '생활비 충당률', status: 'danger' },
-    { id: 2, label: '의료비 대비력', status: 'warning' },
-    { id: 3, label: '유동성·비상금', status: 'warning' },
+    { id: 1, label: '생활비 충당률', status: 'stable' },
+    { id: 2, label: '의료비 대비력', status: 'stable' },
+    { id: 3, label: '유동성·비상금', status: 'stable' },
     { id: 4, label: '부채 부담률', status: 'stable' },
     { id: 5, label: '위험자산 의존도', status: 'stable' },
   ],
 }
+
+// const MOCK_DATA: StabilityData = {
+//   percentage: 32,
+//   status: 'danger',
+//   monthlyShortfallKrw: 1_500_000,
+//   items: [
+//     { id: 1, label: '생활비 충당률', status: 'danger' },
+//     { id: 2, label: '의료비 대비력', status: 'warning' },
+//     { id: 3, label: '유동성·비상금', status: 'warning' },
+//     { id: 4, label: '부채 부담률', status: 'stable' },
+//     { id: 5, label: '위험자산 의존도', status: 'stable' },
+//   ],
+// }
 
 const STATUS_LABEL: Record<StabilityStatus, string> = {
   stable: '안정적이에요',
