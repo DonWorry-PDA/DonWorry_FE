@@ -14,6 +14,7 @@ import PaycheckPlanDetailPage from './paycheckPlan/PaycheckPlanDetailPage'
 import PaycheckExecutePage from './paycheckPlan/PaycheckExecutePage'
 import PaycheckConsultPage from './paycheckPlan/PaycheckConsultPage'
 import StabilityPage from './stability/StabilityPage'
+import HomePage from './home/HomePage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/plans/:planId', element: <PaycheckPlanDetailPage /> },
   { path: '/paycheck-plan/execute', element: <PaycheckExecutePage /> },
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
+  { path: '/home', element: <HomePage /> },
   { path: '/stability', element: <StabilityPage /> },
 ])
 

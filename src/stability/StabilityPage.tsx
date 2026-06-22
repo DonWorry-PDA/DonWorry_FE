@@ -4,23 +4,49 @@ import { NotificationIc } from '../common/assets/icons'
 import GaugeChart from './components/GaugeChart'
 import type { StabilityData, StabilityItem, StabilityStatus } from './types/stability'
 
+// const MOCK_DATA: StabilityData = {
+//   percentage: 59,
+//   status: 'warning',
+//   monthlyShortfallKrw: 900_000,
+//   items: [
+//     { id: 1, label: '생활비 충당률', status: 'warning' },
+//     { id: 2, label: '의료비 대비력', status: 'warning' },
+//     { id: 3, label: '유동성·비상금', status: 'stable' },
+//     { id: 4, label: '부채 부담률', status: 'stable' },
+//     { id: 5, label: '위험자산 의존도', status: 'stable' },
+//   ],
+// }
+
+// const MOCK_DATA: StabilityData = {
+//   percentage: 112,
+//   status: 'stable',
+//   monthlyShortfallKrw: null,
+//   items: [
+//     { id: 1, label: '생활비 충당률', status: 'stable' },
+//     { id: 2, label: '의료비 대비력', status: 'stable' },
+//     { id: 3, label: '유동성·비상금', status: 'stable' },
+//     { id: 4, label: '부채 부담률', status: 'stable' },
+//     { id: 5, label: '위험자산 의존도', status: 'stable' },
+//   ],
+// }
+
 const MOCK_DATA: StabilityData = {
-  percentage: 59,
-  status: 'warning',
-  monthlyShortfallKrw: 900_000,
+  percentage: 32,
+  status: 'danger',
+  monthlyShortfallKrw: 1_500_000,
   items: [
-    { id: 1, label: '생활비 충당률', status: 'warning' },
+    { id: 1, label: '생활비 충당률', status: 'danger' },
     { id: 2, label: '의료비 대비력', status: 'warning' },
-    { id: 3, label: '유동성·비상금', status: 'stable' },
+    { id: 3, label: '유동성·비상금', status: 'warning' },
     { id: 4, label: '부채 부담률', status: 'stable' },
     { id: 5, label: '위험자산 의존도', status: 'stable' },
   ],
 }
 
 const STATUS_LABEL: Record<StabilityStatus, string> = {
-  stable: '안정이에요',
+  stable: '안정적이에요',
   warning: '보완이 필요해요',
-  danger: '위험해요',
+  danger: '개선이 필요해요',
 }
 
 const STATUS_CLASS: Record<StabilityStatus, string> = {
@@ -31,8 +57,8 @@ const STATUS_CLASS: Record<StabilityStatus, string> = {
 
 const ITEM_STATUS_LABEL: Record<StabilityStatus, string> = {
   stable: '안정',
-  warning: '주의',
-  danger: '위험',
+  warning: '보완 필요',
+  danger: '개선 필요',
 }
 
 const ITEM_STATUS_CLASS: Record<StabilityStatus, string> = {
@@ -68,18 +94,31 @@ function StabilityPage() {
             {STATUS_LABEL[status]}
           </p>
           <div className="text-sub text-ink-sub text-center leading-[1.62]">
-            <p>
-              목표 생활비의{' '}
-              <span className="font-bold text-ink">{percentage}%</span>를 충당하고 있어요.
-            </p>
-            {shortfallMan !== null && status !== 'stable' && (
-              <p>
-                매달{' '}
-                <span className={`font-bold ${STATUS_CLASS[status]}`}>
-                  {shortfallMan.toLocaleString('ko-KR')}만원이 부족
-                </span>
-                해요.
-              </p>
+            {status === 'stable' ? (
+              <>
+                <p>
+                  지금 수입만으로{' '}
+                  <span className="font-bold text-ink">생활비를 충당</span>
+                  할 수 있어요.
+                </p>
+                <p>여유자금은 더 키워볼 수 있어요.</p>
+              </>
+            ) : (
+              <>
+                <p>
+                  목표 생활비의{' '}
+                  <span className="font-bold text-ink">{percentage}%</span>를 충당하고 있어요.
+                </p>
+                {shortfallMan !== null && (
+                  <p>
+                    매달{' '}
+                    <span className={`font-bold ${STATUS_CLASS[status]}`}>
+                      {shortfallMan.toLocaleString('ko-KR')}만원이 부족
+                    </span>
+                    해요.
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -101,7 +140,31 @@ function StabilityPage() {
         </div>
 
         {/* TIP 박스 */}
-        {shortfallMan !== null && status !== 'stable' && (
+        {status === 'stable' ? (
+          <div className="px-[22px] pt-4 pb-6">
+            <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
+              <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
+                <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
+              </div>
+              <p className="text-caption text-primary-dark flex-1 min-w-0 leading-[1.6]">
+                여유자금은 &apos;여유자금 성장형&apos;으로 더 키워볼 수 있어요.
+              </p>
+              <span className="text-primary text-md shrink-0">›</span>
+            </div>
+          </div>
+        ) : status === 'danger' ? (
+          <div className="px-[22px] pt-4 pb-6">
+            <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
+              <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
+                <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
+              </div>
+              <p className="text-caption text-primary-dark flex-1 min-w-0 leading-[1.6]">
+                지출 점검·국민연금 연기·전문가 상담을 함께 살펴보세요.
+              </p>
+              <span className="text-primary text-md shrink-0">›</span>
+            </div>
+          </div>
+        ) : shortfallMan !== null ? (
           <div className="px-[22px] pt-4 pb-6">
             <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
               <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
@@ -115,7 +178,7 @@ function StabilityPage() {
               <span className="text-primary text-md shrink-0">›</span>
             </div>
           </div>
-        )}
+        ) : null}
       </main>
     </div>
   )

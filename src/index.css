@@ -4,6 +4,7 @@
   /* ─── Brand ─── */
   --color-primary: #0046ff;
   --color-primary-tint: #eef3ff;
+  --color-primary-dark: #2a4a9c;
 
   /* ─── Text ─── */
   --color-ink: #191f28;
@@ -21,9 +22,9 @@
   --color-warning-bg: #fdf3e5;
 
   /* ─── Status: Danger (위험/오류) ─── */
-  --color-danger: #df3550;
-  --color-danger-text: #8a2738;
-  --color-danger-bg: #fcedf0;
+  --color-danger: #c0566a;
+  --color-danger-text: #7d404e;
+  --color-danger-bg: #faf0f3;
 
   /* ─── Surface & Page ─── */
   --color-surface: #f7f8fa;

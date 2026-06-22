@@ -13,7 +13,7 @@ const STROKE_WIDTH = 14
 const FILL_COLOR: Record<StabilityStatus, string> = {
   stable: '#069A53',
   warning: '#DD7A06',
-  danger: '#DF3550',
+  danger: '#C0566A',
 }
 
 function arcPath(percentage: number): string {
