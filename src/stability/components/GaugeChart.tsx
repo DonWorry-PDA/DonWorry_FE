@@ -11,9 +11,9 @@ const R = 100
 const STROKE_WIDTH = 14
 
 const FILL_COLOR: Record<StabilityStatus, string> = {
-  stable: '#069A53',
-  warning: '#DD7A06',
-  danger: '#C0566A',
+  stable: 'var(--color-success)',
+  warning: 'var(--color-warning)',
+  danger: 'var(--color-danger)',
 }
 
 function arcPath(percentage: number): string {
@@ -28,8 +28,9 @@ function arcPath(percentage: number): string {
 }
 
 function GaugeChart({ percentage, status }: Props) {
+  const safePct = Number.isFinite(percentage) ? percentage : 0
   const trackPath = `M ${CX - R} ${CY} A ${R} ${R} 0 1 1 ${CX + R} ${CY}`
-  const fillPath = arcPath(percentage)
+  const fillPath = arcPath(safePct)
   const fillColor = FILL_COLOR[status]
 
   return (
@@ -39,7 +40,7 @@ function GaugeChart({ percentage, status }: Props) {
       height="156"
       overflow="visible"
       fill="none"
-      aria-label={`생활 안정도 ${percentage}%`}
+      aria-label={`생활 안정도 ${safePct}%`}
     >
       <path
         d={trackPath}
@@ -65,7 +66,7 @@ function GaugeChart({ percentage, status }: Props) {
         fontSize="30"
         fill={fillColor}
       >
-        {percentage}%
+        {safePct}%
       </text>
       <text
         x={CX}

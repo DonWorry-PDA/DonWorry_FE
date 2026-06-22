@@ -33,8 +33,8 @@ function StabilityCard({ data }: { data: HomeStabilityData }) {
 
   const currentMan = Math.round(currentIncomeKrw / 10_000)
   const targetMan = Math.round(targetIncomeKrw / 10_000)
-  const shortfallMan = shortfallKrw ? Math.round(shortfallKrw / 10_000) : null
-  const barPct = Math.min(percentage, 100)
+  const shortfallMan = shortfallKrw != null ? Math.round(shortfallKrw / 10_000) : null
+  const barPct = Math.min(Math.max(percentage, 0), 100)
 
   return (
     <button

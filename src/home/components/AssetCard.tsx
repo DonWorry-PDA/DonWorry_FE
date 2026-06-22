@@ -10,6 +10,8 @@ type Props = {
 function DonutChart({ segments }: { segments: AssetSegment[] }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
 
+  if (segments.length === 0) return null
+
   const CX = 50, CY = 50, R = 33
   const circumference = 2 * Math.PI * R
   const GAP = circumference * (3 / 360)

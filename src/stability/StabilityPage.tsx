@@ -71,7 +71,7 @@ function StabilityPage() {
   const navigate = useNavigate()
   const { percentage, status, monthlyShortfallKrw, items } = MOCK_DATA
 
-  const shortfallMan = monthlyShortfallKrw
+  const shortfallMan = monthlyShortfallKrw != null
     ? Math.round(monthlyShortfallKrw / 10_000)
     : null
 

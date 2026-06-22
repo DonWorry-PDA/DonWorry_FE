@@ -64,7 +64,10 @@ function HomePage() {
           <p className="text-md text-ink font-bold">{MOCK_USER.name}님</p>
           <p className="text-caption text-ink-hint">{MOCK_USER.date}</p>
         </div>
-        <button aria-label="알림" className="shrink-0">
+        <button
+          aria-label="알림"
+          className="-mr-[11px] flex size-11 shrink-0 items-center justify-center"
+        >
           <NotificationIc className="text-ink" width={22} height={22} />
         </button>
       </header>
