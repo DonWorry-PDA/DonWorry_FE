@@ -8,3 +8,15 @@ export type SurveyQuestionData = {
   description?: string[]
   options: SurveyOption[]
 }
+
+export type SurveyRequest = {
+  q1: number
+  q2: number
+  q3: number
+}
+
+export type SurveyResponse = {
+  q1: number
+  q2: number
+  q3: number
+}
