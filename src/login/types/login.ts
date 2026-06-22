@@ -7,3 +7,14 @@ export type LoginData = {
   token: string
   onboardingCompleted: boolean
 }
+
+export type UsePinInputReturn = {
+  pin: string
+  attempts: number
+  isError: boolean
+  isLocked: boolean
+  appendDigit: (digit: string) => void
+  deleteDigit: () => void
+  reset: () => void
+  clearError: () => void
+}

@@ -1,19 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import usePostLogin from './usePostLogin'
+import { UsePinInputReturn } from '../types/login'
 
 const MAX_ATTEMPTS = 5
-
-interface UsePinInputReturn {
-  pin: string
-  attempts: number
-  isError: boolean
-  isLocked: boolean
-  appendDigit: (digit: string) => void
-  deleteDigit: () => void
-  reset: () => void
-  clearError: () => void
-}
 
 export function usePinInput(userId: number): UsePinInputReturn {
   const navigate = useNavigate()
