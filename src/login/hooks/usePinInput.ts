@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import usePostLogin from './usePostLogin'
 import { UsePinInputReturn } from '../types/login'
 
@@ -7,18 +8,20 @@ const MAX_ATTEMPTS = 5
 
 export function usePinInput(userId: number): UsePinInputReturn {
   const navigate = useNavigate()
-  const { mutate: postLogin } = usePostLogin()
+  const { mutate: postLogin, isPending } = usePostLogin()
 
   const [pin, setPin] = useState('')
   const [attempts, setAttempts] = useState(0)
   const [isError, setIsError] = useState(false)
+  const [isServerError, setIsServerError] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
 
   function appendDigit(digit: string) {
-    if (isLocked) return
+    if (isLocked || isPending) return
 
-    if (isError) {
+    if (isError || isServerError) {
       setIsError(false)
+      setIsServerError(false)
       setPin(digit)
       return
     }
@@ -37,18 +40,25 @@ export function usePinInput(userId: number): UsePinInputReturn {
         onSuccess: ({ onboardingCompleted }) => {
           navigate(onboardingCompleted ? '/' : '/onboarding')
         },
-        onError: () => {
-          const nextAttempts = attempts + 1
-          setAttempts(nextAttempts)
-          setIsError(true)
-          if (nextAttempts >= MAX_ATTEMPTS) setIsLocked(true)
+        onError: (error) => {
+          // 401(인증 실패)만 시도 횟수에 반영하고, 네트워크/서버 오류는 별도 처리
+          if (isAxiosError(error) && error.response?.status === 401) {
+            setAttempts((prev) => {
+              const next = prev + 1
+              if (next >= MAX_ATTEMPTS) setIsLocked(true)
+              return next
+            })
+            setIsError(true)
+          } else {
+            setIsServerError(true)
+          }
         },
       },
     )
   }
 
   function deleteDigit() {
-    if (isError || isLocked) return
+    if (isError || isServerError || isLocked) return
     setPin((p) => p.slice(0, -1))
   }
 
@@ -59,7 +69,18 @@ export function usePinInput(userId: number): UsePinInputReturn {
   function clearError() {
     setPin('')
     setIsError(false)
+    setIsServerError(false)
   }
 
-  return { pin, attempts, isError, isLocked, appendDigit, deleteDigit, reset, clearError }
+  return {
+    pin,
+    attempts,
+    isError,
+    isServerError,
+    isLocked,
+    appendDigit,
+    deleteDigit,
+    reset,
+    clearError,
+  }
 }

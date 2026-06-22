@@ -4,6 +4,7 @@ import { getAccessToken, getRefreshToken, setAccessToken, clearTokens } from './
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 10000,
 })
 
 client.interceptors.request.use((config) => {
@@ -11,6 +12,20 @@ client.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
+
+// 동시에 여러 요청이 401을 받아도 토큰 갱신은 한 번만 수행 (single-flight)
+let refreshPromise: Promise<string> | null = null
+
+const refreshAccessToken = () => {
+  const refreshToken = getRefreshToken()
+  // TODO: 토큰 갱신 엔드포인트 확정 후 교체
+  return axios
+    .post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, { refreshToken })
+    .then(({ data }) => {
+      setAccessToken(data.accessToken)
+      return data.accessToken as string
+    })
+}
 
 client.interceptors.response.use(
   (response) => response,
@@ -21,14 +36,14 @@ client.interceptors.response.use(
       originalRequest._retry = true
 
       try {
-        const refreshToken = getRefreshToken()
-        // TODO: 토큰 갱신 엔드포인트 확정 후 교체
-        const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
-          refreshToken,
-        })
+        if (!refreshPromise) {
+          refreshPromise = refreshAccessToken().finally(() => {
+            refreshPromise = null
+          })
+        }
 
-        setAccessToken(data.accessToken)
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
+        const accessToken = await refreshPromise
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`
         return client(originalRequest)
       } catch {
         clearTokens()
