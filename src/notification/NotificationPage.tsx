@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import { NotificationItemIc } from '../common/assets/icons'
 import { MOCK_NOTIFICATIONS } from './mock/notifications'
-import type { NotificationItem } from './types/notification'
+import type { NotificationUIItem } from './types/notification'
 
 function NotificationPage() {
   const navigate = useNavigate()
@@ -64,7 +64,7 @@ function NotificationListItem({
   item,
   isLast,
 }: {
-  item: NotificationItem
+  item: NotificationUIItem
   isLast: boolean
 }) {
   if (item.isUnread) {
