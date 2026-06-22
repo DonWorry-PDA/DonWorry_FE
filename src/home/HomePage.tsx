@@ -21,12 +21,28 @@ const MOCK_ASSET: AssetData = {
 }
 
 const MOCK_STABILITY: HomeStabilityData = {
-  status: 'warning',
-  percentage: 59,
-  currentIncomeKrw: 1_300_000,
+  status: 'stable',
+  percentage: 112,
+  currentIncomeKrw: 2_470_000,
   targetIncomeKrw: 2_200_000,
-  shortfallKrw: 900_000,
+  shortfallKrw: null,
 }
+
+// const MOCK_STABILITY: HomeStabilityData = {
+//   status: 'warning',
+//   percentage: 59,
+//   currentIncomeKrw: 1_300_000,
+//   targetIncomeKrw: 2_200_000,
+//   shortfallKrw: 900_000,
+// }
+
+// const MOCK_STABILITY: HomeStabilityData = {
+//   status: 'danger',
+//   percentage: 32,
+//   currentIncomeKrw: 700_000,
+//   targetIncomeKrw: 2_200_000,
+//   shortfallKrw: 1_500_000,
+// }
 
 const MOCK_REPORT_MONTH = '6월'
 
@@ -38,14 +54,14 @@ const MOCK_REPORT: ReportItem[] = [
 
 function HomePage() {
   return (
-    <div className="flex flex-col bg-page h-dvh">
+    <div className="bg-page flex h-dvh flex-col">
       {/* User header */}
-      <header className="flex items-center gap-[11px] px-5 pt-[10px] pb-[14px] shrink-0">
-        <div className="bg-primary flex items-center justify-center rounded-full size-[42px] shrink-0">
+      <header className="flex shrink-0 items-center gap-[11px] px-5 pt-[10px] pb-[14px]">
+        <div className="bg-primary flex size-[42px] shrink-0 items-center justify-center rounded-full">
           <span className="text-btn font-bold text-white">{MOCK_USER.initial}</span>
         </div>
-        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-          <p className="text-md font-bold text-ink">{MOCK_USER.name}님</p>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <p className="text-md text-ink font-bold">{MOCK_USER.name}님</p>
           <p className="text-caption text-ink-hint">{MOCK_USER.date}</p>
         </div>
         <button aria-label="알림" className="shrink-0">
@@ -57,8 +73,8 @@ function HomePage() {
         <div className="flex flex-col gap-5 px-5">
           {/* 총 자산 */}
           <section>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-body font-bold text-ink">총 자산 ›</span>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-body text-ink font-bold">총 자산 ›</span>
               <span className="text-sub text-ink-hint">분석 보기</span>
             </div>
             <AssetCard
@@ -73,19 +89,21 @@ function HomePage() {
 
           {/* 리포트 */}
           <section className="pb-2">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-body font-bold text-ink">{MOCK_REPORT_MONTH} 리포트 ›</span>
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-body text-ink font-bold">{MOCK_REPORT_MONTH} 리포트 ›</span>
               <span className="text-sub text-ink-hint">전체보기</span>
             </div>
-            <div className="bg-white rounded-card-lg shadow-card px-3 py-[9px]">
+            <div className="rounded-card-lg shadow-card bg-white px-3 py-[9px]">
               <div className="flex gap-2">
                 {MOCK_REPORT.map(({ label, value, valueClass }) => (
                   <div
                     key={label}
-                    className="flex-1 border border-line rounded-card px-3 py-[13px] flex flex-col gap-[3px]"
+                    className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
                   >
                     <p className="text-caption text-ink-hint">{label}</p>
-                    <p className={`text-md font-bold text-ink pt-0.5 ${valueClass ?? ''}`}>{value}</p>
+                    <p className={`text-md text-ink pt-0.5 font-bold ${valueClass ?? ''}`}>
+                      {value}
+                    </p>
                   </div>
                 ))}
               </div>
