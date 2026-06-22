@@ -14,13 +14,13 @@ function NotificationPage() {
       prev.map((group) => ({
         ...group,
         items: group.items.map((item) => ({ ...item, isUnread: false })),
-      })),
+      }))
     )
   }
 
   const readAllButton = (
     <button onClick={markAllRead}>
-      <span className="text-sub text-primary font-normal text-center leading-tight">
+      <span className="text-sub text-primary text-center leading-tight font-normal">
         모두
         <br />
         읽음
@@ -29,22 +29,22 @@ function NotificationPage() {
   )
 
   return (
-    <div className="flex flex-col bg-white h-dvh">
+    <div className="flex h-dvh flex-col bg-white">
       <AppBar title="알림" onBack={() => navigate(-1)} rightAction={readAllButton} />
 
-      <main className="flex-1 overflow-y-auto flex flex-col px-5 pt-1">
+      <main className="flex flex-1 flex-col overflow-y-auto px-5 pt-1">
         <button
           onClick={() => navigate('/notification/settings')}
-          className="flex items-center justify-between py-3 border-b border-divider"
+          className="border-divider flex items-center justify-between border-b py-3"
         >
-          <span className="text-body font-medium text-ink">알림 설정</span>
+          <span className="text-body text-ink font-medium">알림 설정</span>
           <span className="text-disabled text-lg">›</span>
         </button>
 
         {notifications.map((group) => (
           <div key={group.label}>
-            <div className="pb-[10px] pt-2">
-              <span className="text-sub font-semibold text-ink-hint">{group.label}</span>
+            <div className="pt-2 pb-[10px]">
+              <span className="text-sub text-ink-hint font-semibold">{group.label}</span>
             </div>
             {group.items.map((item, index) => (
               <NotificationListItem
@@ -60,22 +60,16 @@ function NotificationPage() {
   )
 }
 
-function NotificationListItem({
-  item,
-  isLast,
-}: {
-  item: NotificationUIItem
-  isLast: boolean
-}) {
+function NotificationListItem({ item, isLast }: { item: NotificationUIItem; isLast: boolean }) {
   if (item.isUnread) {
     return (
       <div className="pb-1">
-        <div className="bg-primary-tint rounded-btn flex gap-3 items-center p-[14px]">
-          <div className="bg-white rounded-icon shrink-0 size-10 flex items-center justify-center">
+        <div className="bg-primary-tint rounded-btn flex items-center gap-3 p-[14px]">
+          <div className="rounded-icon flex size-10 shrink-0 items-center justify-center bg-white">
             <NotificationItemIc className="text-ink" width={18} height={21} />
           </div>
-          <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-            <p className="text-md font-semibold text-ink">{item.title}</p>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <p className="text-md text-ink font-semibold">{item.title}</p>
             {item.subtitle && <p className="text-sub text-ink-sub">{item.subtitle}</p>}
           </div>
         </div>
@@ -84,14 +78,12 @@ function NotificationListItem({
   }
 
   return (
-    <div
-      className={`flex gap-3 items-center py-4 ${!isLast ? 'border-b border-divider' : ''}`}
-    >
-      <div className="bg-surface-muted rounded-icon shrink-0 size-10 flex items-center justify-center">
+    <div className={`flex items-center gap-3 py-4 ${!isLast ? 'border-divider border-b' : ''}`}>
+      <div className="bg-surface-muted rounded-icon flex size-10 shrink-0 items-center justify-center">
         <NotificationItemIc className="text-ink" width={18} height={21} />
       </div>
-      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <p className="text-md font-semibold text-ink">{item.title}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <p className="text-md text-ink font-semibold">{item.title}</p>
         {item.subtitle && <p className="text-sub text-ink-sub">{item.subtitle}</p>}
       </div>
     </div>

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OnboardingContextProvider } from './contexts/OnboardingContext'
 import { useStepNavigation } from './hooks/useStepNavigation'
+import TermsAgree from './components/TermsAgree'
 import Step1Situation from './components/steps/Step1Situation'
 import Step2Pension from './components/steps/Step2Pension'
 import Step3BasicInfo from './components/steps/Step3BasicInfo'
@@ -15,7 +16,7 @@ import AssetLoading from './components/asset/AssetLoading'
 import AssetResult from './components/asset/AssetResult'
 
 function OnboardingContent() {
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(0)
   const navigate = useNavigate()
   const { getNextStep, getPrevStep } = useStepNavigation()
 
@@ -24,7 +25,7 @@ function OnboardingContent() {
   }
 
   function handlePrev() {
-    if (currentStep === 1) {
+    if (currentStep === 0) {
       navigate(-1)
       return
     }
@@ -35,6 +36,7 @@ function OnboardingContent() {
 
   return (
     <>
+      {currentStep === 0 && <TermsAgree {...stepProps} />}
       {currentStep === 1 && <Step1Situation {...stepProps} />}
       {currentStep === 2 && <Step2Pension {...stepProps} />}
       {currentStep === 3 && <Step3BasicInfo {...stepProps} />}

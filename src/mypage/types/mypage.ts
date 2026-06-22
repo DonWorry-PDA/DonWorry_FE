@@ -12,6 +12,14 @@ export type LinkedAccount = {
   amountKrw: number
 }
 
+export type TermAgreement = {
+  id: string
+  label: string
+  required: boolean
+  agreed: boolean
+  agreedAt: string | null
+}
+
 export type ConsultStatus = 'reserved' | 'completed'
 
 export type ConsultRecord = {
