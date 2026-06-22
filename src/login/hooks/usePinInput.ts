@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import usePostLogin from './usePostLogin'
 
-const CORRECT_PIN = '123456'
 const MAX_ATTEMPTS = 5
 
 interface UsePinInputReturn {
@@ -15,8 +15,10 @@ interface UsePinInputReturn {
   clearError: () => void
 }
 
-export function usePinInput(): UsePinInputReturn {
+export function usePinInput(userId: number): UsePinInputReturn {
   const navigate = useNavigate()
+  const { mutate: postLogin } = usePostLogin()
+
   const [pin, setPin] = useState('')
   const [attempts, setAttempts] = useState(0)
   const [isError, setIsError] = useState(false)
@@ -25,7 +27,6 @@ export function usePinInput(): UsePinInputReturn {
   function appendDigit(digit: string) {
     if (isLocked) return
 
-    // 에러 상태에서 첫 입력 시 에러 해제 후 새로 시작
     if (isError) {
       setIsError(false)
       setPin(digit)
@@ -38,20 +39,27 @@ export function usePinInput(): UsePinInputReturn {
       setPin(next)
       return
     }
-    if (next === CORRECT_PIN) {
-      navigate('/onboarding')
-      return
-    }
-    const nextAttempts = attempts + 1
+
     setPin('')
-    setAttempts(nextAttempts)
-    setIsError(true)
-    if (nextAttempts >= MAX_ATTEMPTS) setIsLocked(true)
+    postLogin(
+      { userId, pin: next },
+      {
+        onSuccess: ({ onboardingCompleted }) => {
+          navigate(onboardingCompleted ? '/' : '/onboarding')
+        },
+        onError: () => {
+          const nextAttempts = attempts + 1
+          setAttempts(nextAttempts)
+          setIsError(true)
+          if (nextAttempts >= MAX_ATTEMPTS) setIsLocked(true)
+        },
+      },
+    )
   }
 
   function deleteDigit() {
     if (isError || isLocked) return
-    setPin(p => p.slice(0, -1))
+    setPin((p) => p.slice(0, -1))
   }
 
   function reset() {
