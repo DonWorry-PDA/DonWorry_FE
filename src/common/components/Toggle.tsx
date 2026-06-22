@@ -6,6 +6,7 @@ type ToggleProps = {
   checked: boolean
   onChange: (checked: boolean) => void
   size?: ToggleSize
+  disabled?: boolean
   'aria-label'?: string
 }
 
@@ -14,7 +15,7 @@ const SIZE = {
   md: { w: 50, h: 30, thumb: 24, pad: 3, stretch: 4 },
 }
 
-function Toggle({ checked, onChange, size = 'md', 'aria-label': ariaLabel }: ToggleProps) {
+function Toggle({ checked, onChange, size = 'md', disabled = false, 'aria-label': ariaLabel }: ToggleProps) {
   const [pressed, setPressed] = useState(false)
   const { w, h, thumb, pad, stretch } = SIZE[size]
 
@@ -26,6 +27,7 @@ function Toggle({ checked, onChange, size = 'md', 'aria-label': ariaLabel }: Tog
       role="switch"
       aria-checked={checked}
       aria-label={ariaLabel}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
       onPointerDown={() => setPressed(true)}
       onPointerUp={() => setPressed(false)}

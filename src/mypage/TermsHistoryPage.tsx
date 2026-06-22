@@ -21,7 +21,7 @@ function ChevronRightIcon() {
 
 function TermsHistoryPage() {
   const navigate = useNavigate()
-  const { terms, mutationError, dismissMutationError, toggleConsent } = useTermsAgreement()
+  const { terms, mutationError, dismissMutationError, toggleConsent, isUpdating } = useTermsAgreement()
 
   const requiredTerms = terms.filter(t => t.required)
   const optionalTerms = terms.filter(t => !t.required)
@@ -67,7 +67,7 @@ function TermsHistoryPage() {
                 <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
                   <p className="text-left text-md font-bold text-ink">{term.label}</p>
                   <p className="text-left text-caption text-ink-hint">
-                    동의 · {term.agreedAt}
+                    동의{term.agreedAt ? ` · ${term.agreedAt}` : ''}
                   </p>
                 </div>
                 <ChevronRightIcon />
@@ -88,13 +88,14 @@ function TermsHistoryPage() {
                 <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
                   <p className="text-md font-bold text-ink">{term.label}</p>
                   <p className="text-caption text-ink-hint">
-                    {term.agreed ? '동의' : '미동의'} · {term.agreedAt}
+                    {term.agreed ? '동의' : '미동의'}{term.agreedAt ? ` · ${term.agreedAt}` : ''}
                   </p>
                 </div>
                 <Toggle
                   checked={term.agreed}
                   onChange={agreed => toggleConsent(term.id, agreed)}
                   size="md"
+                  disabled={isUpdating}
                   aria-label={`${term.label} ${term.agreed ? '동의됨' : '미동의'}`}
                 />
               </div>

@@ -18,7 +18,7 @@ export const MOCK_TERMS_AGREEMENTS: TermAgreement[] = [
   { id: 'privacy', label: '개인정보 수집·이용 동의', required: true, agreed: true, agreedAt: '2026.06.12' },
   { id: 'biometric', label: '고유식별정보 처리 동의', required: true, agreed: true, agreedAt: '2026.06.12' },
   { id: 'electronic', label: '전자금융거래 이용약관', required: true, agreed: true, agreedAt: '2026.06.12' },
-  { id: 'thirdParty', label: '개인정보 제3자 제공 동의', required: false, agreed: false, agreedAt: '2026.06.12' },
+  { id: 'thirdParty', label: '개인정보 제3자 제공 동의', required: false, agreed: false, agreedAt: null },
   { id: 'marketing', label: '마케팅 정보 수신 동의', required: false, agreed: true, agreedAt: '2026.06.12' },
 ]
 
