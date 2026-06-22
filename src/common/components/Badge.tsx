@@ -3,6 +3,7 @@ type BadgeTone = 'primary' | 'success' | 'warning' | 'danger' | 'muted'
 type BadgeProps = {
   tone?: BadgeTone
   children: React.ReactNode
+  className?: string
 }
 
 const toneStyles: Record<BadgeTone, string> = {
@@ -13,9 +14,9 @@ const toneStyles: Record<BadgeTone, string> = {
   muted: 'bg-surface-muted text-ink-sub',
 }
 
-function Badge({ tone = 'primary', children }: BadgeProps) {
+function Badge({ tone = 'primary', children, className = '' }: BadgeProps) {
   return (
-    <span className={`inline-flex items-center rounded-badge px-2 py-0.5 text-sub font-medium ${toneStyles[tone]}`}>
+    <span className={`inline-flex items-center rounded-badge px-2 py-0.5 text-sub font-medium ${toneStyles[tone]} ${className}`}>
       {children}
     </span>
   )
