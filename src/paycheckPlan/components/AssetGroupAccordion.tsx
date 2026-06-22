@@ -13,7 +13,6 @@ function AssetGroupAccordion({ category, checkedIds, onToggleItem, onToggleGroup
   const [open, setOpen] = useState(true)
 
   const allChecked = category.items.every((item) => checkedIds.has(item.id))
-  const someChecked = category.items.some((item) => checkedIds.has(item.id))
 
   return (
     <div className="border-b border-divider">

@@ -1,13 +1,13 @@
-export type NotificationItem = {
-  id: string
-  title: string
-  subtitle: string
-  isUnread?: boolean
-}
+export type NotificationType = 'BALANCE_ALERT' | (string & {})
 
-export type NotificationGroup = {
-  label: string
-  items: NotificationItem[]
+export type NotificationItem = {
+  notificationId: number
+  notificationType: NotificationType
+  title: string
+  content: string
+  linkTarget: string
+  read: boolean
+  createdAt: string
 }
 
 export type NotificationSetting = {
