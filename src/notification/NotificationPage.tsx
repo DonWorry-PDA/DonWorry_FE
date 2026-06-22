@@ -76,7 +76,7 @@ function NotificationListItem({
           </div>
           <div className="flex-1 min-w-0 flex flex-col gap-0.5">
             <p className="text-md font-semibold text-ink">{item.title}</p>
-            <p className="text-sub text-ink-sub">{item.subtitle}</p>
+            {item.subtitle && <p className="text-sub text-ink-sub">{item.subtitle}</p>}
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ function NotificationListItem({
       </div>
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
         <p className="text-md font-semibold text-ink">{item.title}</p>
-        <p className="text-sub text-ink-sub">{item.subtitle}</p>
+        {item.subtitle && <p className="text-sub text-ink-sub">{item.subtitle}</p>}
       </div>
     </div>
   )
