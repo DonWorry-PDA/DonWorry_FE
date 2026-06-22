@@ -37,7 +37,19 @@ function ConsultSummaryPage() {
     toastTimer.current = setTimeout(() => setShowToast(false), 2500)
   }
 
-  const metaLine = [record?.dateTime, record?.location, '김신한 PB팀장'].filter(Boolean).join(' · ')
+  if (!record) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 요약" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5">
+          <p className="text-md font-medium text-ink">상담 기록을 찾을 수 없어요</p>
+          <button onClick={() => navigate(-1)} className="text-sub text-primary">돌아가기</button>
+        </div>
+      </div>
+    )
+  }
+
+  const metaLine = [record.dateTime, record.location, '김신한 PB팀장'].filter(Boolean).join(' · ')
 
   return (
     <div className="flex h-dvh flex-col bg-white">
