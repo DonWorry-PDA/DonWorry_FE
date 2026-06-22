@@ -33,8 +33,7 @@ const TOPICS = [
 
 function CheckIcon({ checked }: { checked: boolean }) {
   return (
-    <button
-      type="button"
+    <span
       className={`shrink-0 size-6 rounded-[0.5rem] flex items-center justify-center transition-colors ${
         checked ? 'bg-primary border border-primary' : 'bg-white border border-radio'
       }`}
@@ -48,7 +47,7 @@ function CheckIcon({ checked }: { checked: boolean }) {
           strokeLinejoin="round"
         />
       </svg>
-    </button>
+    </span>
   )
 }
 
@@ -59,7 +58,7 @@ function ConsultPrepPage() {
   const toggle = (id: string) =>
     setCheckedItems((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
 
