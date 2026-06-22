@@ -14,7 +14,7 @@ function Modal({ children }: ModalProps) {
   }, [])
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center px-[30px] bg-[rgba(18,23,33,0.5)]">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center px-[30px] bg-[rgba(18,23,33,0.5)]">
       <div className="w-full max-w-[316px] rounded-[20px] bg-white shadow-float">
         {children}
       </div>
