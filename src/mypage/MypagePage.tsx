@@ -87,7 +87,7 @@ function MypagePage() {
           subtitle="6월 19일 PB 상담 예약됨"
           onPress={() => navigate('/mypage/consult-history')}
         />
-        <MenuRow title="약관 및 동의 내역" onPress={() => {}} />
+        <MenuRow title="약관 및 동의 내역" onPress={() => navigate('/mypage/terms')} />
 
         {/* 로그아웃 */}
         <button className="flex w-full items-center py-[15px]">

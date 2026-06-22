@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BackArrowIc } from '../../common/assets/icons'
 
 interface Props {
@@ -18,13 +19,23 @@ const TERMS = [
 type TermId = (typeof TERMS)[number]['id']
 type CheckedState = Record<TermId, boolean>
 
-const initialChecked: CheckedState = {
+const STORAGE_KEY = 'onboarding-terms-agreed'
+
+const defaultChecked: CheckedState = {
   service: false,
   privacy: false,
   biometric: false,
   electronic: false,
   thirdParty: false,
   marketing: false,
+}
+
+function loadChecked(): CheckedState {
+  try {
+    const stored = sessionStorage.getItem(STORAGE_KEY)
+    if (stored) return JSON.parse(stored) as CheckedState
+  } catch {}
+  return defaultChecked
 }
 
 function CheckboxIcon({ checked }: { checked: boolean }) {
@@ -60,8 +71,12 @@ function AllAgreeCheckbox({ checked }: { checked: boolean }) {
 }
 
 function TermsAgree({ onNext, onPrev }: Props) {
-  const [checked, setChecked] = useState<CheckedState>(initialChecked)
-  const [modalTerm, setModalTerm] = useState<TermId | null>(null)
+  const navigate = useNavigate()
+  const [checked, setChecked] = useState<CheckedState>(loadChecked)
+
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(checked))
+  }, [checked])
 
   const allChecked = TERMS.every(t => checked[t.id])
   const allRequiredChecked = TERMS.filter(t => t.required).every(t => checked[t.id])
@@ -75,9 +90,9 @@ function TermsAgree({ onNext, onPrev }: Props) {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  function agreeAndClose(id: TermId) {
-    setChecked(prev => ({ ...prev, [id]: true }))
-    setModalTerm(null)
+  function handleProceed() {
+    sessionStorage.removeItem(STORAGE_KEY)
+    onNext()
   }
 
   return (
@@ -132,7 +147,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setModalTerm(term.id)}
+                  onClick={() => navigate(`/terms/${term.id}`)}
                   className="flex shrink-0 items-center"
                 >
                   <span className="text-sub font-semibold text-disabled">보기</span>
@@ -164,52 +179,13 @@ function TermsAgree({ onNext, onPrev }: Props) {
       <div className="shrink-0 border-t border-divider px-5 pb-[18px] pt-[15px]">
         <button
           type="button"
-          onClick={onNext}
+          onClick={handleProceed}
           disabled={!allRequiredChecked}
           className="h-[54px] w-full rounded-card bg-primary text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           동의하고 시작하기
         </button>
       </div>
-
-      {/* 약관 내용 모달 */}
-      {modalTerm !== null && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/45">
-          <div className="flex h-[80vh] flex-col overflow-hidden rounded-t-[22px] bg-white">
-            <div className="flex h-[54px] shrink-0 items-center justify-between border-b border-divider px-[18px]">
-              <span className="text-md font-bold text-ink">약관</span>
-              <button
-                type="button"
-                onClick={() => setModalTerm(null)}
-                className="flex size-[30px] items-center justify-center"
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path
-                    d="M5 5L15 15M15 5L5 15"
-                    stroke="#1a1d24"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="flex-1 overflow-auto p-5">
-              <p className="text-body leading-relaxed text-ink-sub">
-                {TERMS.find(t => t.id === modalTerm)?.label} 약관 내용이 여기에 표시됩니다.
-              </p>
-            </div>
-            <div className="shrink-0 border-t border-divider px-5 pb-[14px] pt-[15px]">
-              <button
-                type="button"
-                onClick={() => agreeAndClose(modalTerm)}
-                className="h-[54px] w-full rounded-card bg-primary text-btn font-bold text-white"
-              >
-                이 약관에 동의
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
