@@ -2,16 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import InfoBox from '../common/components/InfoBox'
+import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { mapComparison, toManwon, Q3_LABELS } from './utils/planMapper'
-
-function CenterMessage({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-center h-full px-8 text-center text-body text-ink-hint">
-      {children}
-    </div>
-  )
-}
 
 function PaycheckComparePage() {
   const navigate = useNavigate()
@@ -26,8 +19,17 @@ function PaycheckComparePage() {
     )
   }
 
+  if (isError) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</CenterMessage>
+      </div>
+    )
+  }
+
   const comparison = data ? mapComparison(data) : null
-  if (isError || !comparison) {
+  if (!comparison) {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
@@ -100,11 +102,18 @@ function PaycheckComparePage() {
         )}
       </div>
 
-      <div className="px-5 py-4 shrink-0 flex gap-3">
-        <Button variant="outline" onClick={() => navigate(`/paycheck-plan/plans/${leftPlanId}`)}>
+      <div className="px-5 py-4 shrink-0 grid grid-cols-2 gap-3">
+        <Button
+          variant="outline"
+          className="min-w-0 px-2 truncate"
+          onClick={() => navigate(`/paycheck-plan/plans/${leftPlanId}`)}
+        >
           {leftPlanName} 보기
         </Button>
-        <Button onClick={() => navigate(`/paycheck-plan/plans/${rightPlanId}`)}>
+        <Button
+          className="min-w-0 px-2 truncate"
+          onClick={() => navigate(`/paycheck-plan/plans/${rightPlanId}`)}
+        >
           {rightPlanName} 보기
         </Button>
       </div>

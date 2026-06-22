@@ -3,6 +3,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import InfoBox from '../common/components/InfoBox'
 import AllocationStackBar from './components/AllocationStackBar'
+import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { findPlan, mapPlanDetail } from './utils/planMapper'
 
@@ -21,18 +22,10 @@ function WarningIcon() {
   )
 }
 
-function CenterMessage({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-center h-full px-8 text-center text-body text-ink-hint">
-      {children}
-    </div>
-  )
-}
-
 function PaycheckPlanDetailPage() {
   const navigate = useNavigate()
   const { planId } = useParams<{ planId: string }>()
-  const { data, isLoading, isError } = useGetRecommendation()
+  const { data, isLoading } = useGetRecommendation()
 
   if (isLoading) {
     return (
@@ -43,12 +36,14 @@ function PaycheckPlanDetailPage() {
     )
   }
 
+  // 캐시된 설계안이 있으면 백그라운드 재요청 실패(isError)와 무관하게 그대로 보여준다.
+  // 정말 해당 안이 없을 때만(!plan) 안내한다.
   const plan = data && planId ? findPlan(data, planId) : undefined
-  if (isError || !plan) {
+  if (!plan) {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="설계안" onBack={() => navigate(-1)} />
-        <CenterMessage>설계안을 찾을 수 없어요</CenterMessage>
+        <CenterMessage variant="alert">설계안을 찾을 수 없어요</CenterMessage>
       </div>
     )
   }

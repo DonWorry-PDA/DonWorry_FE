@@ -124,10 +124,10 @@ export const mapComparison = (response: RecommendationResponse): ComparisonTable
     leftPlanName: left.displayName,
     rightPlanName: right.displayName,
     rows: [
-      { label: '예상 월수입', left: `${leftIncome}만원`, right: `${rightIncome}만원` }, // BE
+      { label: '예상 월수입', left: `${leftIncome.toLocaleString('ko-KR')}만원`, right: `${rightIncome.toLocaleString('ko-KR')}만원` }, // BE
       { label: '생활비 충당', left: fmtCoverage(left.alphaCoverageRate), right: fmtCoverage(right.alphaCoverageRate) }, // BE
       // ── 이하 BE 미제공 — static placeholder (TODO: BE 확장/협의) ──
-      { label: '세후 실수령', left: `${Math.round(leftIncome * 0.96)}만원`, right: `${Math.round(rightIncome * 0.96)}만원` },
+      { label: '세후 실수령', left: `${Math.round(leftIncome * 0.96).toLocaleString('ko-KR')}만원`, right: `${Math.round(rightIncome * 0.96).toLocaleString('ko-KR')}만원` },
       { label: '시장이 10% 내리면', left: '월급 그대로', right: '월급 변동 가능' },
       { label: '중도 해지', left: '일부 만기 제약', right: '언제든 가능' },
       { label: '수수료 (연)', left: '협의 예정', right: '협의 예정' },

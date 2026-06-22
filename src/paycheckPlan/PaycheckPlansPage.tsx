@@ -3,19 +3,12 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import InfoBox from '../common/components/InfoBox'
 import SalaryPlanCard from './components/SalaryPlanCard'
+import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { mapPlans } from './utils/planMapper'
 
-// TODO: 사용자 이름은 추천 응답에 없음 — 프로필 조회 연동 시 교체
-const userName = '김영수'
-
-function CenterMessage({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-center h-full px-8 text-center text-body text-ink-hint">
-      {children}
-    </div>
-  )
-}
+// TODO: 사용자 이름은 추천 응답에 없음 — 프로필 조회 연동 시 실명으로 교체
+const userName = '고객'
 
 function PaycheckPlansPage() {
   const navigate = useNavigate()
@@ -34,7 +27,7 @@ function PaycheckPlansPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
-        <CenterMessage>설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</CenterMessage>
+        <CenterMessage variant="alert">설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</CenterMessage>
       </div>
     )
   }
