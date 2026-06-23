@@ -35,6 +35,7 @@ import OrderResultPage from './order/OrderResultPage'
 import OrderCompletePage from './order/OrderCompletePage'
 import OrderModifyPage from './order/OrderModifyPage'
 import OrderConfirmPage from './order/OrderConfirmPage'
+import AssetPage from './asset/AssetPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -52,6 +53,7 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/execute', element: <PaycheckExecutePage /> },
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
   { path: '/home', element: <HomePage /> },
+  { path: '/asset', element: <AssetPage /> },
   { path: '/stability', element: <StabilityPage /> },
   { path: '/calendar', element: <CalendarPage /> },
   { path: '/mypage/consult-history', element: <ConsultHistoryPage /> },

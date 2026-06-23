@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BackArrowIc, NavHomeIc, NotificationIc } from '../../../common/assets/icons'
 
 const CONSENT_ITEMS = [
@@ -13,6 +14,7 @@ interface Props {
 }
 
 function AssetConsent({ onNext, onPrev }: Props) {
+  const navigate = useNavigate()
   const [checked, setChecked] = useState<Record<string, boolean>>(
     Object.fromEntries(CONSENT_ITEMS.map(item => [item.id, false]))
   )
@@ -38,7 +40,14 @@ function AssetConsent({ onNext, onPrev }: Props) {
           <span className="text-body text-ink-sub">자산 연결 약관 동의 3/3</span>
         </div>
         <div className="flex gap-4 text-ink">
-          <NotificationIc width={24} height={24} />
+          <button
+            type="button"
+            aria-label="알림"
+            className="flex size-11 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-btn"
+            onClick={() => navigate('/notification')}
+          >
+            <NotificationIc width={24} height={24} />
+          </button>
           <NavHomeIc width={24} height={24} />
         </div>
       </div>
