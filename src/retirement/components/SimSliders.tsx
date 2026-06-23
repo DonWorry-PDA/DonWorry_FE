@@ -48,23 +48,26 @@ function SimSliders({
   onInflationRateChange,
 }: SimSlidersProps) {
   return (
-    <div className="flex flex-col gap-5 px-5 py-4">
-      <Slider
-        label="투자 수익률 가정"
-        value={returnRate}
-        min={0}
-        max={10}
-        step={0.5}
-        onChange={onReturnRateChange}
-      />
-      <Slider
-        label="물가 상승 가정"
-        value={inflationRate}
-        min={0}
-        max={5}
-        step={0.5}
-        onChange={onInflationRateChange}
-      />
+    <div className="px-5 py-5">
+      <p className="mb-4 text-sub font-semibold text-ink-hint">시나리오 조정</p>
+      <div className="flex flex-col gap-6">
+        <Slider
+          label="투자 수익률 가정"
+          value={returnRate}
+          min={0}
+          max={10}
+          step={0.5}
+          onChange={onReturnRateChange}
+        />
+        <Slider
+          label="물가 상승 가정"
+          value={inflationRate}
+          min={0}
+          max={5}
+          step={0.5}
+          onChange={onInflationRateChange}
+        />
+      </div>
     </div>
   )
 }
