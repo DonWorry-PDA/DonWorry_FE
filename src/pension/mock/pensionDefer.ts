@@ -55,10 +55,8 @@ function buildRows(years: number): PensionDeferComparisonRow[] {
 function buildInsight(deferRate: number, rows: PensionDeferComparisonRow[]): string {
   const selected = rows.find((r) => r.deferRate === deferRate)
   if (!selected) return ''
-  const bestRate = rows
-    .filter((r) => r.coverageRateDuring >= 70)
-    .map((r) => r.deferRate)
-    .at(-1) ?? -1
+  const stableRates = rows.filter((r) => r.coverageRateDuring >= 70).map((r) => r.deferRate)
+  const bestRate = stableRates.length > 0 ? stableRates[stableRates.length - 1] : -1
 
   let primary: string
   if (deferRate === 0) {
