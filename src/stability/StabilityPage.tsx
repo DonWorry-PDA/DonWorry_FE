@@ -1,47 +1,10 @@
 import { useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import { NotificationIc } from '../common/assets/icons'
 import GaugeChart from './components/GaugeChart'
-import type { StabilityData, StabilityItem, StabilityStatus } from './types/stability'
-
-// const MOCK_DATA: StabilityData = {
-//   percentage: 59,
-//   status: 'warning',
-//   monthlyShortfallKrw: 900_000,
-//   items: [
-//     { id: 1, label: '생활비 충당률', status: 'warning' },
-//     { id: 2, label: '의료비 대비력', status: 'warning' },
-//     { id: 3, label: '유동성·비상금', status: 'stable' },
-//     { id: 4, label: '부채 부담률', status: 'stable' },
-//     { id: 5, label: '위험자산 의존도', status: 'stable' },
-//   ],
-// }
-
-const MOCK_DATA: StabilityData = {
-  percentage: 112,
-  status: 'stable',
-  monthlyShortfallKrw: null,
-  items: [
-    { id: 1, label: '생활비 충당률', status: 'stable' },
-    { id: 2, label: '의료비 대비력', status: 'stable' },
-    { id: 3, label: '유동성·비상금', status: 'stable' },
-    { id: 4, label: '부채 부담률', status: 'stable' },
-    { id: 5, label: '위험자산 의존도', status: 'stable' },
-  ],
-}
-
-// const MOCK_DATA: StabilityData = {
-//   percentage: 32,
-//   status: 'danger',
-//   monthlyShortfallKrw: 1_500_000,
-//   items: [
-//     { id: 1, label: '생활비 충당률', status: 'danger' },
-//     { id: 2, label: '의료비 대비력', status: 'warning' },
-//     { id: 3, label: '유동성·비상금', status: 'warning' },
-//     { id: 4, label: '부채 부담률', status: 'stable' },
-//     { id: 5, label: '위험자산 의존도', status: 'stable' },
-//   ],
-// }
+import useGetLifeStability from './hooks/useGetLifeStability'
+import type { StabilityItem, StabilityStatus } from './types/stability'
 
 const STATUS_LABEL: Record<StabilityStatus, string> = {
   stable: '안정적이에요',
@@ -69,11 +32,8 @@ const ITEM_STATUS_CLASS: Record<StabilityStatus, string> = {
 
 function StabilityPage() {
   const navigate = useNavigate()
-  const { percentage, status, monthlyShortfallKrw, items } = MOCK_DATA
-
-  const shortfallMan = monthlyShortfallKrw != null
-    ? Math.round(monthlyShortfallKrw / 10_000)
-    : null
+  const { data, isLoading, isError, error, refetch } = useGetLifeStability()
+  const isEmptyResult = isAxiosError(error) && error.response?.status === 404
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -93,98 +53,82 @@ function StabilityPage() {
       />
 
       <main className="flex-1 overflow-y-auto">
-        {/* 결과 헤딩 */}
-        <div className="flex flex-col items-center gap-[6px] px-[22px] pt-[6px]">
-          <p className={`text-heading font-extrabold ${STATUS_CLASS[status]}`}>
-            {STATUS_LABEL[status]}
-          </p>
-          <div className="text-sub text-ink-sub text-center leading-[1.62]">
-            {status === 'stable' ? (
-              <>
-                <p>
-                  지금 수입만으로{' '}
-                  <span className="font-bold text-ink">생활비를 충당</span>
-                  할 수 있어요.
-                </p>
-                <p>여유자금은 더 키워볼 수 있어요.</p>
-              </>
-            ) : (
-              <>
-                <p>
-                  목표 생활비의{' '}
-                  <span className="font-bold text-ink">{percentage}%</span>를 충당하고 있어요.
-                </p>
-                {shortfallMan !== null && (
-                  <p>
-                    매달{' '}
-                    <span className={`font-bold ${STATUS_CLASS[status]}`}>
-                      {shortfallMan.toLocaleString('ko-KR')}만원이 부족
-                    </span>
-                    해요.
+        {isLoading ? (
+          <StatusMessage text="생활 안정도를 불러오는 중이에요…" />
+        ) : isError || !data ? (
+          <StatusMessage
+            text={
+              isEmptyResult
+                ? '아직 생활 안정도 결과가 없어요.\n자산을 연결하면 분석해 드려요.'
+                : '생활 안정도를 불러오지 못했어요.'
+            }
+            onRetry={isEmptyResult ? undefined : () => refetch()}
+          />
+        ) : (
+          <>
+            {/* 결과 헤딩 */}
+            <div className="flex flex-col items-center gap-[6px] px-[22px] pt-[6px]">
+              <p className={`text-heading font-extrabold ${STATUS_CLASS[data.status]}`}>
+                {STATUS_LABEL[data.status]}
+              </p>
+              <p className="text-sub text-ink-sub text-center leading-[1.62] whitespace-pre-line">
+                {data.summaryMessage}
+              </p>
+            </div>
+
+            {/* 게이지 차트 */}
+            <div className="flex flex-col items-center px-[22px] pt-[6px]">
+              <GaugeChart percentage={data.percentage} status={data.status} />
+            </div>
+
+            {/* 항목별 현황 */}
+            <div className="px-[22px] pt-[22px] pb-[12px]">
+              <p className="text-md font-bold text-ink">항목별 현황</p>
+            </div>
+
+            <div className="flex flex-col gap-[9px] px-[22px]">
+              {data.items.map((item) => (
+                <StabilityItemRow key={item.id} item={item} />
+              ))}
+            </div>
+
+            {/* TIP 박스 */}
+            {data.tip && (
+              <div className="px-[22px] pt-4 pb-6">
+                <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
+                  <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
+                    <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
+                  </div>
+                  <p className="text-caption text-primary-dark flex-1 min-w-0 leading-[1.6] whitespace-pre-line">
+                    {data.tip}
                   </p>
-                )}
-              </>
+                </div>
+              </div>
             )}
-          </div>
-        </div>
-
-        {/* 게이지 차트 */}
-        <div className="flex flex-col items-center px-[22px] pt-[6px]">
-          <GaugeChart percentage={percentage} status={status} />
-        </div>
-
-        {/* 항목별 현황 */}
-        <div className="px-[22px] pt-[22px] pb-[12px]">
-          <p className="text-md font-bold text-ink">항목별 현황</p>
-        </div>
-
-        <div className="flex flex-col gap-[9px] px-[22px]">
-          {items.map((item) => (
-            <StabilityItemRow key={item.id} item={item} />
-          ))}
-        </div>
-
-        {/* TIP 박스 */}
-        {status === 'stable' ? (
-          <div className="px-[22px] pt-4 pb-6">
-            <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
-              <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
-                <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
-              </div>
-              <p className="text-caption text-primary-dark flex-1 min-w-0 leading-[1.6]">
-                여유자금은 &apos;여유자금 성장형&apos;으로 더 키워볼 수 있어요.
-              </p>
-              <span className="text-primary text-md shrink-0">›</span>
-            </div>
-          </div>
-        ) : status === 'danger' ? (
-          <div className="px-[22px] pt-4 pb-6">
-            <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
-              <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
-                <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
-              </div>
-              <p className="text-caption text-primary-dark flex-1 min-w-0 leading-[1.6]">
-                지출 점검·국민연금 연기·전문가 상담을 함께 살펴보세요.
-              </p>
-              <span className="text-primary text-md shrink-0">›</span>
-            </div>
-          </div>
-        ) : shortfallMan !== null ? (
-          <div className="px-[22px] pt-4 pb-6">
-            <div className="bg-primary-tint flex items-center gap-3 rounded-btn px-4 py-[15px]">
-              <div className="bg-white rounded-badge px-2 py-[3px] shrink-0">
-                <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
-              </div>
-              <p className="text-caption text-primary flex-1 min-w-0 leading-[1.6]">
-                월급 만들기로 부족한 {shortfallMan.toLocaleString('ko-KR')}만원을 채우면
-                <br />
-                '안정' 단계로 올라갈 수 있어요.
-              </p>
-              <span className="text-primary text-md shrink-0">›</span>
-            </div>
-          </div>
-        ) : null}
+          </>
+        )}
       </main>
+    </div>
+  )
+}
+
+function StatusMessage({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center gap-4 px-[22px] pt-[120px]"
+    >
+      <p className="text-body text-ink-sub text-center leading-[1.6] whitespace-pre-line">{text}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+        >
+          다시 시도
+        </button>
+      )}
     </div>
   )
 }
