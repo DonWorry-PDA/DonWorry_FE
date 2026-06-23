@@ -13,6 +13,8 @@ function YearChips({ selected, onChange, disabled }: YearChipsProps) {
         <button
           key={year}
           type="button"
+          aria-pressed={selected === year}
+          aria-label={`${year}년 연기`}
           onClick={() => onChange(year)}
           disabled={disabled}
           className={[

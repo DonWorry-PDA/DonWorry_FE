@@ -61,7 +61,7 @@ function DeferDetailCard({ data }: DeferDetailCardProps) {
           label="생활비 충당률"
           value={`${coverageRateBefore}% → ${coverageRateAfter}%`}
         />
-        {breakEvenMonths != null && (
+        {!isImmediate && breakEvenMonths != null && (
           <DetailRow
             label="손익분기 (받기 시작 후)"
             value={formatBreakEven(breakEvenMonths)}

@@ -12,6 +12,8 @@ function RateChips({ selected, onChange }: RateChipsProps) {
         <button
           key={rate}
           type="button"
+          aria-pressed={selected === rate}
+          aria-label={rate === 0 ? '즉시 수령' : `${rate}% 연기`}
           onClick={() => onChange(rate)}
           className={[
             'shrink-0 rounded-card px-4 py-2 text-body font-semibold transition-colors',

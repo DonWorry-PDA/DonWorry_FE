@@ -53,7 +53,8 @@ function buildRows(years: number): PensionDeferComparisonRow[] {
 }
 
 function buildInsight(deferRate: number, rows: PensionDeferComparisonRow[]): string {
-  const selected = rows.find((r) => r.deferRate === deferRate)!
+  const selected = rows.find((r) => r.deferRate === deferRate)
+  if (!selected) return ''
   const bestRate = rows
     .filter((r) => r.coverageRateDuring >= 70)
     .map((r) => r.deferRate)
@@ -80,8 +81,9 @@ function buildInsight(deferRate: number, rows: PensionDeferComparisonRow[]): str
 
 export function buildMockResponse(deferRate: number, deferYears: number): PensionDeferResponse {
   const rows = buildRows(deferYears)
-  const selectedRow = rows.find((r) => r.deferRate === deferRate)!
-  const immediateRow = rows.find((r) => r.deferRate === 0)!
+  const selectedRow = rows.find((r) => r.deferRate === deferRate)
+  const immediateRow = rows.find((r) => r.deferRate === 0)
+  if (!selectedRow || !immediateRow) throw new Error(`Invalid deferRate: ${deferRate}`)
 
   return {
     selected: {

@@ -16,6 +16,9 @@ function PensionDeferPage() {
   const [selectedYears, setSelectedYears] = useState(5)
 
   const { data: apiData, isLoading } = useGetPensionDefer(selectedRate, selectedYears)
+  if (import.meta.env.DEV && !apiData && !isLoading) {
+    console.warn('[PensionDeferPage] API 데이터 없음 — 목 데이터로 폴백')
+  }
   const data = apiData ?? buildMockResponse(selectedRate, selectedYears)
 
   return (
@@ -82,7 +85,7 @@ function PensionDeferPage() {
 
 function LoadingSkeleton() {
   return (
-    <div className="flex flex-col gap-6 px-5 animate-pulse">
+    <div role="status" aria-label="연금 정보 불러오는 중" className="flex flex-col gap-6 px-5 animate-pulse">
       <div className="rounded-card-lg border-2 border-line p-5 flex flex-col gap-4">
         <div className="h-5 w-40 rounded bg-surface-muted" />
         {Array.from({ length: 5 }).map((_, i) => (
