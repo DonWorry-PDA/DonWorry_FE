@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getAccessToken, getRefreshToken, setAccessToken, clearTokens } from './token'
+import queryClient from './queryClient'
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -47,6 +48,7 @@ client.interceptors.response.use(
         return client(originalRequest)
       } catch {
         clearTokens()
+        queryClient.clear()
         window.location.href = '/login'
       }
     }
