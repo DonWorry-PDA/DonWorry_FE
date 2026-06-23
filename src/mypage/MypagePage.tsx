@@ -44,7 +44,7 @@ function MypagePage() {
               {(profile.monthlyTargetKrw / 10_000).toLocaleString('ko-KR')}만원
             </p>
           </div>
-          <button className="shrink-0">
+          <button className="shrink-0" onClick={() => navigate('/mypage/profile-edit')}>
             <span className="text-sub font-semibold text-primary">수정</span>
           </button>
         </div>

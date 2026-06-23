@@ -4,72 +4,90 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 
-const TERMS_ITEMS = [
+type TermsItem = {
+  id: string
+  termId: string
+  title: string
+  subtitle: string | null
+  required: boolean
+}
+
+const TERMS_ITEMS: TermsItem[] = [
   {
     id: 'account',
+    termId: 'account',
     title: '신한 은퇴솔루션 계좌 약관',
+    subtitle: null,
     required: true,
-    content:
-      '신한 은퇴솔루션 계좌는 신한투자증권이 운영하는 은퇴 전용 자산관리 계좌입니다. 본 약관은 해당 계좌의 개설, 운용 및 해지에 관한 사항을 규정합니다.',
   },
   {
     id: 'deposit',
+    termId: 'deposit',
     title: '예금거래 기본약관',
+    subtitle: null,
     required: true,
-    content:
-      '예금거래 기본약관은 예금주와 은행 간의 예금 계약에 적용되는 기본적인 사항을 규정하며, 예금의 입출금, 이자 지급, 계좌 해지 등의 절차를 포함합니다.',
   },
   {
     id: 'privacy-collect',
-    title: '개인정보 수집·이용',
+    termId: 'account-privacy',
+    title: '개인정보 수집·이용 동의',
+    subtitle: '계좌 개설·거래 목적',
     required: true,
-    content:
-      '수집 항목: 성명, 생년월일, 연락처, 금융거래 정보. 수집 목적: 계좌 개설 및 금융 서비스 제공. 보유 기간: 거래 종료 후 5년.',
   },
   {
     id: 'privacy-share',
-    title: '개인정보 제3자 제공',
+    termId: 'account-third-party',
+    title: '개인정보 제3자 제공 동의',
+    subtitle: '예금보험공사 등 계좌 운영 필수',
     required: true,
-    content:
-      '제공 대상: 신용정보원, 금융결제원. 제공 목적: 본인 확인 및 금융 사고 예방. 제공 항목: 성명, 생년월일, 계좌번호. 보유 기간: 제공 목적 달성 후 즉시 파기.',
   },
-  {
-    id: 'marketing',
-    title: '마케팅 정보 수신 (선택)',
-    required: false,
-    content:
-      '신한투자증권의 금융상품, 이벤트, 혜택 등의 마케팅 정보를 SMS, 이메일, 앱 푸시 알림을 통해 수신하는 것에 동의합니다. 동의하지 않아도 서비스 이용에 불이익이 없습니다.',
-  },
-] as const
+]
 
-type TermsId = (typeof TERMS_ITEMS)[number]['id']
+type AgreedState = Record<string, boolean>
 
-type AgreedState = Record<TermsId, boolean>
+const INITIAL_STATE: AgreedState = Object.fromEntries(TERMS_ITEMS.map((item) => [item.id, false]))
 
-const INITIAL_STATE: AgreedState = {
-  account: false,
-  deposit: false,
-  'privacy-collect': false,
-  'privacy-share': false,
-  marketing: false,
+function CheckIcon() {
+  return (
+    <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+      <path
+        d="M1 4.5L4.5 8L11 1"
+        stroke="white"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
 }
 
-type TermsItem = (typeof TERMS_ITEMS)[number]
+function ChevronRight() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path
+        d="M5.25 3.5L8.75 7L5.25 10.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 function TermsAgreePage() {
   const navigate = useNavigate()
   const [agreed, setAgreed] = useState<AgreedState>(INITIAL_STATE)
-  const [viewingTerm, setViewingTerm] = useState<TermsItem | null>(null)
 
   const allChecked = TERMS_ITEMS.every((item) => agreed[item.id])
   const requiredChecked = TERMS_ITEMS.filter((item) => item.required).every((item) => agreed[item.id])
 
   const toggleAll = () => {
     const next = !allChecked
-    setAgreed(Object.fromEntries(TERMS_ITEMS.map((item) => [item.id, next])) as AgreedState)
+    setAgreed(Object.fromEntries(TERMS_ITEMS.map((item) => [item.id, next])))
   }
 
-  const toggle = (id: TermsId) => {
+  const toggle = (id: string) => {
     setAgreed((prev) => ({ ...prev, [id]: !prev[id] }))
   }
 
@@ -77,117 +95,111 @@ function TermsAgreePage() {
     <div className="flex flex-col bg-white h-dvh">
       <AppBar title="약관 동의" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pt-[0.4375rem]">
-        {/* 제목 */}
-        <h2 className="text-heading font-bold text-ink leading-[1.47] mb-[1.125rem]">
-          서비스 이용을 위해
+      <main className="flex-1 overflow-y-auto px-5 pb-6">
+        <h2 className="mt-[1.375rem] text-heading font-extrabold text-ink leading-[1.43] tracking-[-0.025em] mb-3">
+          계좌 개설을 위해
           <br />
           약관에 동의해주세요
         </h2>
+
+        <p className="text-sub text-ink-hint leading-[1.66] mb-[1.375rem]">
+          본인확인·서비스 약관은 가입할 때 완료했어요. 계좌 개설에 필요한 약관만 확인하면 돼요.
+        </p>
 
         {/* 전체 동의 */}
         <button
           role="checkbox"
           aria-checked={allChecked}
           onClick={toggleAll}
-          className={`flex w-full items-center gap-3 rounded-btn border p-[1.0625rem] text-left transition-colors ${
-            allChecked ? 'border-primary bg-primary-tint' : 'border-line bg-white'
-          }`}
+          className="flex w-full items-center gap-3 rounded-card-lg border border-[#e0e9ff] bg-[#edf2ff] p-[1.0625rem] text-left mb-3"
         >
           <span
-            className={`flex size-[1.375rem] shrink-0 items-center justify-center rounded-[0.375rem] transition-colors ${
-              allChecked ? 'bg-primary' : 'border-2 border-line bg-white'
+            className={`flex size-[1.625rem] shrink-0 items-center justify-center rounded-[8px] border transition-colors ${
+              allChecked ? 'bg-primary border-primary' : 'bg-white border-[#bfcbe6]'
             }`}
           >
-            {allChecked && (
-              <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
-                <path
-                  d="M1.5 5L5 8.5L11.5 1.5"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            )}
+            {allChecked && <CheckIcon />}
           </span>
-          <span className="text-md font-semibold text-ink">전체 동의합니다</span>
+          <span className="text-md font-extrabold text-ink tracking-[-0.019em]">
+            약관에 전체 동의합니다
+          </span>
         </button>
 
         {/* 개별 항목 */}
-        <div className="mt-2">
+        <div>
           {TERMS_ITEMS.map((item, index) => {
             const isChecked = agreed[item.id]
             const isLast = index === TERMS_ITEMS.length - 1
             return (
-              <div
-                key={item.id}
-                className={`flex items-center gap-3 px-0.5 py-[0.9375rem] ${!isLast ? 'border-b border-divider' : ''}`}
-              >
-                <button
-                  role="checkbox"
-                  aria-checked={isChecked}
-                  onClick={() => toggle(item.id)}
-                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
-                >
-                  <span
-                    className={`shrink-0 text-[1.125rem] leading-none transition-colors ${
-                      isChecked ? 'text-primary' : 'text-radio'
-                    }`}
+              <div key={item.id}>
+                <div className="flex items-start gap-3 py-[0.9375rem]">
+                  {/* 체크박스 */}
+                  <button
+                    role="checkbox"
+                    aria-checked={isChecked}
+                    onClick={() => toggle(item.id)}
+                    className="shrink-0 mt-[1px]"
                   >
-                    {isChecked ? '✓' : '○'}
-                  </span>
-                  <span className="flex flex-col gap-0.5 pl-[0.625rem]">
                     <span
-                      className={`text-md font-medium ${item.required ? 'text-ink' : 'text-ink-sub'}`}
+                      className={`flex size-6 items-center justify-center rounded-full border transition-colors ${
+                        isChecked ? 'bg-primary border-primary' : 'border-radio'
+                      }`}
                     >
+                      {isChecked && <CheckIcon />}
+                    </span>
+                  </button>
+
+                  {/* 제목 + 부제목 */}
+                  <button
+                    onClick={() => toggle(item.id)}
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <span className="text-body font-bold text-ink block tracking-[-0.019em]">
                       {item.title}
                     </span>
-                    {item.required && <span className="text-caption text-primary">(필수)</span>}
-                  </span>
-                </button>
+                    {item.subtitle && (
+                      <span className="text-sub text-ink-hint block mt-0.5">
+                        {item.subtitle}
+                      </span>
+                    )}
+                  </button>
 
-                <button
-                  className="shrink-0 text-sub text-ink-hint"
-                  onClick={() => setViewingTerm(item)}
-                >
-                  보기
-                </button>
+                  {/* (필수) + 보기 > */}
+                  <div className="shrink-0 flex items-center gap-1.5 mt-[1px]">
+                    {item.required && (
+                      <span className="text-caption font-bold text-primary">(필수)</span>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate(`/terms/${item.termId}`)
+                      }}
+                      className="flex items-center gap-0.5 text-ink-hint"
+                    >
+                      <span className="text-caption font-semibold">보기</span>
+                      <ChevronRight />
+                    </button>
+                  </div>
+                </div>
+                {!isLast && <div className="h-px bg-divider" />}
               </div>
             )
           })}
         </div>
+
+        {/* 안내 박스 */}
+        <div className="mt-4 rounded-card-lg bg-[#f1f5fb] px-4 py-[1.125rem]">
+          <p className="text-sub text-ink-sub leading-[1.66]">
+            마케팅 정보 수신과 본인확인(고유식별정보)은 가입할 때 이미 받았어요. 계좌 개설에 필요한 항목만 다시 확인합니다.
+          </p>
+        </div>
       </main>
 
-      {/* 하단 CTA */}
       <StickyFooter>
         <Button disabled={!requiredChecked} onClick={() => navigate('/account-open/identity')}>
           동의하고 계속
         </Button>
       </StickyFooter>
-
-      {/* 약관 내용 바텀시트 */}
-      {viewingTerm && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/40"
-            onClick={() => setViewingTerm(null)}
-          />
-          <div className="fixed bottom-0 left-1/2 w-full max-w-[480px] -translate-x-1/2 rounded-t-[1.25rem] bg-white px-5 pb-10 pt-5 shadow-float">
-            <div className="mb-1 flex items-center justify-between">
-              <h3 className="text-md font-bold text-ink">{viewingTerm.title}</h3>
-              <button
-                aria-label="닫기"
-                onClick={() => setViewingTerm(null)}
-                className="flex size-8 items-center justify-center text-ink-hint"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-body text-ink-sub leading-relaxed">{viewingTerm.content}</p>
-          </div>
-        </>
-      )}
     </div>
   )
 }
