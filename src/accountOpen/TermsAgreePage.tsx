@@ -137,6 +137,7 @@ function TermsAgreePage() {
                   <button
                     role="checkbox"
                     aria-checked={isChecked}
+                    aria-label={item.title}
                     onClick={() => toggle(item.id)}
                     className="shrink-0 mt-[1px]"
                   >
