@@ -66,6 +66,8 @@ function OrderTermsPage() {
 
         {/* 전체 동의 */}
         <button
+          role="checkbox"
+          aria-checked={allChecked}
           onClick={toggleAll}
           className={`w-full flex items-center gap-3 px-4 py-4 rounded-card border transition-colors ${
             allChecked ? 'bg-primary-tint border-primary' : 'bg-white border-line'
@@ -90,13 +92,18 @@ function OrderTermsPage() {
         <div className="mt-4 flex flex-col divide-y divide-divider border border-line rounded-card overflow-hidden">
           {TERMS.map((term) => (
             <div key={term.id} className="flex items-center gap-3 px-4 py-4">
-              <button onClick={() => toggle(term.id)} className="flex items-center gap-3 flex-1 text-left">
+              <button
+                role="checkbox"
+                aria-checked={agreed[term.id]}
+                onClick={() => toggle(term.id)}
+                className="flex items-center gap-3 flex-1 text-left"
+              >
                 <CheckCircleIcon checked={agreed[term.id]} />
                 <span className={`text-body ${agreed[term.id] ? 'text-ink font-medium' : 'text-ink-sub'}`}>
                   {term.label}
                 </span>
               </button>
-              <button className="shrink-0 text-ink-hint">
+              <button aria-label={`${term.label} 보기`} className="shrink-0 text-ink-hint">
                 <ChevronRightIcon />
               </button>
             </div>

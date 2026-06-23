@@ -135,7 +135,7 @@ function OrderResultPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-body font-semibold text-ink">전체 되돌리기</p>
-                  <p className="text-sub text-ink-hint">전부본자 맞추고 · 비용 발생 · 상담 연결</p>
+                  <p className="text-sub text-ink-hint">원상복구 시도 · 비용 발생 · 상담 연결</p>
                 </div>
                 <span className="text-ink-hint"><ChevronRightIcon /></span>
               </button>

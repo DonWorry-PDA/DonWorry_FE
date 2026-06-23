@@ -52,7 +52,7 @@ function OrderConfirmPage() {
         </button>
         <button
           onClick={() => navigate('/home')}
-          className="w-full text-body text-ink-sub text-center py-2"
+          className="w-full text-body text-ink-sub text-center py-3"
         >
           닫기
         </button>

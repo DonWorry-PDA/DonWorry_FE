@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
-import Button from '../common/components/Button'
 
 function WarningIcon() {
   return (
@@ -37,10 +36,10 @@ function OrderModifyPage() {
             <span className="text-sub font-semibold text-primary rounded-badge bg-primary-tint px-2 py-0.5">접수됨</span>
           </div>
           <div className="flex gap-2">
-            <button className="flex-1 h-10 rounded-btn border border-line text-body font-semibold text-ink">
+            <button className="flex-1 h-11 rounded-btn border border-line text-body font-semibold text-ink">
               정정
             </button>
-            <button className="flex-1 h-10 rounded-btn border border-line text-body font-semibold text-ink">
+            <button className="flex-1 h-11 rounded-btn border border-line text-body font-semibold text-ink">
               취소
             </button>
           </div>
@@ -69,7 +68,7 @@ function OrderModifyPage() {
             </div>
           </div>
 
-          <button className="w-full h-10 rounded-btn border border-line text-body font-semibold text-ink">
+          <button className="w-full h-11 rounded-btn border border-line text-body font-semibold text-ink">
             되팔기 주문 넣기
           </button>
         </div>

@@ -100,6 +100,8 @@ function OrderReviewPage() {
 
         {/* 확인 체크 */}
         <button
+          role="checkbox"
+          aria-checked={confirmed}
           onClick={() => setConfirmed((v) => !v)}
           className="flex items-center gap-3 mt-5 w-full text-left"
         >

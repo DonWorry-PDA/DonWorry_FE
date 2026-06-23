@@ -122,15 +122,6 @@ function OrderExecutingPage() {
         )}
       </div>
 
-      {/* 임시: 결과 페이지로 이동 버튼 (개발용) */}
-      <div className="px-5 pb-6 shrink-0">
-        <button
-          onClick={() => navigate('/order/result')}
-          className="w-full text-body text-ink-hint text-center py-2"
-        >
-          결과 확인 (개발용)
-        </button>
-      </div>
     </div>
   )
 }
