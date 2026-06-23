@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
@@ -53,6 +54,8 @@ const MOCK_REPORT: ReportItem[] = [
 ]
 
 function HomePage() {
+  const navigate = useNavigate()
+
   return (
     <div className="bg-page flex h-dvh flex-col">
       {/* User header */}
@@ -67,6 +70,7 @@ function HomePage() {
         <button
           aria-label="알림"
           className="-mr-[11px] flex size-11 shrink-0 items-center justify-center"
+          onClick={() => navigate('/notification')}
         >
           <NotificationIc className="text-ink" width={22} height={22} />
         </button>
@@ -77,14 +81,20 @@ function HomePage() {
           {/* 총 자산 */}
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <span className="text-body text-ink font-bold">총 자산 ›</span>
-              <span className="text-sub text-ink-hint">분석 보기</span>
+              <button className="text-body text-ink font-bold" onClick={() => navigate('/asset')}>총 자산 ›</button>
+              <button className="text-sub text-ink-hint" onClick={() => navigate('/asset')}>분석 보기</button>
             </div>
-            <AssetCard
-              totalAmountKrw={MOCK_ASSET.totalAmountKrw}
-              segments={MOCK_ASSET.segments}
-              monthlyIncomeKrw={MOCK_ASSET.monthlyIncomeKrw}
-            />
+            <button
+              className="w-full text-left"
+              onClick={() => navigate('/asset')}
+              aria-label="자산분석 페이지로 이동"
+            >
+              <AssetCard
+                totalAmountKrw={MOCK_ASSET.totalAmountKrw}
+                segments={MOCK_ASSET.segments}
+                monthlyIncomeKrw={MOCK_ASSET.monthlyIncomeKrw}
+              />
+            </button>
           </section>
 
           {/* 생활 안정도 */}
