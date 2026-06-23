@@ -27,6 +27,7 @@ import TermsHistoryPage from './mypage/TermsHistoryPage'
 import TermsDetailPage from './terms/TermsDetailPage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
 import AccountOpenCompletePage from './accountOpen/AccountOpenCompletePage'
+import AssetPage from './asset/AssetPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/execute', element: <PaycheckExecutePage /> },
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
   { path: '/home', element: <HomePage /> },
+  { path: '/asset', element: <AssetPage /> },
   { path: '/stability', element: <StabilityPage /> },
   { path: '/calendar', element: <CalendarPage /> },
   { path: '/mypage/consult-history', element: <ConsultHistoryPage /> },
