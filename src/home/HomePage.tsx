@@ -81,8 +81,8 @@ function HomePage() {
           {/* 총 자산 */}
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <button className="text-body text-ink font-bold" onClick={() => navigate('/asset')}>총 자산 ›</button>
-              <button className="text-sub text-ink-hint" onClick={() => navigate('/asset')}>분석 보기</button>
+              <button className="text-body text-ink font-bold min-h-11 px-2 -ml-2" onClick={() => navigate('/asset')}>총 자산 ›</button>
+              <button className="text-sub text-ink-hint min-h-11 px-2 -mr-2" onClick={() => navigate('/asset')}>분석 보기</button>
             </div>
             <button
               className="w-full text-left"
