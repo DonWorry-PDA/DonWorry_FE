@@ -8,7 +8,7 @@ function EventLegend() {
         return (
           <div key={cat} className="flex items-center gap-[3px]">
             <span className={`size-[7px] rounded-[3.5px] ${style.dot}`} />
-            <span className="text-[0.65rem] text-ink-sub">{style.label}</span>
+            <span className="text-caption text-ink-sub">{style.label}</span>
           </div>
         )
       })}

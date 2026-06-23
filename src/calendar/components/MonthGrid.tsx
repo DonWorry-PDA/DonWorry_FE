@@ -69,10 +69,12 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                     key={i}
                     className={`flex w-full flex-col items-center rounded-[5px] px-[3px] py-px leading-[1.15] ${style.badgeBg}`}
                   >
-                    <span className={`text-[0.5rem] ${style.text}`}>{e.short}</span>
-                    <span className={`text-[0.5rem] ${style.text}`}>
-                      {formatMan(e.amountKrw)}
-                    </span>
+                    <span className={`text-[0.625rem] ${style.text}`}>{e.short}</span>
+                    {e.amountKrw !== null && (
+                      <span className={`text-[0.625rem] ${style.text}`}>
+                        {formatMan(Math.abs(e.amountKrw))}
+                      </span>
+                    )}
                   </span>
                 )
               })}

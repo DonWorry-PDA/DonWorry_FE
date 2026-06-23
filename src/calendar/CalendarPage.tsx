@@ -6,27 +6,27 @@ import MonthGrid from './components/MonthGrid'
 import EventLegend from './components/EventLegend'
 import DaySchedule from './components/DaySchedule'
 import TransactionList from './components/TransactionList'
-import {
-  MOCK_EVENTS,
-  MOCK_SCHEDULES,
-  MOCK_TODAY_ISO,
-  MOCK_TRANSACTIONS,
-} from './mock/calendar'
-import {
-  formatDayTitle,
-  formatMonthTitle,
-  parseIso,
-} from './utils/monthGrid'
+import useGetCalendar from './hooks/useGetCalendar'
+import { BackArrowIc } from '../common/assets/icons'
+import { formatDayTitle, formatMonthTitle, parseIso, toIso } from './utils/monthGrid'
 
 function CalendarPage() {
   const navigate = useNavigate()
-  const today = parseIso(MOCK_TODAY_ISO)
+  const today = new Date()
+  const todayIso = toIso(today)
 
   const [view, setView] = useState({
     year: today.getFullYear(),
     month0: today.getMonth(),
   })
-  const [selectedIso, setSelectedIso] = useState(MOCK_TODAY_ISO)
+  const [selectedIso, setSelectedIso] = useState(todayIso)
+
+  // API는 1-based month → 0-based month0에 +1
+  const { data, isLoading, isError } = useGetCalendar(view.year, view.month0 + 1)
+
+  const events = data?.events ?? {}
+  const schedules = data?.schedules[selectedIso] ?? []
+  const transactions = data?.transactions[selectedIso] ?? []
 
   const handleSelect = (iso: string) => {
     setSelectedIso(iso)
@@ -39,11 +39,19 @@ function CalendarPage() {
 
   const goToday = () => {
     setView({ year: today.getFullYear(), month0: today.getMonth() })
-    setSelectedIso(MOCK_TODAY_ISO)
+    setSelectedIso(todayIso)
   }
 
-  const schedules = MOCK_SCHEDULES[selectedIso] ?? []
-  const transactions = MOCK_TRANSACTIONS[selectedIso] ?? []
+  // 연도 경계(1월↔12월)는 Date 연산으로 자동 처리
+  const shiftMonth = (delta: number) => {
+    const d = new Date(view.year, view.month0 + delta, 1)
+    setView({ year: d.getFullYear(), month0: d.getMonth() })
+    // 헤더와 하단 일정/거래내역 기준일이 어긋나지 않게 선택일도 새 달로 동기화
+    // (새 달이 이번 달이면 오늘, 아니면 그 달 1일)
+    const landsOnTodayMonth =
+      d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth()
+    setSelectedIso(landsOnTodayMonth ? todayIso : toIso(d))
+  }
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -51,29 +59,64 @@ function CalendarPage() {
 
       <main className="flex-1 overflow-y-auto px-[18px] pb-6">
         {/* 월 헤더 */}
-        <div className="flex items-center justify-between pt-1 pb-[14px]">
-          <h1 className="text-card font-bold text-ink">
-            {formatMonthTitle(view.year, view.month0)} ›
-          </h1>
-          <button onClick={goToday} className="text-body font-semibold text-primary">
-            오늘
-          </button>
+        <div className="relative flex items-center justify-center pt-1 pb-[14px]">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => shiftMonth(-1)}
+              aria-label="이전 달"
+              className="flex size-7 items-center justify-center rounded-full bg-surface-muted text-ink-sub"
+            >
+              <BackArrowIc width={14} height={14} />
+            </button>
+            <h1 className="text-card font-bold text-ink">
+              {formatMonthTitle(view.year, view.month0)}
+            </h1>
+            <button
+              onClick={() => shiftMonth(1)}
+              aria-label="다음 달"
+              className="flex size-7 items-center justify-center rounded-full bg-surface-muted text-ink-sub"
+            >
+              <BackArrowIc width={14} height={14} className="rotate-180" />
+            </button>
+          </div>
+
+          {/* 오늘 버튼: 캘린더 토(7번째) 열 위에 정렬 */}
+          <div className="pointer-events-none absolute inset-x-0 grid grid-cols-7">
+            <button
+              onClick={goToday}
+              className="pointer-events-auto col-start-7 justify-self-center text-body font-semibold text-primary"
+            >
+              오늘
+            </button>
+          </div>
         </div>
 
         <MonthGrid
           year={view.year}
           month0={view.month0}
-          todayIso={MOCK_TODAY_ISO}
+          todayIso={todayIso}
           selectedIso={selectedIso}
-          events={MOCK_EVENTS}
+          events={events}
           onSelect={handleSelect}
         />
 
         <EventLegend />
 
-        <DaySchedule title={`${formatDayTitle(selectedIso)} 일정`} items={schedules} />
-
-        <TransactionList items={transactions} />
+        {isError ? (
+          <p className="py-10 text-center text-sub text-ink-hint">
+            캘린더를 불러오지 못했어요
+          </p>
+        ) : isLoading ? (
+          <p className="py-10 text-center text-sub text-ink-hint">불러오는 중…</p>
+        ) : (
+          <>
+            <DaySchedule
+              title={`${formatDayTitle(selectedIso)} 일정`}
+              items={schedules}
+            />
+            <TransactionList items={transactions} />
+          </>
+        )}
       </main>
 
       <BottomNav />
