@@ -19,7 +19,9 @@ function AssetResult() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <div className="flex items-center justify-end gap-4 px-6 pt-12 pb-4 text-ink">
-        <NotificationIc width={24} height={24} />
+        <button aria-label="알림" onClick={() => navigate('/notification')}>
+          <NotificationIc width={24} height={24} />
+        </button>
         <NavHomeIc width={24} height={24} />
       </div>
 

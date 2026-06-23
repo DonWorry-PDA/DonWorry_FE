@@ -81,7 +81,7 @@ function StabilityPage() {
         title="생활 안정도"
         onBack={() => navigate(-1)}
         rightAction={
-          <button aria-label="알림">
+          <button aria-label="알림" onClick={() => navigate('/notification')}>
             <NotificationIc className="text-ink" width={22} height={22} />
           </button>
         }
