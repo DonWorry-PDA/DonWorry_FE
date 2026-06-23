@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import queryClient from '../common/api/queryClient'
+import { clearTokens } from '../common/api/token'
 import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
@@ -16,6 +18,13 @@ function MypagePage() {
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
 
   const profile = MOCK_USER_PROFILE
+
+  // 로그아웃: 토큰과 React Query 캐시를 모두 비워 이전 user 데이터가 남지 않게 한다
+  const handleLogout = () => {
+    clearTokens()
+    queryClient.clear()
+    setLogoutStep('done')
+  }
 
   return (
     <div className="relative flex flex-col bg-white h-dvh">
@@ -135,7 +144,7 @@ function MypagePage() {
               </button>
               <button
                 className="bg-primary flex h-[50px] flex-1 items-center justify-center rounded-[13px] text-btn font-bold text-white"
-                onClick={() => setLogoutStep('done')}
+                onClick={handleLogout}
               >
                 로그아웃
               </button>
