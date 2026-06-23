@@ -57,7 +57,11 @@ function SimResultCards({ result }: SimResultCardsProps) {
       <ResultCard label="부족분 보완 가능 기간">
         <div className="flex items-center justify-between">
           <span className="font-inter text-display font-bold text-ink">
-            {coverableMonths === 0 ? '충당 가능' : formatMonths(coverableMonths)}
+            {monthlyShortfallKrw === 0 && coverableMonths === 0
+              ? '충당 가능'
+              : coverableMonths === 0
+                ? '즉시 소진'
+                : formatMonths(coverableMonths)}
           </span>
           <Badge tone={badgeTone[status]}>{statusLabel[status]}</Badge>
         </div>

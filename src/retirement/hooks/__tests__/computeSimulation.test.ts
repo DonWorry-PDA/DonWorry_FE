@@ -45,6 +45,29 @@ describe('computeSimulation', () => {
     expect(result.status).toBe('danger')
   })
 
+  it('물가상승 있을 때 초기 충당 가능해도 자산 소진 시뮬레이션 실행', () => {
+    // 연금 = 생활비 → 현재 shortfall = 0, 물가상승 3% → 미래에 생활비 > 연금
+    const params: SimParams = {
+      ...BASE,
+      monthlyPensionKrw: 2_200_000, // 현재는 충당 가능
+      totalAssetsKrw: 10_000_000,
+    }
+    const result = computeSimulation(params, 0, 3)
+    expect(result.monthlyShortfallKrw).toBe(0) // 현재 부족 없음
+    expect(result.coverableMonths).toBeGreaterThan(0) // 물가 상승으로 미래에 소진
+  })
+
+  it('자산 없고 부족액 있으면 coverableMonths = 0 (즉시 소진)', () => {
+    const params: SimParams = {
+      ...BASE,
+      totalAssetsKrw: 0,
+      monthlyPensionKrw: 500_000,
+    }
+    const result = computeSimulation(params, 0, 0)
+    expect(result.monthlyShortfallKrw).toBeGreaterThan(0)
+    expect(result.coverableMonths).toBe(0)
+  })
+
   it('coverableMonths는 자산 소진까지 월 수', () => {
     const result = computeSimulation(
       { ...BASE, totalAssetsKrw: 12_000_000, monthlyPensionKrw: 0 },

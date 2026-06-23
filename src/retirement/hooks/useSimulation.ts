@@ -17,12 +17,17 @@ export function computeSimulation(
   )
 
   let coverableMonths = 0
-  if (monthlyShortfallKrw > 0) {
+  // monthlyInflation > 0이면 초기에 충당 가능해도 미래에 생활비가 연금을 초과할 수 있으므로 항상 실행
+  if (monthlyShortfallKrw > 0 || monthlyInflation > 0) {
     let assets = params.totalAssetsKrw
-    while (assets > 0 && coverableMonths < 1200) {
-      const inflationFactor = Math.pow(1 + monthlyInflation, coverableMonths)
-      assets = assets * (1 + monthlyReturn) - monthlyShortfallKrw * inflationFactor
-      coverableMonths++
+    for (let month = 0; month < 1200; month++) {
+      const inflationFactor = Math.pow(1 + monthlyInflation, month)
+      const draw = Math.max(0, params.monthlyLivingKrw * inflationFactor - params.monthlyPensionKrw)
+      assets = assets * (1 + monthlyReturn) - draw
+      if (assets < 0) {
+        coverableMonths = month
+        break
+      }
     }
   }
 
