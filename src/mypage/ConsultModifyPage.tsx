@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import AppBar from '../common/components/AppBar'
@@ -37,9 +37,40 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 // 공통 알림창 카드
 function AlertCard({ children }: { children: React.ReactNode }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement as HTMLElement
+    cardRef.current?.focus()
+    return () => { previousFocusRef.current?.focus() }
+  }, [])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab') return
+    const focusable = cardRef.current?.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    )
+    if (!focusable || focusable.length === 0) return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus() }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+  }
+
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center px-[30px] bg-black/50">
-      <div className="w-full max-w-[316px] rounded-[20px] bg-white px-[22px] pb-[18px] pt-[26px] shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.4)]">
+      <div
+        ref={cardRef}
+        role="alertdialog"
+        aria-modal="true"
+        tabIndex={-1}
+        onKeyDown={handleKeyDown}
+        className="w-full max-w-[316px] rounded-[20px] bg-white px-[22px] pb-[18px] pt-[26px] shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.4)] outline-none"
+      >
         {children}
       </div>
     </div>,
