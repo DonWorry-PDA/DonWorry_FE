@@ -5,6 +5,9 @@
   --color-primary: #0046ff;
   --color-primary-tint: #eef3ff;
   --color-primary-dark: #2a4a9c;
+  --color-primary-muted: #6e96ff;
+  --color-primary-faint: #e3ebff;
+  --color-primary-dim: #c7d7ff;
 
   /* ─── Text ─── */
   --color-ink: #191f28;
@@ -95,6 +98,11 @@
     padding: 0;
     margin: 0;
     font-family: var(--font-sans);
+  }
+
+  html,
+  #root {
+    height: 100%;
   }
 
   body {

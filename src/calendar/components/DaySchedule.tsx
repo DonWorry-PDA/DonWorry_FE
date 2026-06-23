@@ -18,7 +18,8 @@ function DaySchedule({ title, items }: Props) {
         <ul>
           {items.map((item) => {
             const style = CATEGORY_STYLE[item.category]
-            const amountColor = item.amountKrw < 0 ? 'text-ink' : style.text
+            const hasAmount = item.amountKrw !== null
+            const amountColor = hasAmount && item.amountKrw! < 0 ? 'text-ink' : style.text
             return (
               <li
                 key={item.id}
@@ -29,12 +30,19 @@ function DaySchedule({ title, items }: Props) {
                 >
                   <span className={`text-body ${style.text}`}>₩</span>
                 </span>
-                <span className="min-w-0 flex-1 truncate text-body text-ink">
-                  {item.title}
-                </span>
-                <span className={`text-body font-bold ${amountColor}`}>
-                  {formatSignedWon(item.amountKrw)}
-                </span>
+                <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                  <span className="truncate text-body text-ink">{item.title}</span>
+                  {item.estimated && (
+                    <span className="shrink-0 rounded-badge bg-surface-muted px-1.5 py-0.5 text-caption text-ink-sub">
+                      예상
+                    </span>
+                  )}
+                </div>
+                {hasAmount && (
+                  <span className={`text-body font-bold ${amountColor}`}>
+                    {formatSignedWon(item.amountKrw!)}
+                  </span>
+                )}
               </li>
             )
           })}

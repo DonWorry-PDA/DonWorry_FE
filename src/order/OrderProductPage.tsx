@@ -1,0 +1,129 @@
+import { useNavigate } from 'react-router-dom'
+import AppBar from '../common/components/AppBar'
+import Button from '../common/components/Button'
+import InfoBox from '../common/components/InfoBox'
+
+function ChevronRightIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function WarningIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 6v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M6.8 2.6a1.4 1.4 0 0 1 2.4 0l4.9 8.4A1.4 1.4 0 0 1 12.9 13H3.1a1.4 1.4 0 0 1-1.2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function DocIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M6 7h8M6 10h8M6 13h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function OrderProductPage() {
+  const navigate = useNavigate()
+
+  const product = {
+    name: 'OO 월지급식 인컴 ETF',
+    type: '국내 상장 ETF · 채권혼합',
+    riskLevel: '4등급 · 보통위험',
+    fee: '연 0.39%',
+    distributionCycle: '매월',
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <AppBar title="상품 설명" onBack={() => navigate(-1)} />
+
+      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6">
+        <h2 className="text-heading font-bold text-ink mb-1">
+          사기 전에
+          <br />
+          꼭 확인해 주세요
+        </h2>
+
+        <div className="mt-5 rounded-card border border-line divide-y divide-divider">
+          <div className="px-4 py-3">
+            <p className="text-sub text-ink-hint mb-0.5">상품명</p>
+            <p className="text-body font-semibold text-ink">{product.name}</p>
+          </div>
+          <div className="px-4 py-3 flex justify-between items-center">
+            <p className="text-body text-ink-sub">유형</p>
+            <p className="text-body font-medium text-ink">{product.type}</p>
+          </div>
+          <div className="px-4 py-3 flex justify-between items-center">
+            <p className="text-body text-ink-sub">위험등급</p>
+            <p className="text-body font-semibold text-warning">{product.riskLevel}</p>
+          </div>
+          <div className="px-4 py-3 flex justify-between items-center">
+            <p className="text-body text-ink-sub">총보수</p>
+            <p className="text-body font-medium text-ink">{product.fee}</p>
+          </div>
+          <div className="px-4 py-3 flex justify-between items-center">
+            <p className="text-body text-ink-sub">분배 주기</p>
+            <p className="text-body font-medium text-ink">{product.distributionCycle}</p>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-btn bg-warning-bg border border-warning/20 px-4 py-3 flex gap-3">
+          <span className="shrink-0 text-warning mt-0.5">
+            <WarningIcon />
+          </span>
+          <div>
+            <p className="text-body font-semibold text-warning-text mb-0.5">원금을 잃을 수 있어요</p>
+            <p className="text-sub text-warning-text/80">
+              예금과 달리 시세에 따라 평가금이 줄 수 있고, 매달 받는 분배금도 정해진 게 아니라 달라질 수 있어요.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3">
+          <button className="flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left">
+            <span className="shrink-0 text-ink-sub">
+              <DocIcon />
+            </span>
+            <div className="flex-1">
+              <p className="text-body font-medium text-ink">투자설명서</p>
+              <p className="text-sub text-ink-hint">운용·위험·비용 상세</p>
+            </div>
+            <span className="text-ink-hint">
+              <ChevronRightIcon />
+            </span>
+          </button>
+
+          <button className="flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left">
+            <span className="shrink-0 text-ink-sub">
+              <DocIcon />
+            </span>
+            <div className="flex-1">
+              <p className="text-body font-medium text-ink">핵심상품설명서</p>
+              <p className="text-sub text-ink-hint">꼭 알아야 할 핵심만</p>
+            </div>
+            <span className="text-ink-hint">
+              <ChevronRightIcon />
+            </span>
+          </button>
+        </div>
+
+        <InfoBox className="mt-4">
+          적합성 확인은 앞서 고르신 투자 성향과 이 상품의 위험등급(4등급)을 맞춰보는 절차예요.
+        </InfoBox>
+      </div>
+
+      <div className="px-5 pb-4 shrink-0">
+        <Button onClick={() => navigate('/order/terms')}>이해했어요 · 계속하기</Button>
+      </div>
+    </div>
+  )
+}
+
+export default OrderProductPage
