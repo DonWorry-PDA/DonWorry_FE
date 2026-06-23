@@ -44,6 +44,8 @@ function MenuIcon({ menuKey, tone }: { menuKey: ManageMenuKey; tone: MenuIconTon
   return (
     <span className={`rounded-icon flex size-8 items-center justify-center ${TONE_BOX[tone]}`}>
       <svg
+        aria-hidden="true"
+        focusable="false"
         width={18}
         height={18}
         viewBox="0 0 24 24"

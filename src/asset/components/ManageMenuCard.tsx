@@ -16,9 +16,11 @@ const DOT_COLOR: Record<NonNullable<ManageMenu['statusDot']>, string> = {
 function ManageMenuCard({ menu, onClick }: Props) {
   const { key, title, caption, iconTone, progressPct, statusDot, statusText, highlighted, isNew } =
     menu
+  const safeProgressPct = progressPct == null ? null : Math.min(100, Math.max(0, progressPct))
 
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`rounded-card-lg shadow-card flex h-full flex-col items-start bg-white p-4 text-left ${
         highlighted ? 'border-primary border' : 'border border-transparent'
@@ -40,12 +42,12 @@ function ManageMenuCard({ menu, onClick }: Props) {
 
       <p className="text-caption text-ink-hint mt-1 flex-1 whitespace-pre-line">{caption}</p>
 
-      {progressPct != null && (
+      {safeProgressPct != null && (
         <div className="mt-3 w-full">
           <div className="bg-track h-1.5 overflow-hidden rounded-full">
-            <div className="bg-primary h-full rounded-full" style={{ width: `${progressPct}%` }} />
+            <div className="bg-primary h-full rounded-full" style={{ width: `${safeProgressPct}%` }} />
           </div>
-          <p className="text-caption text-primary mt-1.5 font-bold">{progressPct}% 달성</p>
+          <p className="text-caption text-primary mt-1.5 font-bold">{safeProgressPct}% 달성</p>
         </div>
       )}
     </button>

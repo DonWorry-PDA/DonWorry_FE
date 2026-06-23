@@ -44,27 +44,33 @@ function AssetSummaryCard({
         )}
       </div>
 
-      {/* 분포 막대 */}
-      <div className="mt-4 flex h-2 overflow-hidden rounded-full">
-        {allocation.map(({ label, pct }, i) => (
-          <div
-            key={label}
-            style={{ width: `${pct}%`, backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
-          />
-        ))}
-      </div>
-      {/* 범례 */}
-      <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
-        {allocation.map(({ label, pct }, i) => (
-          <span key={label} className="text-caption text-ink-sub flex items-center gap-1">
-            <span
-              className="size-1.5 rounded-full"
-              style={{ backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
-            />
-            {label} {pct}%
-          </span>
-        ))}
-      </div>
+      {allocation.length === 0 ? (
+        <p className="text-caption text-ink-hint mt-4">자산 분포 데이터가 없습니다</p>
+      ) : (
+        <>
+          {/* 분포 막대 */}
+          <div className="mt-4 flex h-2 overflow-hidden rounded-full">
+            {allocation.map(({ label, pct }, i) => (
+              <div
+                key={`${label}-${i}`}
+                style={{ width: `${pct}%`, backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
+              />
+            ))}
+          </div>
+          {/* 범례 */}
+          <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
+            {allocation.map(({ label, pct }, i) => (
+              <span key={`${label}-${i}`} className="text-caption text-ink-sub flex items-center gap-1">
+                <span
+                  className="size-1.5 rounded-full"
+                  style={{ backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
+                />
+                {label} {pct}%
+              </span>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* 이번 달 수입/지출 */}
       <div className="border-line mt-4 flex border-t pt-4">
