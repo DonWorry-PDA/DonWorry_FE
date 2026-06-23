@@ -110,6 +110,7 @@ function DateTimePickerSheet({
             {/* 헤더 */}
             <div className="flex items-center justify-between pb-[0.875rem] pt-5">
               <button
+                aria-label="이전 달"
                 className="flex size-[34px] items-center justify-center"
                 onClick={prevMonth}
               >
@@ -127,6 +128,7 @@ function DateTimePickerSheet({
                 {viewYear}년 {viewMonth}월
               </span>
               <button
+                aria-label="다음 달"
                 className="flex size-[34px] items-center justify-center"
                 onClick={nextMonth}
               >
@@ -221,6 +223,7 @@ function DateTimePickerSheet({
             {/* 뒤로 + 선택된 날짜 */}
             <div className="flex items-center gap-2 pb-4 pt-2">
               <button
+                aria-label="날짜 선택으로 돌아가기"
                 className="flex size-8 items-center justify-center"
                 onClick={() => setStep('date')}
               >
