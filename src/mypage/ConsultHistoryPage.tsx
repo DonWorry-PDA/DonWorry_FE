@@ -98,6 +98,14 @@ function ConsultHistoryCard({ record, navigate }: { record: ConsultRecord; navig
           {record.actionLabel}
         </button>
       )}
+      {record.status === 'reserved' && (
+        <button
+          className="text-sub font-semibold text-ink-sub w-full min-h-11 text-center"
+          onClick={() => navigate(`/mypage/consult-history/${record.id}/modify`)}
+        >
+          예약 변경·취소
+        </button>
+      )}
     </div>
   )
 }

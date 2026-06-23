@@ -28,6 +28,7 @@ export type ConsultRecord = {
   status: ConsultStatus
   dateTime: string
   location: string
+  counselor?: string
   actionLabel?: string
   actionPath?: string
 }
