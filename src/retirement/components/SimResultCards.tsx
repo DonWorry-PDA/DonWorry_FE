@@ -2,10 +2,6 @@ import Badge from '@/common/components/Badge'
 import { formatKrw } from '@/common/utils/formatKrw'
 import type { SimResult } from '../types/simulation'
 
-interface SimResultCardsProps {
-  result: SimResult
-}
-
 function formatMonths(months: number): string {
   const years = Math.floor(months / 12)
   const m = months % 12
@@ -14,10 +10,10 @@ function formatMonths(months: number): string {
   return `약 ${years}년 ${m}개월`
 }
 
-const coverageValueClass: Record<SimResult['status'], string> = {
-  stable: 'text-success',
-  warning: 'text-warning',
-  danger: 'text-danger',
+const FILL_COLOR: Record<SimResult['status'], string> = {
+  stable: 'var(--color-success)',
+  warning: 'var(--color-warning)',
+  danger: 'var(--color-danger)',
 }
 
 const badgeTone: Record<SimResult['status'], 'success' | 'warning' | 'danger'> = {
@@ -32,54 +28,138 @@ const statusLabel: Record<SimResult['status'], string> = {
   danger: '개선 필요',
 }
 
-function SimResultCards({ result }: SimResultCardsProps) {
-  const { coverageRatePct, monthlyShortfallKrw, coverableMonths, status } = result
+const CX = 122
+const CY = 130
+const R = 100
+const STROKE_WIDTH = 14
+const CIRCUMFERENCE = Math.PI * R
+const TRACK_PATH = `M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}`
+
+function CoverageGauge({ pct, status }: { pct: number; status: SimResult['status'] }) {
+  const fillColor = FILL_COLOR[status]
+  const dashOffset = CIRCUMFERENCE * (1 - Math.min(pct, 100) / 100)
 
   return (
-    <div className="px-5">
-      <p className="mb-3 text-sub font-semibold text-ink-hint">이 조건이라면</p>
-
-      {/* 상단 두 카드 */}
-      <div className="mb-3 grid grid-cols-2 gap-3">
-        <ResultCard label="생활비 충당률">
-          <span className={`font-inter text-display font-bold ${coverageValueClass[status]}`}>
-            {coverageRatePct}%
-          </span>
-        </ResultCard>
-        <ResultCard label="월 부족액">
-          <span className="font-inter text-display font-bold text-ink">
-            {monthlyShortfallKrw === 0 ? '없음' : formatKrw(monthlyShortfallKrw)}
-          </span>
-        </ResultCard>
-      </div>
-
-      {/* 하단 넓은 카드 */}
-      <ResultCard label="부족분 보완 가능 기간">
-        <div className="flex items-center justify-between">
-          <span className="font-inter text-display font-bold text-ink">
-            {monthlyShortfallKrw === 0 && coverableMonths === 0
-              ? '충당 가능'
-              : coverableMonths === 0
-                ? '즉시 소진'
-                : formatMonths(coverableMonths)}
-          </span>
-          <Badge tone={badgeTone[status]}>{statusLabel[status]}</Badge>
-        </div>
-      </ResultCard>
+    <div className="mx-auto w-full max-w-[260px]">
+      <svg
+        viewBox="0 0 244 156"
+        overflow="visible"
+        fill="none"
+        aria-label={`생활비 충당률 ${pct}%`}
+        className="w-full"
+      >
+        {/* 트랙 */}
+        <path
+          d={TRACK_PATH}
+          stroke="#EDF0F4"
+          strokeWidth={STROKE_WIDTH}
+          strokeLinecap="round"
+        />
+        {/* 채움 — strokeDashoffset 애니메이션 */}
+        <path
+          d={TRACK_PATH}
+          strokeWidth={STROKE_WIDTH}
+          strokeLinecap="round"
+          strokeDasharray={`${CIRCUMFERENCE}`}
+          style={{
+            stroke: fillColor,
+            strokeDashoffset: dashOffset,
+            transition:
+              'stroke-dashoffset 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s ease',
+          }}
+        />
+        {/* 퍼센트 숫자 */}
+        <text
+          x={CX}
+          y={86}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontFamily="Inter, 'Noto Sans KR', sans-serif"
+          fontWeight="800"
+          fontSize="30"
+          style={{ fill: fillColor, transition: 'fill 0.3s ease' }}
+        >
+          {pct}%
+        </text>
+        {/* 레이블 */}
+        <text
+          x={CX}
+          y={111}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontFamily="'Noto Sans KR', sans-serif"
+          fontWeight="400"
+          fontSize="12"
+          fill="#98A2B0"
+        >
+          생활비 충당률
+        </text>
+        {/* 끝 레이블 */}
+        <text
+          x={CX - R}
+          y={148}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontFamily="'Noto Sans KR', sans-serif"
+          fontWeight="400"
+          fontSize="12"
+          fill="#8B95A1"
+        >
+          0%
+        </text>
+        <text
+          x={CX + R}
+          y={148}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontFamily="'Noto Sans KR', sans-serif"
+          fontWeight="400"
+          fontSize="12"
+          fill="#8B95A1"
+        >
+          목표 100%
+        </text>
+      </svg>
     </div>
   )
 }
 
-function ResultCard({
-  label,
-  children,
-}: {
-  label: string
-  children: React.ReactNode
-}) {
+function SimResultCards({ result }: { result: SimResult }) {
+  const { coverageRatePct, monthlyShortfallKrw, coverableMonths, status } = result
+
+  const durationText =
+    monthlyShortfallKrw === 0 && coverableMonths === 0
+      ? '충당 가능'
+      : coverableMonths === 0
+        ? '즉시 소진'
+        : formatMonths(coverableMonths)
+
   return (
-    <div className="rounded-card border border-line bg-white px-4 py-4">
-      <p className="mb-2 text-sub text-ink-hint">{label}</p>
+    <div className="px-5 pb-2">
+      <CoverageGauge pct={coverageRatePct} status={status} />
+
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <MetricCard label="월 부족액">
+          <span className="font-inter text-card font-bold text-ink">
+            {monthlyShortfallKrw === 0 ? '없음' : formatKrw(monthlyShortfallKrw)}
+          </span>
+        </MetricCard>
+        <MetricCard label="생활비 지속 가능 기간">
+          <span className="font-inter text-card font-bold text-ink">{durationText}</span>
+        </MetricCard>
+      </div>
+
+      <div className="mt-3 flex justify-end">
+        <Badge tone={badgeTone[status]}>{statusLabel[status]}</Badge>
+      </div>
+    </div>
+  )
+}
+
+function MetricCard({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-card-lg bg-surface px-4 py-4">
+      <p className="mb-1.5 text-sub text-ink-hint">{label}</p>
       {children}
     </div>
   )
