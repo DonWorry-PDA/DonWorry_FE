@@ -1,5 +1,4 @@
 export type LoginRequest = {
-  userId: number
   pin: string
 }
 

@@ -6,7 +6,7 @@ import { UsePinInputReturn } from '../types/login'
 
 const MAX_ATTEMPTS = 5
 
-export function usePinInput(userId: number): UsePinInputReturn {
+export function usePinInput(): UsePinInputReturn {
   const navigate = useNavigate()
   const { mutate: postLogin, isPending } = usePostLogin()
 
@@ -35,7 +35,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
 
     setPin('')
     postLogin(
-      { userId, pin: next },
+      { pin: next },
       {
         onSuccess: ({ onboardingCompleted }) => {
           navigate(onboardingCompleted ? '/home' : '/onboarding')

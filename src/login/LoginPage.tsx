@@ -3,8 +3,7 @@ import PinKeypad from './components/PinKeypad'
 import { usePinInput } from './hooks/usePinInput'
 
 function LoginPage() {
-  // TODO: userId는 앱 전역 인증 컨텍스트에서 가져오도록 교체
-  const { pin, attempts, isError, isLocked, appendDigit, deleteDigit, reset } = usePinInput(1)
+  const { pin, attempts, isError, isLocked, appendDigit, deleteDigit, reset } = usePinInput()
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
