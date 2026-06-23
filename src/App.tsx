@@ -27,6 +27,14 @@ import TermsHistoryPage from './mypage/TermsHistoryPage'
 import TermsDetailPage from './terms/TermsDetailPage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
 import AccountOpenCompletePage from './accountOpen/AccountOpenCompletePage'
+import OrderProductPage from './order/OrderProductPage'
+import OrderTermsPage from './order/OrderTermsPage'
+import OrderReviewPage from './order/OrderReviewPage'
+import OrderExecutingPage from './order/OrderExecutingPage'
+import OrderResultPage from './order/OrderResultPage'
+import OrderCompletePage from './order/OrderCompletePage'
+import OrderModifyPage from './order/OrderModifyPage'
+import OrderConfirmPage from './order/OrderConfirmPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -57,6 +65,14 @@ const router = createBrowserRouter([
   { path: '/account-open', element: <TermsAgreePage /> },
   { path: '/account-open/identity', element: <IdentityVerifyPage /> },
   { path: '/account-open/complete', element: <AccountOpenCompletePage /> },
+  { path: '/order/product', element: <OrderProductPage /> },
+  { path: '/order/terms', element: <OrderTermsPage /> },
+  { path: '/order/review', element: <OrderReviewPage /> },
+  { path: '/order/executing', element: <OrderExecutingPage /> },
+  { path: '/order/result', element: <OrderResultPage /> },
+  { path: '/order/complete', element: <OrderCompletePage /> },
+  { path: '/order/modify', element: <OrderModifyPage /> },
+  { path: '/order/confirm', element: <OrderConfirmPage /> },
 ])
 
 function App() {
