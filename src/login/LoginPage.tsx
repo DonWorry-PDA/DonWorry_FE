@@ -13,8 +13,6 @@ function LoginPage() {
         <p className="px-6 pt-12 text-center text-sub text-ink-sub">신한 은퇴솔루션</p>
         <div className="mt-10 px-6 text-center">
           <h1 className="text-heading font-bold text-ink">
-            김영수님,
-            <br />
             다시 만나서 반가워요
           </h1>
           <p className="mt-2 text-body text-ink-sub">간편 비밀번호 6자리를 입력해주세요.</p>
