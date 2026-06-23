@@ -10,12 +10,8 @@ type AlertState = 'save-success' | 'cancel-confirm' | 'cancel-done' | null
 function parseDateTime(dateTimeStr: string) {
   const [datePart, time24] = dateTimeStr.split(' ')
   const [year, month, day] = datePart.split('.').map(Number)
-  const [hour, minute] = time24.split(':').map(Number)
-
   const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][new Date(year, month - 1, day).getDay()]
-  const isPM = hour >= 12
-  const displayHour = hour === 12 ? 12 : hour % 12
-  const displayTime = `${isPM ? '오후' : '오전'} ${displayHour}:${String(minute).padStart(2, '0')}`
+  const displayTime = formatTime24(time24)
 
   return {
     date: new Date(year, month - 1, day),

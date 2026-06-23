@@ -22,6 +22,12 @@ function ProfileEditPage() {
     String(profile.monthlyTargetKrw / 10_000),
   )
 
+  const ageNum = Number(age)
+  const monthlyNum = Number(monthlyTarget)
+  const isValid =
+    /^\d+$/.test(age) && ageNum >= 1 && ageNum <= 120 &&
+    /^\d+$/.test(monthlyTarget) && monthlyNum >= 0
+
   return (
     <div className="flex flex-col bg-white h-dvh">
       <AppBar title="프로필 수정" onBack={() => navigate(-1)} />
@@ -138,7 +144,7 @@ function ProfileEditPage() {
       </main>
 
       <StickyFooter>
-        <Button onClick={() => navigate(-1)}>저장</Button>
+        <Button disabled={!isValid} onClick={() => navigate(-1)}>저장</Button>
       </StickyFooter>
     </div>
   )
