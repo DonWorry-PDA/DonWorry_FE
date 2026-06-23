@@ -33,6 +33,7 @@ const ITEM_STATUS_CLASS: Record<StabilityStatus, string> = {
 function StabilityPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError, error, refetch } = useGetLifeStability()
+  const isEmptyResult = isAxiosError(error) && error.response?.status === 404
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -57,11 +58,11 @@ function StabilityPage() {
         ) : isError || !data ? (
           <StatusMessage
             text={
-              isAxiosError(error) && error.response?.status === 404
+              isEmptyResult
                 ? '아직 생활 안정도 결과가 없어요.\n자산을 연결하면 분석해 드려요.'
                 : '생활 안정도를 불러오지 못했어요.'
             }
-            onRetry={() => refetch()}
+            onRetry={isEmptyResult ? undefined : () => refetch()}
           />
         ) : (
           <>
@@ -113,7 +114,11 @@ function StabilityPage() {
 
 function StatusMessage({ text, onRetry }: { text: string; onRetry?: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 px-[22px] pt-[120px]">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center gap-4 px-[22px] pt-[120px]"
+    >
       <p className="text-body text-ink-sub text-center leading-[1.6] whitespace-pre-line">{text}</p>
       {onRetry && (
         <button

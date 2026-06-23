@@ -25,14 +25,15 @@ export type LifeStabilityMetrics = {
   riskAssetDependencyRate: number
 }
 
-/** 각 지표 상태는 한글 라벨로 내려온다: '안정' | '보완 필요' | '개선 필요' */
+export type LifeStabilityIndicatorLabel = '안정' | '보완 필요' | '개선 필요'
+
 export type LifeStabilityIndicators = {
-  cashflowStatus: string
-  essentialExpenseStatus: string
-  medicalPreparednessStatus: string
-  liquidityStatus: string
-  debtBurdenStatus: string
-  riskAssetDependencyStatus: string
+  cashflowStatus: LifeStabilityIndicatorLabel
+  essentialExpenseStatus: LifeStabilityIndicatorLabel
+  medicalPreparednessStatus: LifeStabilityIndicatorLabel
+  liquidityStatus: LifeStabilityIndicatorLabel
+  debtBurdenStatus: LifeStabilityIndicatorLabel
+  riskAssetDependencyStatus: LifeStabilityIndicatorLabel
 }
 
 export type LifeStabilityResponse = {
