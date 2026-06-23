@@ -122,6 +122,16 @@ function OrderExecutingPage() {
         )}
       </div>
 
+      {doneCount === ITEMS.length && (
+        <div className="px-5 pb-4 shrink-0">
+          <button
+            onClick={() => navigate('/order/result')}
+            className="w-full h-[54px] rounded-btn bg-primary text-white text-btn font-bold"
+          >
+            결과 확인
+          </button>
+        </div>
+      )}
     </div>
   )
 }
