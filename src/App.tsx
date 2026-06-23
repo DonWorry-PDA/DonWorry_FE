@@ -30,6 +30,7 @@ import TermsHistoryPage from './mypage/TermsHistoryPage'
 import TermsDetailPage from './terms/TermsDetailPage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
 import AccountOpenCompletePage from './accountOpen/AccountOpenCompletePage'
+import PensionDeferPage from './pension/PensionDeferPage'
 import OrderProductPage from './order/OrderProductPage'
 import OrderTermsPage from './order/OrderTermsPage'
 import OrderReviewPage from './order/OrderReviewPage'
@@ -81,6 +82,7 @@ const router = createBrowserRouter([
   { path: '/order/complete', element: <OrderCompletePage /> },
   { path: '/order/modify', element: <OrderModifyPage /> },
   { path: '/order/confirm', element: <OrderConfirmPage /> },
+  { path: '/pension/defer', element: <PensionDeferPage /> },
 ])
 
 function App() {
