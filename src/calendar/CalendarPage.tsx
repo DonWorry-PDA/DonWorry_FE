@@ -44,10 +44,13 @@ function CalendarPage() {
 
   // 연도 경계(1월↔12월)는 Date 연산으로 자동 처리
   const shiftMonth = (delta: number) => {
-    setView((v) => {
-      const d = new Date(v.year, v.month0 + delta, 1)
-      return { year: d.getFullYear(), month0: d.getMonth() }
-    })
+    const d = new Date(view.year, view.month0 + delta, 1)
+    setView({ year: d.getFullYear(), month0: d.getMonth() })
+    // 헤더와 하단 일정/거래내역 기준일이 어긋나지 않게 선택일도 새 달로 동기화
+    // (새 달이 이번 달이면 오늘, 아니면 그 달 1일)
+    const landsOnTodayMonth =
+      d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth()
+    setSelectedIso(landsOnTodayMonth ? todayIso : toIso(d))
   }
 
   return (
