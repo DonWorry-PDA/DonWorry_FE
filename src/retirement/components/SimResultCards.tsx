@@ -59,9 +59,7 @@ function SimResultCards({ result }: SimResultCardsProps) {
           <span className="font-inter text-display font-bold text-ink">
             {coverableMonths === 0 ? '충당 가능' : formatMonths(coverableMonths)}
           </span>
-          {status !== 'stable' && (
-            <Badge tone={badgeTone[status]}>{statusLabel[status]}</Badge>
-          )}
+          <Badge tone={badgeTone[status]}>{statusLabel[status]}</Badge>
         </div>
       </ResultCard>
     </div>
