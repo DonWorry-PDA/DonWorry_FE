@@ -40,6 +40,7 @@ import OrderCompletePage from './order/OrderCompletePage'
 import OrderModifyPage from './order/OrderModifyPage'
 import OrderConfirmPage from './order/OrderConfirmPage'
 import AssetPage from './asset/AssetPage'
+import RetirementSimulationPage from './retirement/RetirementSimulationPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
@@ -83,6 +84,7 @@ const router = createBrowserRouter([
   { path: '/order/modify', element: <OrderModifyPage /> },
   { path: '/order/confirm', element: <OrderConfirmPage /> },
   { path: '/pension/defer', element: <PensionDeferPage /> },
+  { path: '/retirement-simulation', element: <RetirementSimulationPage /> },
 ])
 
 function App() {
