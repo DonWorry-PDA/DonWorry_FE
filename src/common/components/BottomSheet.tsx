@@ -13,6 +13,20 @@ function BottomSheet({ open, onClose, children }: BottomSheetProps) {
   const [dragOffset, setDragOffset] = useState(0)
   const startYRef = useRef(0)
   const isDragging = useRef(false)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (open) {
+      previousFocusRef.current = document.activeElement as HTMLElement
+    } else {
+      previousFocusRef.current?.focus()
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (visible) sheetRef.current?.focus()
+  }, [visible])
 
   useEffect(() => {
     if (open) {
@@ -57,7 +71,11 @@ function BottomSheet({ open, onClose, children }: BottomSheetProps) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className={`w-full max-w-[480px] rounded-t-[22px] bg-white shadow-float transition-transform duration-300 ${
+        ref={sheetRef}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
+        className={`w-full max-w-[480px] rounded-t-[22px] bg-white shadow-float transition-transform duration-300 outline-none ${
           visible ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={
@@ -65,6 +83,7 @@ function BottomSheet({ open, onClose, children }: BottomSheetProps) {
             ? { transform: `translateY(${dragOffset}px)`, transition: 'none' }
             : undefined
         }
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
