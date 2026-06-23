@@ -25,7 +25,7 @@ function isAvailable(year: number, month: number, day: number): boolean {
 export function formatTime24(time24: string): string {
   const [h, m] = time24.split(':').map(Number)
   const isPM = h >= 12
-  const hour = h === 12 ? 12 : h % 12
+  const hour = h % 12 || 12
   return `${isPM ? '오후' : '오전'} ${hour}:${String(m).padStart(2, '0')}`
 }
 
