@@ -24,7 +24,7 @@ function EditParamsSheet({ open, params, onClose, onConfirm }: EditParamsSheetPr
       setLiving(String(params.monthlyLivingKrw / 10_000))
       setPension(String(params.monthlyPensionKrw / 10_000))
     }
-  }, [open])
+  }, [open, params])
 
   const handleConfirm = () => {
     const next: SimParams = {

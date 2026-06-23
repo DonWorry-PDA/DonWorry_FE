@@ -26,7 +26,7 @@ function Slider({ label, value, min, max, step, onChange }: SliderProps) {
         onChange={(e) => onChange(Number(e.target.value))}
         className="h-[3px] w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-card"
         style={{
-          background: `linear-gradient(to right, #0046FF ${pct}%, #EDF0F4 ${pct}%)`,
+          background: `linear-gradient(to right, var(--color-primary) ${pct}%, var(--color-track) ${pct}%)`,
         }}
         aria-label={label}
       />
