@@ -1,0 +1,64 @@
+import type { ManageMenuKey, MenuIconTone } from '../types/asset'
+
+const TONE_BOX: Record<MenuIconTone, string> = {
+  primary: 'bg-primary-tint text-primary',
+  warning: 'bg-warning-bg text-warning',
+  muted: 'bg-primary-tint text-ink-sub',
+}
+
+const PATHS: Record<ManageMenuKey, React.ReactNode> = {
+  // 지갑
+  salaryMaking: (
+    <>
+      <rect x="3" y="6" width="18" height="13" rx="2.5" />
+      <path d="M3 10h18" />
+      <circle cx="16.5" cy="13.5" r="1.1" fill="currentColor" stroke="none" />
+    </>
+  ),
+  // 계기판
+  lifeStability: (
+    <>
+      <path d="M4 17a8 8 0 0 1 16 0" />
+      <path d="M12 17l4-4" />
+      <circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none" />
+    </>
+  ),
+  // 돋보기
+  investmentCheck: (
+    <>
+      <circle cx="11" cy="11" r="6" />
+      <path d="M20 20l-4.5-4.5" />
+    </>
+  ),
+  // 문서
+  monthlyReport: (
+    <>
+      <path d="M6 3.5h7l5 5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
+      <path d="M13 3.5V9h5" />
+      <path d="M8.5 13h7M8.5 16.5h5" />
+    </>
+  ),
+}
+
+function MenuIcon({ menuKey, tone }: { menuKey: ManageMenuKey; tone: MenuIconTone }) {
+  return (
+    <span className={`rounded-icon flex size-8 items-center justify-center ${TONE_BOX[tone]}`}>
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        width={18}
+        height={18}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.7}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {PATHS[menuKey]}
+      </svg>
+    </span>
+  )
+}
+
+export default MenuIcon
