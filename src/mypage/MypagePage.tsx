@@ -19,7 +19,7 @@ function MypagePage() {
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
 
   const profile = MOCK_USER_PROFILE
-  const { mutate: logout } = usePostLogout()
+  const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
 
   // 로그아웃: API 호출 후 성공·실패 모두 클라이언트 토큰·캐시를 정리한다
   const handleLogout = () => {
@@ -149,10 +149,11 @@ function MypagePage() {
                 취소
               </button>
               <button
-                className="bg-primary flex h-[50px] flex-1 items-center justify-center rounded-[13px] text-btn font-bold text-white"
+                className="bg-primary flex h-[50px] flex-1 items-center justify-center rounded-[13px] text-btn font-bold text-white disabled:opacity-50"
                 onClick={handleLogout}
+                disabled={isLoggingOut}
               >
-                로그아웃
+                {isLoggingOut ? '처리 중…' : '로그아웃'}
               </button>
             </div>
           </div>
