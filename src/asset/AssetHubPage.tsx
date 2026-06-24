@@ -1,44 +1,31 @@
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc } from '../common/assets/icons'
-import useGetLifeStability from '../stability/hooks/useGetLifeStability'
-import type { StabilityStatus } from '../stability/types/stability'
+import useGetAssetHub from './hooks/useGetAssetHub'
+import type { AssetHubResponse, LifeStabilityGrade } from './types/assetHub'
 import AssetSummaryCard from './components/AssetSummaryCard'
 import ManageMenuCard from './components/ManageMenuCard'
 import type { AssetHubSummary, ManageMenu } from './types/asset'
+import type { StabilityStatus } from '../stability/types/stability'
 
-const MOCK_SUMMARY: AssetHubSummary = {
-  totalAmountKrw: 251_200_000,
-  changeAmountKrw: 1_200_000,
-  changeDirection: 'UP',
-  allocation: [
-    { label: '연금', pct: 60 },
-    { label: '예금', pct: 20 },
-    { label: 'ETF', pct: 12 },
-    { label: '주식', pct: 8 },
-  ],
-  monthlyIncomeKrw: 1_300_000,
-  monthlyExpenseKrw: 2_180_000,
-}
-
-const MOCK_MENUS: ManageMenu[] = [
+// API로 채우지 않는 메뉴 메타데이터(제목/경로/아이콘/기본 캡션).
+// salaryMaking·lifeStability·retirementSim은 asset/hub 응답으로 덮어쓰고,
+// investmentCheck(#2)·pensionDefer(#5)·monthlyReport(#6)은 BE 미구현이라 정적 캡션을 유지한다.
+const MENU_BASE: ManageMenu[] = [
   {
     key: 'salaryMaking',
     title: '월급 만들기',
-    caption: '목표 220만 중 130만',
+    caption: '목표 대비 현재 현금흐름',
     path: '/paycheck-plan/assets',
     iconTone: 'primary',
-    progressPct: 59,
     highlighted: true,
   },
   {
     key: 'lifeStability',
     title: '생활 안정도',
-    caption: '충당률 59%',
+    caption: '생활비 충당률',
     path: '/stability',
-    iconTone: 'warning',
-    statusDot: 'warning',
-    statusText: '주의',
+    iconTone: 'muted',
   },
   {
     key: 'investmentCheck',
@@ -84,31 +71,68 @@ const STATUS_ICON_TONE: Record<StabilityStatus, ManageMenu['iconTone']> = {
   danger: 'warning',
 }
 
-function AssetHubPage() {
-  const navigate = useNavigate()
-  const { data: stability, isLoading: isStabilityLoading } = useGetLifeStability()
+const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
+  if (grade === 'STABLE') return 'stable'
+  if (grade === 'NEED_COMPLEMENT') return 'warning'
+  return 'danger'
+}
 
-  const menus: ManageMenu[] = MOCK_MENUS.map((menu) => {
-    if (menu.key !== 'lifeStability') return menu
-    if (isStabilityLoading) {
-      return { ...menu, caption: '충당률 계산 중', statusDot: undefined, statusText: undefined }
+const toMan = (krw: number) => Math.round(krw / 10_000).toLocaleString('ko-KR')
+
+const toSummary = (hub: AssetHubResponse): AssetHubSummary => ({
+  totalAmountKrw: hub.totalAsset,
+  changeAmountKrw: hub.changeAmount,
+  changeDirection: hub.changeDirection,
+  allocation: hub.allocation.map((item) => ({ label: item.category, pct: item.ratio })),
+  monthlyIncomeKrw: hub.monthlyIncome,
+  monthlyExpenseKrw: hub.monthlyExpense,
+})
+
+const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
+  MENU_BASE.map((menu) => {
+    if (menu.key === 'salaryMaking') {
+      const salaryMaking = hub.menus.salaryMaking
+      if (!salaryMaking) return menu
+      const caption =
+        salaryMaking.targetAmount != null && salaryMaking.currentAmount != null
+          ? `목표 ${toMan(salaryMaking.targetAmount)}만 중 ${toMan(salaryMaking.currentAmount)}만`
+          : menu.caption
+      return { ...menu, caption, progressPct: salaryMaking.achievementRate ?? undefined }
     }
-    if (!stability) {
+
+    if (menu.key === 'lifeStability') {
+      const lifeStability = hub.menus.lifeStability
+      if (!lifeStability || lifeStability.grade == null) {
+        return { ...menu, caption: '아직 결과가 없어요' }
+      }
+      const status = gradeToStatus(lifeStability.grade)
       return {
         ...menu,
-        caption: '정보를 불러오지 못했어요',
-        statusDot: undefined,
-        statusText: undefined,
+        caption:
+          lifeStability.coverageRate != null
+            ? `충당률 ${Math.round(lifeStability.coverageRate)}%`
+            : menu.caption,
+        iconTone: STATUS_ICON_TONE[status],
+        statusDot: status,
+        statusText: STATUS_TEXT[status],
       }
     }
-    return {
-      ...menu,
-      caption: `충당률 ${stability.percentage}%`,
-      iconTone: STATUS_ICON_TONE[stability.status],
-      statusDot: stability.status,
-      statusText: STATUS_TEXT[stability.status],
+
+    if (menu.key === 'retirementSim') {
+      const retirementSim = hub.menus.retirementSim
+      if (retirementSim && retirementSim.available === false) {
+        return { ...menu, caption: '준비 중', iconTone: 'muted' }
+      }
+      return menu
     }
+
+    // investmentCheck(#2) / pensionDefer(#5) / monthlyReport(#6): BE 미구현 → 정적 캡션 유지
+    return menu
   })
+
+function AssetHubPage() {
+  const navigate = useNavigate()
+  const { data: hub, isLoading, refetch } = useGetAssetHub()
 
   return (
     <div className="bg-page flex h-dvh flex-col">
@@ -124,21 +148,49 @@ function AssetHubPage() {
       </header>
 
       <main className="flex-1 overflow-y-auto pb-6">
-        <div className="flex flex-col gap-5 px-5">
-          <AssetSummaryCard {...MOCK_SUMMARY} />
+        {isLoading ? (
+          <StatusMessage text="자산 정보를 불러오는 중이에요…" />
+        ) : !hub ? (
+          // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
+          <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
+        ) : (
+          <div className="flex flex-col gap-5 px-5">
+            <AssetSummaryCard {...toSummary(hub)} />
 
-          <section>
-            <h2 className="text-body text-ink mb-3 font-bold">관리 메뉴</h2>
-            <div className="grid grid-cols-2 gap-3 [grid-auto-rows:1fr]">
-              {menus.map((menu) => (
-                <ManageMenuCard key={menu.key} menu={menu} onClick={() => navigate(menu.path)} />
-              ))}
-            </div>
-          </section>
-        </div>
+            <section>
+              <h2 className="text-body text-ink mb-3 font-bold">관리 메뉴</h2>
+              <div className="grid grid-cols-2 gap-3 [grid-auto-rows:1fr]">
+                {buildMenus(hub).map((menu) => (
+                  <ManageMenuCard key={menu.key} menu={menu} onClick={() => navigate(menu.path)} />
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
       </main>
 
       <BottomNav />
+    </div>
+  )
+}
+
+function StatusMessage({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center gap-4 px-[22px] pt-[120px]"
+    >
+      <p className="text-body text-ink-sub text-center leading-[1.6] whitespace-pre-line">{text}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+        >
+          다시 시도
+        </button>
+      )}
     </div>
   )
 }
