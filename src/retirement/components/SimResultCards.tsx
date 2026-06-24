@@ -132,7 +132,9 @@ function SimResultCards({ result }: { result: SimResult }) {
       ? '충당 가능'
       : coverableMonths === 0
         ? '즉시 소진'
-        : formatMonths(coverableMonths)
+        : coverableMonths >= 1200
+          ? '100년 이상'
+          : formatMonths(coverableMonths)
 
   return (
     <div className="px-5 pb-2">

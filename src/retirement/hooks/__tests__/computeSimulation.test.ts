@@ -68,6 +68,24 @@ describe('computeSimulation', () => {
     expect(result.coverableMonths).toBe(0)
   })
 
+  it('monthlyLivingKrw가 0이면 danger 결과를 반환', () => {
+    const result = computeSimulation({ ...BASE, monthlyLivingKrw: 0 }, 0, 0)
+    expect(result.coverageRatePct).toBe(0)
+    expect(result.monthlyShortfallKrw).toBe(0)
+    expect(result.coverableMonths).toBe(0)
+    expect(result.status).toBe('danger')
+  })
+
+  it('1200개월 내 자산 미소진 시 coverableMonths = 1200', () => {
+    // 충분한 자산 + 낮은 물가상승 → 100년 내 소진 안 됨
+    const result = computeSimulation(
+      { ...BASE, totalAssetsKrw: 10_000_000_000, monthlyPensionKrw: 2_200_000 },
+      5,
+      1,
+    )
+    expect(result.coverableMonths).toBe(1200)
+  })
+
   it('coverableMonths는 자산 소진까지 월 수', () => {
     const result = computeSimulation(
       { ...BASE, totalAssetsKrw: 12_000_000, monthlyPensionKrw: 0 },

@@ -6,6 +6,10 @@ export function computeSimulation(
   returnRatePct: number,
   inflationRatePct: number,
 ): SimResult {
+  if (params.monthlyLivingKrw <= 0) {
+    return { coverageRatePct: 0, monthlyShortfallKrw: 0, coverableMonths: 0, status: 'danger' }
+  }
+
   const monthlyReturn = returnRatePct / 100 / 12
   const monthlyInflation = inflationRatePct / 100 / 12
 
@@ -20,14 +24,19 @@ export function computeSimulation(
   // monthlyInflation > 0이면 초기에 충당 가능해도 미래에 생활비가 연금을 초과할 수 있으므로 항상 실행
   if (monthlyShortfallKrw > 0 || monthlyInflation > 0) {
     let assets = params.totalAssetsKrw
+    let depleted = false
     for (let month = 0; month < 1200; month++) {
       const inflationFactor = Math.pow(1 + monthlyInflation, month)
       const draw = Math.max(0, params.monthlyLivingKrw * inflationFactor - params.monthlyPensionKrw)
       assets = assets * (1 + monthlyReturn) - draw
       if (assets < 0) {
         coverableMonths = month
+        depleted = true
         break
       }
+    }
+    if (!depleted) {
+      coverableMonths = 1200
     }
   }
 
