@@ -21,8 +21,6 @@ export function usePinInput(userId: number): UsePinInputReturn {
   useEffect(() => {
     if (!isLocked) return
 
-    setLockSecondsLeft(LOCK_SECONDS)
-
     const interval = setInterval(() => {
       setLockSecondsLeft((prev) => {
         if (prev <= 1) {
@@ -65,12 +63,14 @@ export function usePinInput(userId: number): UsePinInputReturn {
         },
         onError: (error) => {
           // 401(인증 실패)만 시도 횟수에 반영하고, 네트워크/서버 오류는 별도 처리
+          // TODO: 서버에서도 사용자/IP 기반 rate limiting을 적용해야 클라이언트 새로고침 우회를 막을 수 있음
           if (isAxiosError(error) && error.response?.status === 401) {
-            setAttempts((prev) => {
-              const next = prev + 1
-              if (next >= MAX_ATTEMPTS) setIsLocked(true)
-              return next
-            })
+            const nextAttempts = attempts + 1
+            setAttempts(nextAttempts)
+            if (nextAttempts >= MAX_ATTEMPTS) {
+              setIsLocked(true)
+              setLockSecondsLeft(LOCK_SECONDS)
+            }
             setIsError(true)
           } else {
             setIsServerError(true)
