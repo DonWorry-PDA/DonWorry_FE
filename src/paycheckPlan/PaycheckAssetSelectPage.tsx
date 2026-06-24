@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -6,46 +6,72 @@ import StickyFooter from '../common/components/StickyFooter'
 import Checkbox from '../common/components/Checkbox'
 import StepProgress from './components/StepProgress'
 import AssetGroupAccordion from './components/AssetGroupAccordion'
-import { mockAssetCategories } from './mock/paycheckPlan'
-
-const allItemIds = mockAssetCategories.flatMap((c) => c.items.map((i) => i.id))
+import useGetSalaryAssets from './hooks/useGetSalaryAssets'
+import usePutSalaryAssetExclusions from './hooks/usePutSalaryAssetExclusions'
 
 function PaycheckAssetSelectPage() {
   const navigate = useNavigate()
-  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set(allItemIds))
+  const { data, isLoading, isError } = useGetSalaryAssets()
+  const { mutate: saveExclusions, isPending } = usePutSalaryAssetExclusions()
 
-  const allChecked = allItemIds.every((id) => checkedIds.has(id))
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
+  const [submitError, setSubmitError] = useState(false)
+  const initialized = useRef(false)
+
+  useEffect(() => {
+    if (!data || initialized.current) return
+    initialized.current = true
+    const includedKeys = data.assetGroups
+      .flatMap((g) => g.items)
+      .filter((item) => !item.excluded)
+      .map((item) => item.assetKey)
+    setCheckedIds(new Set(includedKeys))
+  }, [data])
+
+  const allItemKeys = data?.assetGroups.flatMap((g) => g.items.map((i) => i.assetKey)) ?? []
+  const allChecked = allItemKeys.length > 0 && allItemKeys.every((key) => checkedIds.has(key))
 
   const toggleAll = () => {
     if (allChecked) {
       setCheckedIds(new Set())
     } else {
-      setCheckedIds(new Set(allItemIds))
+      setCheckedIds(new Set(allItemKeys))
     }
   }
 
-  const toggleItem = (id: string) => {
+  const toggleItem = (assetKey: string) => {
     setCheckedIds((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
+      if (next.has(assetKey)) {
+        next.delete(assetKey)
       } else {
-        next.add(id)
+        next.add(assetKey)
       }
       return next
     })
   }
 
-  const toggleGroup = (categoryId: string) => {
-    const category = mockAssetCategories.find((c) => c.id === categoryId)
-    if (!category) return
-    const groupIds = category.items.map((i) => i.id)
+  const toggleGroup = (category: string) => {
+    const group = data?.assetGroups.find((g) => g.category === category)
+    if (!group) return
+    const groupKeys = group.items.map((i) => i.assetKey)
     setCheckedIds((prev) => {
-      const groupAllChecked = groupIds.every((id) => prev.has(id))
+      const groupAllChecked = groupKeys.every((key) => prev.has(key))
       const next = new Set(prev)
-      groupIds.forEach((id) => (groupAllChecked ? next.delete(id) : next.add(id)))
+      groupKeys.forEach((key) => (groupAllChecked ? next.delete(key) : next.add(key)))
       return next
     })
+  }
+
+  const handleSubmit = () => {
+    const excludedKeys = allItemKeys.filter((key) => !checkedIds.has(key))
+    saveExclusions(
+      { excludedAssetKeys: excludedKeys },
+      {
+        onSuccess: () => navigate('/paycheck-plan/diagnosis'),
+        onError: () => setSubmitError(true),
+      },
+    )
   }
 
   return (
@@ -61,25 +87,38 @@ function PaycheckAssetSelectPage() {
         </h2>
         <p className="text-body text-ink-sub mb-6">연금 계좌나 오래 두고 싶은 자산은 그대로 지켜드려요.</p>
 
-        <div className="border-b border-divider py-4">
-          <Checkbox checked={allChecked} onChange={toggleAll} label="전체 선택" />
-        </div>
+        {isLoading ? (
+          <p className="text-body text-ink-hint text-center pt-10">자산 목록을 불러오는 중이에요…</p>
+        ) : isError ? (
+          <p className="text-body text-danger text-center pt-10">자산 목록을 불러오지 못했어요.</p>
+        ) : data?.assetGroups.length === 0 ? (
+          <p className="text-body text-ink-hint text-center pt-10">연결된 자산이 없어요.</p>
+        ) : (
+          <>
+            <div className="border-b border-divider py-4">
+              <Checkbox checked={allChecked} onChange={toggleAll} label="전체 선택" />
+            </div>
 
-        {mockAssetCategories.map((category) => (
-          <AssetGroupAccordion
-            key={category.id}
-            category={category}
-            checkedIds={checkedIds}
-            onToggleItem={toggleItem}
-            onToggleGroup={toggleGroup}
-          />
-        ))}
+            {data?.assetGroups.map((group) => (
+              <AssetGroupAccordion
+                key={group.category}
+                group={group}
+                checkedIds={checkedIds}
+                onToggleItem={toggleItem}
+                onToggleGroup={toggleGroup}
+              />
+            ))}
+          </>
+        )}
       </div>
 
       <StickyFooter>
+        {submitError && (
+          <p className="text-sub text-danger text-center mb-3">저장에 실패했어요. 다시 시도해 주세요.</p>
+        )}
         <Button
-          onClick={() => navigate('/paycheck-plan/diagnosis')}
-          disabled={checkedIds.size === 0}
+          onClick={handleSubmit}
+          disabled={checkedIds.size === 0 || isLoading || isPending}
         >
           월급 설계하기
         </Button>

@@ -1,26 +1,26 @@
 import { useState } from 'react'
 import Checkbox from '../../common/components/Checkbox'
-import type { AssetCategory } from '../types/paycheckPlan'
+import type { SalaryAssetGroup } from '../types/paycheckPlan'
 
 type AssetGroupAccordionProps = {
-  category: AssetCategory
+  group: SalaryAssetGroup
   checkedIds: Set<string>
-  onToggleItem: (id: string) => void
-  onToggleGroup: (categoryId: string) => void
+  onToggleItem: (assetKey: string) => void
+  onToggleGroup: (category: string) => void
 }
 
-function AssetGroupAccordion({ category, checkedIds, onToggleItem, onToggleGroup }: AssetGroupAccordionProps) {
+function AssetGroupAccordion({ group, checkedIds, onToggleItem, onToggleGroup }: AssetGroupAccordionProps) {
   const [open, setOpen] = useState(true)
 
-  const allChecked = category.items.every((item) => checkedIds.has(item.id))
+  const allChecked = group.items.every((item) => checkedIds.has(item.assetKey))
 
   return (
     <div className="border-b border-divider">
       <div className="flex items-center justify-between py-4">
         <Checkbox
           checked={allChecked}
-          onChange={() => onToggleGroup(category.id)}
-          label={category.name}
+          onChange={() => onToggleGroup(group.category)}
+          label={group.categoryLabel}
         />
         <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? '접기' : '펼치기'} className="p-1">
           <svg
@@ -37,13 +37,13 @@ function AssetGroupAccordion({ category, checkedIds, onToggleItem, onToggleGroup
 
       {open && (
         <div className="pb-2 pl-9 flex flex-col gap-3">
-          {category.items.map((item) => (
+          {group.items.map((item) => (
             <Checkbox
-              key={item.id}
-              checked={checkedIds.has(item.id)}
-              onChange={() => onToggleItem(item.id)}
+              key={item.assetKey}
+              checked={checkedIds.has(item.assetKey)}
+              onChange={() => onToggleItem(item.assetKey)}
               label={item.name}
-              subLabel={item.subLabel || undefined}
+              subLabel={item.description || undefined}
             />
           ))}
         </div>
