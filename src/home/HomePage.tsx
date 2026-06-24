@@ -8,10 +8,13 @@ import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHu
 import type { AssetData, HomeStabilityData, ReportItem } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
 
+// 사용자 헤더는 아직 mock(사용자 API 연동 전). 날짜만 오늘 기준으로 표시해 고정 오정보를 방지한다.
+const TODAY_LABEL = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'full' }).format(new Date())
+
 const MOCK_USER = {
   name: '김영수',
   initial: '김',
-  date: '2026년 6월 12일 금요일',
+  date: TODAY_LABEL,
 }
 
 // 월간 리포트(#6)는 아직 미구현이라 mock 유지
@@ -40,8 +43,12 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   const salaryMaking = hub.menus.salaryMaking
   if (!lifeStability || lifeStability.grade == null) return null
 
-  const current = salaryMaking?.currentAmount ?? 0
-  const target = salaryMaking?.targetAmount ?? 0
+  // 급여 데이터가 없으면 0원으로 위장하지 않고 카드를 표시하지 않는다(대체 표시로 폴백).
+  if (!salaryMaking || salaryMaking.currentAmount == null || salaryMaking.targetAmount == null) {
+    return null
+  }
+  const current = salaryMaking.currentAmount
+  const target = salaryMaking.targetAmount
   const shortfall = target - current
 
   return {
@@ -55,7 +62,7 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
 
 function HomePage() {
   const navigate = useNavigate()
-  const { data: hub, isLoading, isError, refetch } = useGetAssetHub()
+  const { data: hub, isLoading, refetch } = useGetAssetHub()
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
@@ -83,7 +90,8 @@ function HomePage() {
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
           <StatusMessage text="자산 정보를 불러오는 중이에요…" />
-        ) : isError || !hub || !asset ? (
+        ) : !hub || !asset ? (
+          // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
         ) : (
           <div className="flex flex-col gap-5 px-5">
