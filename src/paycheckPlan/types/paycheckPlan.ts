@@ -32,6 +32,15 @@ export type SalaryAssetExclusionRequest = {
   excludedAssetKeys: string[]
 }
 
+export type CashFlowDiagnosisResponse = {
+  monthlyCashFlow: number
+  nationalPension: number
+  dividendIncome: number
+  targetMonthlyLivingCost: number
+  monthlyShortfall: number
+  shortfallExists: boolean
+}
+
 export type Analysis = {
   securedCashflow: number
   breakdown: CashflowItem[]
