@@ -36,6 +36,9 @@ client.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
+      const refreshToken = getRefreshToken()
+      if (!refreshToken) return Promise.reject(error)
+
       try {
         if (!refreshPromise) {
           refreshPromise = refreshAccessToken().finally(() => {

@@ -4,7 +4,7 @@ import { usePinInput } from './hooks/usePinInput'
 
 function LoginPage() {
   // TODO: userId는 앱 전역 인증 컨텍스트에서 가져오도록 교체
-  const { pin, attempts, isError, isLocked, appendDigit, deleteDigit, reset } = usePinInput(1)
+  const { pin, attempts, isError, isLocked, lockSecondsLeft, appendDigit, deleteDigit, reset } = usePinInput(1)
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -24,7 +24,7 @@ function LoginPage() {
         <PinDots count={pin.length} />
         <div className="mt-3 h-5 text-center">
           {isLocked ? (
-            <p className="text-sub text-danger">비밀번호 5회 오류로 잠겼습니다.</p>
+            <p className="text-sub text-danger">비밀번호 5회 오류로 잠겼습니다. ({lockSecondsLeft}초 후 해제)</p>
           ) : isError ? (
             <p className="text-sub text-danger">비밀번호가 일치하지 않아요 ({attempts}/5)</p>
           ) : null}
