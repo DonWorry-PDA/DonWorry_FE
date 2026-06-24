@@ -2,29 +2,35 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '@/common/components/AppBar'
 import SimParamsBar from './components/SimParamsBar'
+import SimParamsBarSkeleton from './components/SimParamsBarSkeleton'
 import SimSliders from './components/SimSliders'
 import SimResultCards from './components/SimResultCards'
 import SimActionItems from './components/SimActionItems'
 import useSimActionItems from './hooks/useSimActionItems'
 import EditParamsSheet from './components/EditParamsSheet'
 import useSimulation from './hooks/useSimulation'
+import useGetRetirementSimParams from './hooks/useGetRetirementSimParams'
 import type { SimParams } from './types/simulation'
 
-const MOCK_PARAMS: SimParams = {
-  ageYears: 63,
-  totalAssetsKrw: 250_000_000,
-  monthlyLivingKrw: 2_200_000,
-  monthlyPensionKrw: 1_200_000,
+const FALLBACK_PARAMS: SimParams = {
+  ageYears: 0,
+  totalAssetsKrw: 0,
+  monthlyLivingKrw: 0,
+  monthlyPensionKrw: 0,
 }
 
 function RetirementSimulationPage() {
   const navigate = useNavigate()
-  const [params, setParams] = useState<SimParams>(MOCK_PARAMS)
+  const { data, isPending, isError, refetch } = useGetRetirementSimParams()
+  const [localParams, setLocalParams] = useState<SimParams | null>(null)
   const [returnRate, setReturnRate] = useState(3.5)
   const [inflationRate, setInflationRate] = useState(2.0)
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
 
-  const result = useSimulation(params, returnRate, inflationRate)
+  // 사용자가 수정한 값 우선, 없으면 API 응답 사용
+  const activeParams = localParams ?? data
+
+  const result = useSimulation(activeParams ?? FALLBACK_PARAMS, returnRate, inflationRate)
   const actionItems = useSimActionItems()
 
   return (
@@ -40,42 +46,52 @@ function RetirementSimulationPage() {
           </p>
         </div>
 
-        {/* 파라미터 바 */}
-        <SimParamsBar params={params} onEditClick={() => setIsEditSheetOpen(true)} />
+        {(isPending || (!isError && !activeParams)) && <SimParamsBarSkeleton />}
 
-        <div className="border-t border-divider" />
+        {isError && (
+          <div className="flex flex-col items-center gap-3 px-5 py-4">
+            <p className="text-body text-ink-sub">데이터를 불러오지 못했어요.</p>
+            <button
+              type="button"
+              className="text-btn font-semibold text-primary"
+              onClick={refetch}
+            >
+              다시 시도
+            </button>
+          </div>
+        )}
 
-        {/* 슬라이더 */}
-        <SimSliders
-          returnRate={returnRate}
-          inflationRate={inflationRate}
-          onReturnRateChange={setReturnRate}
-          onInflationRateChange={setInflationRate}
-        />
-
-        <div className="border-t border-divider" />
-
-        {/* 결과 */}
-        <div className="py-6">
-          <SimResultCards result={result} />
-        </div>
-
-        <div className="border-t border-divider" />
-
-        {/* 액션 */}
-        <div className="py-5">
-          <SimActionItems items={actionItems} />
-        </div>
-
-        <div className="h-6" />
+        {activeParams && (
+          <>
+            <SimParamsBar params={activeParams} onEditClick={() => setIsEditSheetOpen(true)} />
+            <div className="border-t border-divider" />
+            <SimSliders
+              returnRate={returnRate}
+              inflationRate={inflationRate}
+              onReturnRateChange={setReturnRate}
+              onInflationRateChange={setInflationRate}
+            />
+            <div className="border-t border-divider" />
+            <div className="py-6">
+              <SimResultCards result={result} />
+            </div>
+            <div className="border-t border-divider" />
+            <div className="py-5">
+              <SimActionItems items={actionItems} />
+            </div>
+            <div className="h-6" />
+          </>
+        )}
       </main>
 
-      <EditParamsSheet
-        open={isEditSheetOpen}
-        params={params}
-        onClose={() => setIsEditSheetOpen(false)}
-        onConfirm={setParams}
-      />
+      {activeParams && (
+        <EditParamsSheet
+          open={isEditSheetOpen}
+          params={activeParams}
+          onClose={() => setIsEditSheetOpen(false)}
+          onConfirm={setLocalParams}
+        />
+      )}
     </div>
   )
 }

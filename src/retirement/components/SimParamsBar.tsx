@@ -24,7 +24,7 @@ function SimParamsBar({ params, onEditClick }: SimParamsBarProps) {
   return (
     <div className="flex items-center gap-3 px-5 py-3">
       <div className="flex flex-1 flex-wrap items-center gap-x-3 gap-y-1">
-        <ParamChip label="나이" value={`${params.ageYears}세`} />
+        <ParamChip label="나이" value={params.ageYears > 0 ? `${params.ageYears}세` : '-'} />
         <Sep />
         <ParamChip label="자산" value={formatAssets(params.totalAssetsKrw)} />
         <Sep />
