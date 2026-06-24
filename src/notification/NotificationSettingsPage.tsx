@@ -1,17 +1,18 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
-import { MOCK_NOTIFICATION_SETTINGS } from './mock/notificationSettings'
+import useGetNotificationSettings from './hooks/useGetNotificationSettings'
+import usePatchNotificationSetting from './hooks/usePatchNotificationSetting'
 import type { NotificationSetting } from './types/notification'
 
 function NotificationSettingsPage() {
   const navigate = useNavigate()
-  const [settings, setSettings] = useState<NotificationSetting[]>(MOCK_NOTIFICATION_SETTINGS)
+  const { data: settings = [], isLoading, isError } = useGetNotificationSettings()
+  const { mutate: patchSetting } = usePatchNotificationSetting()
 
   const toggle = (id: string, enabled: boolean) => {
-    setSettings((prev) => prev.map((s) => (s.id === id ? { ...s, enabled } : s)))
+    patchSetting({ id, enabled })
   }
 
   return (
@@ -42,16 +43,30 @@ function NotificationSettingsPage() {
 
         {/* 설정 목록 */}
         <div className="px-5 flex flex-col gap-4 pb-6">
-          <div className="border border-line rounded-card-xl shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)] overflow-hidden">
-            {settings.map((item, index) => (
-              <SettingRow
-                key={item.id}
-                item={item}
-                isLast={index === settings.length - 1}
-                onToggle={(enabled) => toggle(item.id, enabled)}
-              />
-            ))}
-          </div>
+          {isLoading && (
+            <div className="flex items-center justify-center py-10">
+              <p className="text-sub text-ink-hint">불러오는 중...</p>
+            </div>
+          )}
+
+          {isError && (
+            <div className="flex items-center justify-center py-10">
+              <p className="text-sub text-danger">설정을 불러오지 못했어요.</p>
+            </div>
+          )}
+
+          {!isLoading && !isError && settings.length > 0 && (
+            <div className="border border-line rounded-card-xl shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)] overflow-hidden">
+              {settings.map((item, index) => (
+                <SettingRow
+                  key={item.id}
+                  item={item}
+                  isLast={index === settings.length - 1}
+                  onToggle={(enabled) => toggle(item.id, enabled)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* 안내 문구 */}
           <div className="bg-surface rounded-card-lg p-4">
@@ -66,7 +81,6 @@ function NotificationSettingsPage() {
     </div>
   )
 }
-
 
 function SettingRow({
   item,
