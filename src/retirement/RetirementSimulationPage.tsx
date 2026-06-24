@@ -46,7 +46,7 @@ function RetirementSimulationPage() {
           </p>
         </div>
 
-        {isPending && <SimParamsBarSkeleton />}
+        {(isPending || (!isError && !activeParams)) && <SimParamsBarSkeleton />}
 
         {isError && (
           <div className="flex flex-col items-center gap-3 px-5 py-4">
