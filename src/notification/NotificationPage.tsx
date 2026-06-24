@@ -28,16 +28,7 @@ function NotificationPage() {
       <AppBar title="알림" onBack={() => navigate(-1)} rightAction={readAllButton} />
 
       <main className="flex flex-1 flex-col overflow-y-auto px-5 pt-1">
-        <button
-          type="button"
-          onClick={() => navigate('/notification/settings')}
-          className="border-divider flex items-center justify-between border-b py-3"
-        >
-          <span className="text-body text-ink font-medium">알림 설정</span>
-          <span className="text-disabled text-lg">›</span>
-        </button>
-
-        {isLoading && (
+{isLoading && (
           <div className="flex flex-1 items-center justify-center">
             <p className="text-sub text-ink-hint">불러오는 중...</p>
           </div>
