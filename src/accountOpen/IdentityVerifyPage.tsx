@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
-import { MOCK_USER_PROFILE } from '../mypage/mock/mypage'
+import useCurrentUser from '../common/hooks/useCurrentUser'
 
 const STEPS = [
   { step: 1, label: '인증' },
@@ -20,6 +20,7 @@ function formatPhone(value: string) {
 
 function IdentityVerifyPage() {
   const navigate = useNavigate()
+  const currentUser = useCurrentUser()
 
   const [activeTab, setActiveTab] = useState<'phone' | 'shinhan'>('phone')
   const [ssnFront, setSsnFront] = useState('')
@@ -103,16 +104,17 @@ function IdentityVerifyPage() {
           <div className="flex flex-col gap-[0.5625rem] border-b border-divider pb-[1.1875rem] pt-[1.125rem]">
             <span className="text-sub text-ink-sub">이름</span>
             <span className="font-inter text-card font-bold text-ink">
-              {MOCK_USER_PROFILE.name}
+              {currentUser.name}
             </span>
           </div>
 
           {/* 주민등록번호 */}
           <div className="flex flex-col gap-[0.5625rem] border-b border-divider pb-[1.1875rem] pt-[1.125rem]">
-            <span className="text-sub text-ink-sub">주민등록번호</span>
+            <label htmlFor="ssn-front" className="text-sub text-ink-sub">주민등록번호</label>
             <div className="flex items-center gap-[0.625rem]">
               {/* 앞 6자리 */}
               <input
+                id="ssn-front"
                 type="tel"
                 inputMode="numeric"
                 value={ssnFront}
@@ -129,6 +131,7 @@ function IdentityVerifyPage() {
                 }`}
               >
                 <input
+                  id="ssn-back"
                   ref={ssnBackRef}
                   type="password"
                   inputMode="numeric"
@@ -138,6 +141,7 @@ function IdentityVerifyPage() {
                   onBlur={() => setSsnBackFocused(false)}
                   maxLength={7}
                   placeholder="뒤 7자리"
+                  aria-label="주민등록번호 뒷자리"
                   className="w-full bg-transparent font-inter text-card font-bold text-ink outline-none placeholder:font-normal placeholder:text-disabled"
                 />
               </div>
@@ -146,8 +150,9 @@ function IdentityVerifyPage() {
 
           {/* 휴대폰 번호 */}
           <div className="flex flex-col gap-[0.5625rem] pb-[1.1875rem] pt-[1.125rem]">
-            <span className="text-sub text-ink-sub">휴대폰 번호</span>
+            <label htmlFor="phone" className="text-sub text-ink-sub">휴대폰 번호</label>
             <input
+              id="phone"
               type="tel"
               inputMode="numeric"
               value={phone}
