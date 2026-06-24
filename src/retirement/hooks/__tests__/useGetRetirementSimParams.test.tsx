@@ -2,7 +2,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
-import React from 'react'
 import client from '@/common/api/client'
 import useGetRetirementSimParams from '../useGetRetirementSimParams'
 
@@ -10,11 +9,9 @@ vi.mock('@/common/api/client', () => ({
   default: { get: vi.fn() },
 }))
 
-const createWrapper = () => {
+function createWrapper({ children }: { children: React.ReactNode }) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={qc}>{children}</QueryClientProvider>
-  )
+  return <QueryClientProvider client={qc}>{children}</QueryClientProvider>
 }
 
 describe('useGetRetirementSimParams', () => {
@@ -35,7 +32,7 @@ describe('useGetRetirementSimParams', () => {
     })
 
     const { result } = renderHook(() => useGetRetirementSimParams(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper,
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
@@ -62,10 +59,19 @@ describe('useGetRetirementSimParams', () => {
     })
 
     const { result } = renderHook(() => useGetRetirementSimParams(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper,
     })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
     expect(result.current.data?.ageYears).toBe(0)
+  })
+
+  it('API 호출 실패 시 isError가 true가 된다', async () => {
+    vi.mocked(client.get).mockRejectedValueOnce(new Error('Network Error'))
+
+    const { result } = renderHook(() => useGetRetirementSimParams(), {
+      wrapper: createWrapper,
+    })
+    await waitFor(() => expect(result.current.isError).toBe(true))
   })
 })
