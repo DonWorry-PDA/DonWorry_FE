@@ -197,7 +197,20 @@ function TermsAgreePage() {
       </main>
 
       <StickyFooter>
-        <Button disabled={!requiredChecked} onClick={() => navigate('/account-open/identity')}>
+        <Button
+          disabled={!requiredChecked}
+          onClick={() =>
+            navigate('/account-open/complete', {
+              state: {
+                accountNumber: '123-456-789012',
+                openedAt: new Date()
+                  .toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
+                  .replace(/\.\s?/g, '.')
+                  .replace(/\.$/, ''),
+              },
+            })
+          }
+        >
           동의하고 계속
         </Button>
       </StickyFooter>

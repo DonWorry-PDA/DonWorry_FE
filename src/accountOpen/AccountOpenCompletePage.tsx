@@ -4,6 +4,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import type { AccountOpenResult } from './types/accountOpen'
+import CheckBadge from '../common/components/CheckBadge'
 
 type StepState = 'completed' | 'active' | 'inactive'
 
@@ -39,17 +40,7 @@ function AccountOpenCompletePage() {
 
         {/* 성공 아이콘 + 타이틀 */}
         <div className="flex flex-col items-center gap-[1.125rem] pb-[0.625rem] pt-6">
-          <div className="flex size-16 items-center justify-center rounded-full bg-primary">
-            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-              <path
-                d="M6 15.5L12.5 22L24 9"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <CheckBadge />
           <h2 className="text-center text-heading font-bold text-ink leading-[1.46]">
             계좌 개설이
             <br />
@@ -69,7 +60,7 @@ function AccountOpenCompletePage() {
 
       {/* 하단 CTA */}
       <StickyFooter>
-        <Button onClick={() => navigate('/')}>자산관리 시작하기</Button>
+        <Button onClick={() => navigate('/home')}>자산관리 시작하기</Button>
       </StickyFooter>
     </div>
   )
