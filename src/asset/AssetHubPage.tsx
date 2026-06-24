@@ -46,6 +46,20 @@ const MOCK_MENUS: ManageMenu[] = [
     iconTone: 'muted',
   },
   {
+    key: 'pensionDefer',
+    title: '국민연금 연기',
+    caption: '5년 미루면\n평생 +43만원',
+    path: '/pension/defer',
+    iconTone: 'muted',
+  },
+  {
+    key: 'retirementSim',
+    title: '은퇴 시뮬레이션',
+    caption: '조건 바꿔\n미리 보기',
+    path: '/retirement-simulation',
+    iconTone: 'muted',
+  },
+  {
     key: 'monthlyReport',
     title: '월간 리포트',
     caption: '6월 리포트가\n도착했어요',

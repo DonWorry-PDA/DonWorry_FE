@@ -30,6 +30,24 @@ const PATHS: Record<ManageMenuKey, React.ReactNode> = {
       <path d="M20 20l-4.5-4.5" />
     </>
   ),
+  // 시계
+  pensionDefer: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 8v4l2.5 2" />
+    </>
+  ),
+  // 슬라이더
+  retirementSim: (
+    <>
+      <path d="M4 9h8" />
+      <circle cx="15" cy="9" r="2" />
+      <path d="M17 9h3" />
+      <path d="M4 15h3" />
+      <circle cx="9" cy="15" r="2" />
+      <path d="M11 15h9" />
+    </>
+  ),
   // 문서
   monthlyReport: (
     <>
