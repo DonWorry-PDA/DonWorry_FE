@@ -16,6 +16,8 @@ export type ManageMenuKey =
   | 'salaryMaking'
   | 'lifeStability'
   | 'investmentCheck'
+  | 'pensionDefer'
+  | 'retirementSim'
   | 'monthlyReport'
 
 export type MenuIconTone = 'primary' | 'warning' | 'muted'
