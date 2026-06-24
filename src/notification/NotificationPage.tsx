@@ -1,26 +1,30 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import { NotificationItemIc } from '../common/assets/icons'
-import { MOCK_NOTIFICATIONS } from './mock/notifications'
+import useGetNotifications from './hooks/useGetNotifications'
+import usePatchNotificationsReadAll from './hooks/usePatchNotificationsReadAll'
+import groupNotifications from './utils/groupNotifications'
 import type { NotificationUIItem } from './types/notification'
 
 function NotificationPage() {
   const navigate = useNavigate()
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
+  const { data, isLoading, isError } = useGetNotifications()
+  const { mutate: readAll, isPending: isReadingAll } = usePatchNotificationsReadAll()
 
-  const markAllRead = () => {
-    setNotifications((prev) =>
-      prev.map((group) => ({
-        ...group,
-        items: group.items.map((item) => ({ ...item, isUnread: false })),
-      }))
-    )
-  }
+  const notifications = groupNotifications(data ?? [])
+  const hasUnread = notifications.some((g) => g.items.some((i) => i.isUnread))
+  const readAllDisabled = isLoading || isError || !hasUnread || isReadingAll
 
   const readAllButton = (
-    <button onClick={markAllRead}>
-      <span className="text-sub text-primary text-center leading-tight font-normal">
+    <button
+      type="button"
+      onClick={() => readAll()}
+      disabled={readAllDisabled}
+      aria-disabled={readAllDisabled}
+    >
+      <span
+        className={`text-sub text-center leading-tight font-normal ${readAllDisabled ? 'text-disabled' : 'text-primary'}`}
+      >
         모두
         <br />
         읽음
@@ -33,13 +37,23 @@ function NotificationPage() {
       <AppBar title="알림" onBack={() => navigate(-1)} rightAction={readAllButton} />
 
       <main className="flex flex-1 flex-col overflow-y-auto px-5 pt-1">
-        <button
-          onClick={() => navigate('/notification/settings')}
-          className="border-divider flex items-center justify-between border-b py-3"
-        >
-          <span className="text-body text-ink font-medium">알림 설정</span>
-          <span className="text-disabled text-lg">›</span>
-        </button>
+{isLoading && (
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-sub text-ink-hint">불러오는 중...</p>
+          </div>
+        )}
+
+        {isError && (
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-sub text-danger">알림을 불러오지 못했어요.</p>
+          </div>
+        )}
+
+        {!isLoading && !isError && notifications.length === 0 && (
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-sub text-ink-hint">알림이 없어요.</p>
+          </div>
+        )}
 
         {notifications.map((group) => (
           <div key={group.label}>
