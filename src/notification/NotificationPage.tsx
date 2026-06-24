@@ -9,13 +9,22 @@ import type { NotificationUIItem } from './types/notification'
 function NotificationPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError } = useGetNotifications()
-  const { mutate: readAll } = usePatchNotificationsReadAll()
+  const { mutate: readAll, isPending: isReadingAll } = usePatchNotificationsReadAll()
 
   const notifications = groupNotifications(data ?? [])
+  const hasUnread = notifications.some((g) => g.items.some((i) => i.isUnread))
+  const readAllDisabled = isLoading || isError || !hasUnread || isReadingAll
 
   const readAllButton = (
-    <button type="button" onClick={() => readAll()}>
-      <span className="text-sub text-primary text-center leading-tight font-normal">
+    <button
+      type="button"
+      onClick={() => readAll()}
+      disabled={readAllDisabled}
+      aria-disabled={readAllDisabled}
+    >
+      <span
+        className={`text-sub text-center leading-tight font-normal ${readAllDisabled ? 'text-disabled' : 'text-primary'}`}
+      >
         모두
         <br />
         읽음
