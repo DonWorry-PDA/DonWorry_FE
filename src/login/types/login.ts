@@ -14,6 +14,7 @@ export type UsePinInputReturn = {
   isError: boolean
   isServerError: boolean
   isLocked: boolean
+  lockSecondsLeft: number
   appendDigit: (digit: string) => void
   deleteDigit: () => void
   reset: () => void

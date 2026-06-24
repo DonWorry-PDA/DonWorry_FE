@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import usePostLogin from './usePostLogin'
 import { UsePinInputReturn } from '../types/login'
 
 const MAX_ATTEMPTS = 5
+const LOCK_SECONDS = 30
 
 export function usePinInput(userId: number): UsePinInputReturn {
   const navigate = useNavigate()
@@ -15,6 +16,28 @@ export function usePinInput(userId: number): UsePinInputReturn {
   const [isError, setIsError] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
   const [isLocked, setIsLocked] = useState(false)
+  const [lockSecondsLeft, setLockSecondsLeft] = useState(0)
+
+  useEffect(() => {
+    if (!isLocked) return
+
+    setLockSecondsLeft(LOCK_SECONDS)
+
+    const interval = setInterval(() => {
+      setLockSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          setIsLocked(false)
+          setAttempts(0)
+          setIsError(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [isLocked])
 
   function appendDigit(digit: string) {
     if (isLocked || isPending) return
@@ -78,6 +101,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
     isError,
     isServerError,
     isLocked,
+    lockSecondsLeft,
     appendDigit,
     deleteDigit,
     reset,
