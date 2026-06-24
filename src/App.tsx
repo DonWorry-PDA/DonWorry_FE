@@ -29,6 +29,7 @@ import TermsAgreePage from './accountOpen/TermsAgreePage'
 import TermsHistoryPage from './mypage/TermsHistoryPage'
 import TermsDetailPage from './terms/TermsDetailPage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
+import OtpVerifyPage from './accountOpen/OtpVerifyPage'
 import AccountOpenCompletePage from './accountOpen/AccountOpenCompletePage'
 import OrderProductPage from './order/OrderProductPage'
 import OrderTermsPage from './order/OrderTermsPage'
@@ -70,8 +71,9 @@ const router = createBrowserRouter([
   { path: '/mypage/profile-edit', element: <ProfileEditPage /> },
   { path: '/mypage/terms', element: <TermsHistoryPage /> },
   { path: '/terms/:termId', element: <TermsDetailPage /> },
-  { path: '/account-open', element: <TermsAgreePage /> },
-  { path: '/account-open/identity', element: <IdentityVerifyPage /> },
+  { path: '/account-open', element: <IdentityVerifyPage /> },
+  { path: '/account-open/otp', element: <OtpVerifyPage /> },
+  { path: '/account-open/terms', element: <TermsAgreePage /> },
   { path: '/account-open/complete', element: <AccountOpenCompletePage /> },
   { path: '/order/product', element: <OrderProductPage /> },
   { path: '/order/terms', element: <OrderTermsPage /> },
