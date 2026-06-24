@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import queryClient from '../common/api/queryClient'
 import { clearTokens } from '../common/api/token'
+import usePostLogout from './hooks/usePostLogout'
 import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
@@ -18,12 +19,17 @@ function MypagePage() {
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
 
   const profile = MOCK_USER_PROFILE
+  const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
 
-  // 로그아웃: 토큰과 React Query 캐시를 모두 비워 이전 user 데이터가 남지 않게 한다
+  // 로그아웃: API 호출 후 성공·실패 모두 클라이언트 토큰·캐시를 정리한다
   const handleLogout = () => {
-    clearTokens()
-    queryClient.clear()
-    setLogoutStep('done')
+    logout(undefined, {
+      onSettled: () => {
+        clearTokens()
+        queryClient.clear()
+        setLogoutStep('done')
+      },
+    })
   }
 
   return (
@@ -143,10 +149,11 @@ function MypagePage() {
                 취소
               </button>
               <button
-                className="bg-primary flex h-[50px] flex-1 items-center justify-center rounded-[13px] text-btn font-bold text-white"
+                className="bg-primary flex h-[50px] flex-1 items-center justify-center rounded-[13px] text-btn font-bold text-white disabled:opacity-50"
                 onClick={handleLogout}
+                disabled={isLoggingOut}
               >
-                로그아웃
+                {isLoggingOut ? '처리 중…' : '로그아웃'}
               </button>
             </div>
           </div>
