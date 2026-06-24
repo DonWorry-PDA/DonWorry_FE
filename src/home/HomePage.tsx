@@ -3,7 +3,10 @@ import BottomNav from '../common/components/BottomNav'
 import { NotificationIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import StabilityCard from './components/StabilityCard'
+import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
+import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData, ReportItem } from './types/home'
+import type { StabilityStatus } from '../stability/types/stability'
 
 const MOCK_USER = {
   name: '김영수',
@@ -11,50 +14,51 @@ const MOCK_USER = {
   date: '2026년 6월 12일 금요일',
 }
 
-const MOCK_ASSET: AssetData = {
-  totalAmountKrw: 250_000_000,
-  segments: [
-    { label: '연금', pct: 60 },
-    { label: '증권', pct: 20 },
-    { label: '예금', pct: 20 },
-  ],
-  monthlyIncomeKrw: 1_300_000,
-}
-
-const MOCK_STABILITY: HomeStabilityData = {
-  status: 'stable',
-  percentage: 112,
-  currentIncomeKrw: 2_470_000,
-  targetIncomeKrw: 2_200_000,
-  shortfallKrw: null,
-}
-
-// const MOCK_STABILITY: HomeStabilityData = {
-//   status: 'warning',
-//   percentage: 59,
-//   currentIncomeKrw: 1_300_000,
-//   targetIncomeKrw: 2_200_000,
-//   shortfallKrw: 900_000,
-// }
-
-// const MOCK_STABILITY: HomeStabilityData = {
-//   status: 'danger',
-//   percentage: 32,
-//   currentIncomeKrw: 700_000,
-//   targetIncomeKrw: 2_200_000,
-//   shortfallKrw: 1_500_000,
-// }
-
+// 월간 리포트(#6)는 아직 미구현이라 mock 유지
 const MOCK_REPORT_MONTH = '6월'
-
 const MOCK_REPORT: ReportItem[] = [
   { label: '배당금 변동', value: '+12.4%', valueClass: 'text-success' },
   { label: '다음 달 수입', value: '130만원' },
   { label: '소비 수준', value: '적정' },
 ]
 
+const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
+  if (grade === 'STABLE') return 'stable'
+  if (grade === 'NEED_COMPLEMENT') return 'warning'
+  return 'danger'
+}
+
+const toAssetData = (hub: AssetHubResponse): AssetData => ({
+  totalAmountKrw: hub.totalAsset,
+  segments: hub.allocation.map((item) => ({ label: item.category, pct: item.ratio })),
+  monthlyIncomeKrw: hub.monthlyIncome,
+})
+
+// 생활 안정도가 아직 산출되지 않은 사용자는 null → 카드 대신 대체 표시
+const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
+  const lifeStability = hub.menus.lifeStability
+  const salaryMaking = hub.menus.salaryMaking
+  if (!lifeStability || lifeStability.grade == null) return null
+
+  const current = salaryMaking?.currentAmount ?? 0
+  const target = salaryMaking?.targetAmount ?? 0
+  const shortfall = target - current
+
+  return {
+    status: gradeToStatus(lifeStability.grade),
+    percentage: Math.round(lifeStability.coverageRate ?? 0),
+    currentIncomeKrw: current,
+    targetIncomeKrw: target,
+    shortfallKrw: shortfall > 0 ? shortfall : null,
+  }
+}
+
 function HomePage() {
   const navigate = useNavigate()
+  const { data: hub, isLoading, isError, refetch } = useGetAssetHub()
+
+  const asset = hub ? toAssetData(hub) : null
+  const stability = hub ? toStabilityData(hub) : null
 
   return (
     <div className="bg-page flex h-dvh flex-col">
@@ -77,55 +81,94 @@ function HomePage() {
       </header>
 
       <main className="flex-1 overflow-y-auto pb-6">
-        <div className="flex flex-col gap-5 px-5">
-          {/* 총 자산 */}
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <button className="text-body text-ink font-bold min-h-11 px-2 -ml-2" onClick={() => navigate('/asset')}>총 자산 ›</button>
-              <button className="text-sub text-ink-hint min-h-11 px-2 -mr-2" onClick={() => navigate('/asset')}>분석 보기</button>
-            </div>
-            <button
-              className="w-full text-left"
-              onClick={() => navigate('/asset')}
-              aria-label="자산분석 페이지로 이동"
-            >
-              <AssetCard
-                totalAmountKrw={MOCK_ASSET.totalAmountKrw}
-                segments={MOCK_ASSET.segments}
-                monthlyIncomeKrw={MOCK_ASSET.monthlyIncomeKrw}
-              />
-            </button>
-          </section>
-
-          {/* 생활 안정도 */}
-          <StabilityCard data={MOCK_STABILITY} />
-
-          {/* 리포트 */}
-          <section className="pb-2">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-body text-ink font-bold">{MOCK_REPORT_MONTH} 리포트 ›</span>
-              <span className="text-sub text-ink-hint">전체보기</span>
-            </div>
-            <div className="rounded-card-lg shadow-card bg-white px-3 py-[9px]">
-              <div className="flex gap-2">
-                {MOCK_REPORT.map(({ label, value, valueClass }) => (
-                  <div
-                    key={label}
-                    className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
-                  >
-                    <p className="text-caption text-ink-hint">{label}</p>
-                    <p className={`text-md text-ink pt-0.5 font-bold ${valueClass ?? ''}`}>
-                      {value}
-                    </p>
-                  </div>
-                ))}
+        {isLoading ? (
+          <StatusMessage text="자산 정보를 불러오는 중이에요…" />
+        ) : isError || !hub || !asset ? (
+          <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
+        ) : (
+          <div className="flex flex-col gap-5 px-5">
+            {/* 총 자산 */}
+            <section>
+              <div className="mb-3 flex items-center justify-between">
+                <button className="text-body text-ink font-bold min-h-11 px-2 -ml-2" onClick={() => navigate('/asset')}>총 자산 ›</button>
+                <button className="text-sub text-ink-hint min-h-11 px-2 -mr-2" onClick={() => navigate('/asset')}>분석 보기</button>
               </div>
-            </div>
-          </section>
-        </div>
+              <button
+                className="w-full text-left"
+                onClick={() => navigate('/asset')}
+                aria-label="자산분석 페이지로 이동"
+              >
+                <AssetCard
+                  totalAmountKrw={asset.totalAmountKrw}
+                  segments={asset.segments}
+                  monthlyIncomeKrw={asset.monthlyIncomeKrw}
+                />
+              </button>
+            </section>
+
+            {/* 생활 안정도 */}
+            {stability ? (
+              <StabilityCard data={stability} />
+            ) : (
+              <button
+                onClick={() => navigate('/stability')}
+                className="w-full bg-white rounded-card-xl shadow-card p-5 text-left flex flex-col gap-[7px]"
+              >
+                <span className="text-card font-bold text-ink">생활 안정도</span>
+                <p className="text-sub text-ink-sub leading-[1.62]">
+                  아직 생활 안정도 결과가 없어요. 자산을 연결하면 분석해 드려요.
+                </p>
+              </button>
+            )}
+
+            {/* 리포트 */}
+            <section className="pb-2">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-body text-ink font-bold">{MOCK_REPORT_MONTH} 리포트 ›</span>
+                <span className="text-sub text-ink-hint">전체보기</span>
+              </div>
+              <div className="rounded-card-lg shadow-card bg-white px-3 py-[9px]">
+                <div className="flex gap-2">
+                  {MOCK_REPORT.map(({ label, value, valueClass }) => (
+                    <div
+                      key={label}
+                      className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
+                    >
+                      <p className="text-caption text-ink-hint">{label}</p>
+                      <p className={`text-md text-ink pt-0.5 font-bold ${valueClass ?? ''}`}>
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
       </main>
 
       <BottomNav />
+    </div>
+  )
+}
+
+function StatusMessage({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center gap-4 px-[22px] pt-[120px]"
+    >
+      <p className="text-body text-ink-sub text-center leading-[1.6] whitespace-pre-line">{text}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+        >
+          다시 시도
+        </button>
+      )}
     </div>
   )
 }
