@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -15,10 +15,16 @@ const TIMER_SECONDS = 3 * 60
 
 function OtpVerifyPage() {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [otp, setOtp] = useState('')
   const [seconds, setSeconds] = useState(TIMER_SECONDS)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const phone = (location.state as { phone?: string } | null)?.phone
+    if (!phone) navigate('/account-open', { replace: true })
+  }, [location.state, navigate])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -40,7 +46,7 @@ function OtpVerifyPage() {
     setOtp(v)
   }
 
-  const handleResend = () => setSeconds(TIMER_SECONDS)
+  const handleResend = () => { setOtp(''); setSeconds(TIMER_SECONDS) }
 
   const isComplete = otp.length === OTP_LENGTH && seconds > 0
 
