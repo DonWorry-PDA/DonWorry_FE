@@ -14,7 +14,9 @@ function ProfileEditPage() {
 
   const [age, setAge] = useState(String(profile.age))
   const [retirementStatus, setRetirementStatus] = useState<RetirementStatus>(
-    profile.status === '은퇴 전' ? '은퇴 전' : '은퇴 후',
+    profile.status === '은퇴 전' || profile.status === '은퇴 후'
+      ? profile.status
+      : '은퇴 전',
   )
   const [pensionStatus, setPensionStatus] = useState<PensionStatus>('수령 전')
   const [monthlyTarget, setMonthlyTarget] = useState(
@@ -50,7 +52,7 @@ function ProfileEditPage() {
           <div className="flex flex-col gap-2">
             <span className="text-sub font-semibold text-ink-sub">이름</span>
             <div className="flex h-[3.375rem] w-full items-center rounded-card border border-line bg-surface px-[1.0625rem]">
-              <span className="text-md font-semibold text-ink-sub">{profile.name}</span>
+              <span className="truncate text-md font-semibold text-ink-sub">{profile.name}</span>
             </div>
           </div>
 
