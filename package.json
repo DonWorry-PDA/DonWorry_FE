@@ -11,7 +11,8 @@
     "lint:css": "stylelint \"src/**/*.css\"",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:typecheck": "tsc -p tsconfig.vitest.json --noEmit"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
