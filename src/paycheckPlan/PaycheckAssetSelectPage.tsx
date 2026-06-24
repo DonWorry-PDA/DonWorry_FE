@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -15,9 +15,12 @@ function PaycheckAssetSelectPage() {
   const { mutate: saveExclusions, isPending } = usePutSalaryAssetExclusions()
 
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
+  const [submitError, setSubmitError] = useState(false)
+  const initialized = useRef(false)
 
   useEffect(() => {
-    if (!data) return
+    if (!data || initialized.current) return
+    initialized.current = true
     const includedKeys = data.assetGroups
       .flatMap((g) => g.items)
       .filter((item) => !item.excluded)
@@ -64,7 +67,10 @@ function PaycheckAssetSelectPage() {
     const excludedKeys = allItemKeys.filter((key) => !checkedIds.has(key))
     saveExclusions(
       { excludedAssetKeys: excludedKeys },
-      { onSuccess: () => navigate('/paycheck-plan/diagnosis') },
+      {
+        onSuccess: () => navigate('/paycheck-plan/diagnosis'),
+        onError: () => setSubmitError(true),
+      },
     )
   }
 
@@ -85,6 +91,8 @@ function PaycheckAssetSelectPage() {
           <p className="text-body text-ink-hint text-center pt-10">자산 목록을 불러오는 중이에요…</p>
         ) : isError ? (
           <p className="text-body text-danger text-center pt-10">자산 목록을 불러오지 못했어요.</p>
+        ) : data?.assetGroups.length === 0 ? (
+          <p className="text-body text-ink-hint text-center pt-10">연결된 자산이 없어요.</p>
         ) : (
           <>
             <div className="border-b border-divider py-4">
@@ -105,6 +113,9 @@ function PaycheckAssetSelectPage() {
       </div>
 
       <StickyFooter>
+        {submitError && (
+          <p className="text-sub text-danger text-center mb-3">저장에 실패했어요. 다시 시도해 주세요.</p>
+        )}
         <Button
           onClick={handleSubmit}
           disabled={checkedIds.size === 0 || isLoading || isPending}
