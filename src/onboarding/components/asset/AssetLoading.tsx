@@ -1,40 +1,96 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useOnboarding } from '../../contexts/OnboardingContext'
+import usePostOnboarding, { toOnboardingRequest } from '../../hooks/usePostOnboarding'
+import usePostMydataConnect from '@/asset/hooks/usePostMydataConnect'
 
 interface Props {
   onNext: () => void
 }
 
 function AssetLoading({ onNext }: Props) {
+  const { answers } = useOnboarding()
+  const { mutateAsync: submitOnboarding } = usePostOnboarding()
+  const { mutateAsync: connectMydata } = usePostMydataConnect()
+
   const [progress, setProgress] = useState(0)
+  const [failed, setFailed] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const startedRef = useRef(false)
 
-  useEffect(() => {
-    const DURATION_MS = 2000
-    const INTERVAL_MS = 50
-    const increment = 100 / (DURATION_MS / INTERVAL_MS)
-
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        const next = prev + increment
-        if (next >= 100) {
-          clearInterval(timer)
-          return 100
-        }
-        return next
-      })
-    }, INTERVAL_MS)
-
-    const nav = setTimeout(onNext, DURATION_MS)
-
-    return () => {
-      clearInterval(timer)
-      clearTimeout(nav)
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const run = useCallback(async () => {
+    setFailed(false)
+    setProgress(0)
+    // 진행률 표시(시각용). 실제 작업이 끝날 때까지 95%에서 대기한다.
+    stopTimer()
+    timerRef.current = setInterval(() => {
+      setProgress(prev => (prev >= 95 ? 95 : prev + 2))
+    }, 50)
+
+    // 온보딩(UserGoal 생성)이 마이데이터 연결의 자동 재계산보다 먼저 끝나야 한다.
+    // 실패 단계(온보딩 제출 / 자산 연결)를 구분해 로깅한다.
+    try {
+      await submitOnboarding(toOnboardingRequest(answers))
+    } catch (error) {
+      stopTimer()
+      console.error('[onboarding] 온보딩 제출 실패', error)
+      setFailed(true)
+      return
+    }
+
+    try {
+      await connectMydata()
+    } catch (error) {
+      stopTimer()
+      console.error('[onboarding] 마이데이터 연결 실패', error)
+      setFailed(true)
+      return
+    }
+
+    stopTimer()
+    setProgress(100)
+    onNext()
+  }, [answers, submitOnboarding, connectMydata, onNext, stopTimer])
+
+  useEffect(() => {
+    if (startedRef.current) return
+    startedRef.current = true
+    run()
+    return stopTimer
+  }, [run, stopTimer])
+
+  if (failed) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
+        <p role="alert" className="text-center text-body text-ink leading-[1.6]">
+          자산 연결에 실패했어요.
+          <br />
+          잠시 후 다시 시도해주세요.
+        </p>
+        <button
+          type="button"
+          onClick={run}
+          className="mt-6 rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+        >
+          다시 시도
+        </button>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6">
-      <div className="relative flex size-32 items-center justify-center">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex min-h-screen flex-col items-center justify-center bg-white px-6"
+    >
+      <div className="relative flex size-32 items-center justify-center" aria-hidden="true">
         <div className="absolute inset-0 animate-spin">
           {[0, 60, 120, 180, 240, 300].map(deg => (
             <div
