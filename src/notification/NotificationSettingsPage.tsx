@@ -55,6 +55,12 @@ function NotificationSettingsPage() {
             </div>
           )}
 
+          {!isLoading && !isError && settings.length === 0 && (
+            <div className="flex items-center justify-center py-10">
+              <p className="text-sub text-ink-hint">알림 설정 항목이 없어요.</p>
+            </div>
+          )}
+
           {!isLoading && !isError && settings.length > 0 && (
             <div className="border border-line rounded-card-xl shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)] overflow-hidden">
               {settings.map((item, index) => (
