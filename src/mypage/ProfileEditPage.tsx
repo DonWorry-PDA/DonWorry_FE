@@ -6,18 +6,17 @@ import StickyFooter from '../common/components/StickyFooter'
 import { MOCK_USER_PROFILE } from './mock/mypage'
 
 type RetirementStatus = '은퇴 전' | '은퇴 후'
-
-const SALARY_CHIPS = [180, 220, 300]
+type PensionStatus = '수령 전' | '수령 중'
 
 function ProfileEditPage() {
   const navigate = useNavigate()
   const profile = MOCK_USER_PROFILE
 
-  const [name, setName] = useState(profile.name)
   const [age, setAge] = useState(String(profile.age))
   const [retirementStatus, setRetirementStatus] = useState<RetirementStatus>(
     profile.status === '은퇴 전' ? '은퇴 전' : '은퇴 후',
   )
+  const [pensionStatus, setPensionStatus] = useState<PensionStatus>('수령 전')
   const [monthlyTarget, setMonthlyTarget] = useState(
     String(profile.monthlyTargetKrw / 10_000),
   )
@@ -47,15 +46,12 @@ function ProfileEditPage() {
 
         {/* 폼 */}
         <div className="flex flex-col gap-[1.125rem] px-5 pb-6">
-          {/* 이름 */}
+          {/* 이름 (읽기 전용) */}
           <div className="flex flex-col gap-2">
-            <label className="text-sub font-semibold text-ink-sub">이름</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="h-[3.375rem] w-full rounded-card border border-line bg-white px-[1.0625rem] text-md font-semibold text-ink outline-none focus:border-primary"
-            />
+            <span className="text-sub font-semibold text-ink-sub">이름</span>
+            <div className="flex h-[3.375rem] w-full items-center rounded-card border border-line bg-surface px-[1.0625rem]">
+              <span className="text-md font-semibold text-ink-sub">{profile.name}</span>
+            </div>
           </div>
 
           {/* 나이 */}
@@ -84,6 +80,7 @@ function ProfileEditPage() {
                 return (
                   <button
                     key={status}
+                    type="button"
                     onClick={() => setRetirementStatus(status)}
                     className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
                       isSelected
@@ -98,6 +95,33 @@ function ProfileEditPage() {
             </div>
             <p className="text-caption leading-[1.6] text-[#b0b8c1]">
               '은퇴 전' 선택 시 예상 은퇴 나이를 입력받아 인출 계획을 세워드려요.
+            </p>
+          </div>
+
+          {/* 연금 수령 여부 */}
+          <div className="flex flex-col gap-[0.4375rem]">
+            <label className="text-sub font-semibold text-ink-sub">연금 수령 여부</label>
+            <div className="flex gap-1 rounded-card bg-surface-muted p-1">
+              {(['수령 전', '수령 중'] as PensionStatus[]).map((status) => {
+                const isSelected = pensionStatus === status
+                return (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => setPensionStatus(status)}
+                    className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
+                      isSelected
+                        ? 'bg-white font-bold text-primary shadow-[0px_1px_2px_rgba(0,0,0,0.10)]'
+                        : 'font-semibold text-ink-sub'
+                    }`}
+                  >
+                    {status}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-caption leading-[1.6] text-[#b0b8c1]">
+              국민연금·개인연금 등 현재 수령 중인 연금이 있으면 '수령 중'을 선택해주세요.
             </p>
           </div>
 
@@ -117,24 +141,6 @@ function ProfileEditPage() {
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-md font-bold text-ink-hint">
                 만원
               </span>
-            </div>
-            <div className="flex flex-wrap gap-2 pt-[0.1875rem]">
-              {SALARY_CHIPS.map((amount) => {
-                const isSelected = monthlyTarget === String(amount)
-                return (
-                  <button
-                    key={amount}
-                    onClick={() => setMonthlyTarget(String(amount))}
-                    className={`h-10 rounded-[11px] px-4 text-body font-semibold transition-colors ${
-                      isSelected
-                        ? 'bg-primary-tint text-primary'
-                        : 'bg-surface-muted text-ink-sub'
-                    }`}
-                  >
-                    {amount}만원
-                  </button>
-                )
-              })}
             </div>
             <p className="text-caption leading-[1.6] text-[#b0b8c1]">
               국민연금·연금저축 등 예상 수령액을 빼고, 추가로 만들 금액이에요.
