@@ -141,7 +141,7 @@ function StabilityItemRow({ item }: { item: StabilityItem }) {
       </div>
       <p className="text-sub font-semibold text-ink flex-1 min-w-0">{item.label}</p>
       <p className={`text-sub font-bold shrink-0 ${ITEM_STATUS_CLASS[item.status]}`}>
-        {ITEM_STATUS_LABEL[item.status]} ›
+        {ITEM_STATUS_LABEL[item.status]}
       </p>
     </div>
   )
