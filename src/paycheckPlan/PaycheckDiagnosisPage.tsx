@@ -6,6 +6,10 @@ import InfoBox from '../common/components/InfoBox'
 import useGetCashFlowDiagnosis from './hooks/useGetCashFlowDiagnosis'
 
 const toMan = (won: number) => Math.round(won / 10_000)
+const formatShortfall = (won: number) => {
+  const man = toMan(won)
+  return man < 1 ? '1만원 미만' : `${man}만원`
+}
 
 function PaycheckDiagnosisPage() {
   const navigate = useNavigate()
@@ -33,7 +37,7 @@ function PaycheckDiagnosisPage() {
   const nationalPensionMan = toMan(data.nationalPension)
   const dividendIncomeMan = toMan(data.dividendIncome)
   const targetMan = toMan(data.targetMonthlyLivingCost)
-  const shortfallMan = toMan(data.monthlyShortfall)
+  const shortfallLabel = formatShortfall(data.monthlyShortfall)
 
   return (
     <div className="flex flex-col h-full">
@@ -64,7 +68,7 @@ function PaycheckDiagnosisPage() {
         {data.shortfallExists ? (
           <InfoBox tone="danger" className="mb-6">
             <p className="text-sub text-danger-text mb-1">매달 부족한 돈</p>
-            <p className="font-inter text-display font-bold text-danger">{shortfallMan}만원</p>
+            <p className="font-inter text-display font-bold text-danger">{shortfallLabel}</p>
           </InfoBox>
         ) : (
           <InfoBox tone="success" className="mb-6">
@@ -79,7 +83,7 @@ function PaycheckDiagnosisPage() {
           {data.shortfallExists ? (
             <>
               <p className="text-body font-semibold text-ink mb-0.5">
-                부족한 {shortfallMan}만원, 월급으로 만들어볼까요?
+                부족한 {shortfallLabel}, 월급으로 만들어볼까요?
               </p>
               <p className="text-sub text-ink-sub">선택은 자유예요. 원하실 때 언제든 만들 수 있어요.</p>
             </>
