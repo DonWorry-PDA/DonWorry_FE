@@ -1,44 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import usePostLogin from './usePostLogin'
 import { UsePinInputReturn } from '../types/login'
-
-const MAX_ATTEMPTS = 5
-const LOCK_SECONDS = 30
 
 export function usePinInput(userId: number): UsePinInputReturn {
   const navigate = useNavigate()
   const { mutate: postLogin, isPending } = usePostLogin()
 
   const [pin, setPin] = useState('')
-  const [attempts, setAttempts] = useState(0)
   const [isError, setIsError] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
-  const [isLocked, setIsLocked] = useState(false)
-  const [lockSecondsLeft, setLockSecondsLeft] = useState(0)
-
-  useEffect(() => {
-    if (!isLocked) return
-
-    const interval = setInterval(() => {
-      setLockSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          setIsLocked(false)
-          setAttempts(0)
-          setIsError(false)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [isLocked])
 
   function appendDigit(digit: string) {
-    if (isLocked || isPending) return
+    if (isPending) return
 
     if (isError || isServerError) {
       setIsError(false)
@@ -62,15 +37,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
           navigate(onboardingCompleted ? '/home' : '/onboarding')
         },
         onError: (error) => {
-          // 401(인증 실패)만 시도 횟수에 반영하고, 네트워크/서버 오류는 별도 처리
-          // TODO: 서버에서도 사용자/IP 기반 rate limiting을 적용해야 클라이언트 새로고침 우회를 막을 수 있음
           if (isAxiosError(error) && error.response?.status === 401) {
-            const nextAttempts = attempts + 1
-            setAttempts(nextAttempts)
-            if (nextAttempts >= MAX_ATTEMPTS) {
-              setIsLocked(true)
-              setLockSecondsLeft(LOCK_SECONDS)
-            }
             setIsError(true)
           } else {
             setIsServerError(true)
@@ -81,7 +48,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
   }
 
   function deleteDigit() {
-    if (isError || isServerError || isLocked) return
+    if (isError || isServerError) return
     setPin((p) => p.slice(0, -1))
   }
 
@@ -97,11 +64,8 @@ export function usePinInput(userId: number): UsePinInputReturn {
 
   return {
     pin,
-    attempts,
     isError,
     isServerError,
-    isLocked,
-    lockSecondsLeft,
     appendDigit,
     deleteDigit,
     reset,
