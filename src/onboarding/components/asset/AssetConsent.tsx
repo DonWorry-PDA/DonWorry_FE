@@ -31,7 +31,7 @@ function AssetConsent({ onNext, onPrev }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <div className="flex items-center gap-3 px-6 pt-12 pb-4">
-        <button type="button" onClick={onPrev} className="text-ink">
+        <button type="button" onClick={onPrev} aria-label="이전 단계로 이동" className="text-ink">
           <BackArrowIc width={24} height={24} />
         </button>
         <span className="text-body text-ink-sub">자산 연결 약관 동의 3/3</span>
