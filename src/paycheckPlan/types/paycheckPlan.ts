@@ -10,6 +10,28 @@ export type AssetItem = {
   subLabel: string
 }
 
+export type SalaryAssetItem = {
+  assetKey: string
+  name: string
+  description: string
+  amount: number
+  excluded: boolean
+}
+
+export type SalaryAssetGroup = {
+  category: string
+  categoryLabel: string
+  items: SalaryAssetItem[]
+}
+
+export type SalaryAssetListResponse = {
+  assetGroups: SalaryAssetGroup[]
+}
+
+export type SalaryAssetExclusionRequest = {
+  excludedAssetKeys: string[]
+}
+
 export type Analysis = {
   securedCashflow: number
   breakdown: CashflowItem[]
