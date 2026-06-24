@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { NavHomeIc, NotificationIc } from '../../../common/assets/icons'
 import { formatKrw } from '../../../common/utils/formatKrw'
 import { MOCK_LINKED_ACCOUNTS } from '../../../mypage/mock/mypage'
 import AssetConnectedDetail from './AssetConnectedDetail'
+import CheckBadge from '../../../common/components/CheckBadge'
 
 const totalAsset = MOCK_LINKED_ACCOUNTS.reduce((sum, a) => sum + a.amountKrw, 0)
 
@@ -17,19 +17,8 @@ function AssetResult() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <div className="flex items-center justify-end gap-4 px-6 pt-12 pb-4 text-ink">
-        <button aria-label="알림" onClick={() => navigate('/notification')}>
-          <NotificationIc width={24} height={24} />
-        </button>
-        <NavHomeIc width={24} height={24} />
-      </div>
-
-      <div className="flex flex-1 flex-col items-center px-6 pt-8">
-        <div className="flex size-16 items-center justify-center rounded-full bg-primary">
-          <svg width="28" height="21" viewBox="0 0 28 21" fill="none" aria-hidden="true">
-            <path d="M2 10L10 18L26 2" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+      <div className="flex flex-1 flex-col items-center px-6 pt-16">
+        <CheckBadge />
 
         <h1 className="mt-6 text-heading font-bold text-ink">자산 연결 결과</h1>
         <p className="mt-2 text-body text-ink-sub">마이데이터로 연결된 자산을 한눈에 모아드려요.</p>
@@ -66,7 +55,7 @@ function AssetResult() {
       <div className="px-6 pb-10">
         <button
           type="button"
-          onClick={() => navigate('/mypage', { replace: true })}
+          onClick={() => navigate('/home', { replace: true })}
           className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white"
         >
           시작하기

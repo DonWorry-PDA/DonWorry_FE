@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { BackArrowIc, NavHomeIc, NotificationIc } from '../../../common/assets/icons'
+import { BackArrowIc } from '../../../common/assets/icons'
 
 const CONSENT_ITEMS = [
   { id: 'collect', label: '[필수] 개인(신용)정보 수집 이용 동의' },
@@ -14,7 +13,6 @@ interface Props {
 }
 
 function AssetConsent({ onNext, onPrev }: Props) {
-  const navigate = useNavigate()
   const [checked, setChecked] = useState<Record<string, boolean>>(
     Object.fromEntries(CONSENT_ITEMS.map(item => [item.id, false]))
   )
@@ -32,24 +30,11 @@ function AssetConsent({ onNext, onPrev }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <div className="flex items-center justify-between px-6 pt-12 pb-4">
-        <div className="flex items-center gap-3">
-          <button type="button" onClick={onPrev} className="text-ink">
-            <BackArrowIc width={24} height={24} />
-          </button>
-          <span className="text-body text-ink-sub">자산 연결 약관 동의 3/3</span>
-        </div>
-        <div className="flex gap-4 text-ink">
-          <button
-            type="button"
-            aria-label="알림"
-            className="flex size-11 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-btn"
-            onClick={() => navigate('/notification')}
-          >
-            <NotificationIc width={24} height={24} />
-          </button>
-          <NavHomeIc width={24} height={24} />
-        </div>
+      <div className="flex items-center gap-3 px-6 pt-12 pb-4">
+        <button type="button" onClick={onPrev} className="text-ink">
+          <BackArrowIc width={24} height={24} />
+        </button>
+        <span className="text-body text-ink-sub">자산 연결 약관 동의 3/3</span>
       </div>
 
       <div className="flex flex-1 flex-col px-6 pt-8">
