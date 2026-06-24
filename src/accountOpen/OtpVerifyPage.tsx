@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
+import usePostOtpSend from './hooks/usePostOtpSend'
 
 const STEPS = [
   { step: 1, label: '인증' },
@@ -17,14 +18,17 @@ function OtpVerifyPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  const phone = (location.state as { phone?: string } | null)?.phone ?? ''
+
   const [otp, setOtp] = useState('')
   const [seconds, setSeconds] = useState(TIMER_SECONDS)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const { mutate: sendOtp, isPending: isResending, error: resendError } = usePostOtpSend()
+
   useEffect(() => {
-    const phone = (location.state as { phone?: string } | null)?.phone
     if (!phone) navigate('/account-open', { replace: true })
-  }, [location.state, navigate])
+  }, [phone, navigate])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -46,7 +50,11 @@ function OtpVerifyPage() {
     setOtp(v)
   }
 
-  const handleResend = () => { setOtp(''); setSeconds(TIMER_SECONDS) }
+  const handleResend = () => {
+    sendOtp(phone, {
+      onSuccess: () => { setOtp(''); setSeconds(TIMER_SECONDS) },
+    })
+  }
 
   const isComplete = otp.length === OTP_LENGTH && seconds > 0
 
@@ -114,17 +122,22 @@ function OtpVerifyPage() {
 
           {/* 타이머 + 재전송 */}
           <div className="mt-3 flex items-center justify-between">
-            <span className={`text-sub font-bold ${seconds > 0 ? 'text-danger' : 'text-danger'}`}>
-              {timerText}
-            </span>
+            <span className="text-sub font-bold text-danger">{timerText}</span>
             <button
               type="button"
+              disabled={isResending}
               onClick={(e) => { e.stopPropagation(); handleResend() }}
-              className="text-sub font-bold text-primary"
+              className="text-sub font-bold text-primary disabled:text-disabled"
             >
-              재전송
+              {isResending ? '전송 중…' : '재전송'}
             </button>
           </div>
+
+          {resendError && (
+            <p className="mt-2 text-caption text-danger">
+              인증번호 재전송에 실패했어요. 잠시 후 다시 시도해주세요.
+            </p>
+          )}
 
           {/* 안내 박스 */}
           <div className="mt-5 rounded-card-lg bg-[#f1f5fb] px-4 py-[1.125rem]">
