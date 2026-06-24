@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc } from '../common/assets/icons'
+import useGetLifeStability from '../stability/hooks/useGetLifeStability'
+import type { StabilityStatus } from '../stability/types/stability'
 import AssetSummaryCard from './components/AssetSummaryCard'
 import ManageMenuCard from './components/ManageMenuCard'
 import type { AssetHubSummary, ManageMenu } from './types/asset'
@@ -69,8 +71,44 @@ const MOCK_MENUS: ManageMenu[] = [
   },
 ]
 
+const STATUS_TEXT: Record<StabilityStatus, string> = {
+  stable: '안정',
+  warning: '주의',
+  danger: '위험',
+}
+
+// MenuIconTone에 danger 전용 톤이 없어 danger도 warning 톤으로 표시(상태 점은 빨강으로 구분됨)
+const STATUS_ICON_TONE: Record<StabilityStatus, ManageMenu['iconTone']> = {
+  stable: 'muted',
+  warning: 'warning',
+  danger: 'warning',
+}
+
 function AssetHubPage() {
   const navigate = useNavigate()
+  const { data: stability, isLoading: isStabilityLoading } = useGetLifeStability()
+
+  const menus: ManageMenu[] = MOCK_MENUS.map((menu) => {
+    if (menu.key !== 'lifeStability') return menu
+    if (isStabilityLoading) {
+      return { ...menu, caption: '충당률 계산 중', statusDot: undefined, statusText: undefined }
+    }
+    if (!stability) {
+      return {
+        ...menu,
+        caption: '정보를 불러오지 못했어요',
+        statusDot: undefined,
+        statusText: undefined,
+      }
+    }
+    return {
+      ...menu,
+      caption: `충당률 ${stability.percentage}%`,
+      iconTone: STATUS_ICON_TONE[stability.status],
+      statusDot: stability.status,
+      statusText: STATUS_TEXT[stability.status],
+    }
+  })
 
   return (
     <div className="bg-page flex h-dvh flex-col">
@@ -92,7 +130,7 @@ function AssetHubPage() {
           <section>
             <h2 className="text-body text-ink mb-3 font-bold">관리 메뉴</h2>
             <div className="grid grid-cols-2 gap-3 [grid-auto-rows:1fr]">
-              {MOCK_MENUS.map((menu) => (
+              {menus.map((menu) => (
                 <ManageMenuCard key={menu.key} menu={menu} onClick={() => navigate(menu.path)} />
               ))}
             </div>
