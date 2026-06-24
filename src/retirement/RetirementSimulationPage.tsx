@@ -54,7 +54,7 @@ function RetirementSimulationPage() {
             <button
               type="button"
               className="text-btn font-semibold text-primary"
-              onClick={refetch}
+              onClick={() => void refetch()}
             >
               다시 시도
             </button>
