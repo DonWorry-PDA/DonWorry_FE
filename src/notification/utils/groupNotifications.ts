@@ -1,12 +1,16 @@
 import type { NotificationGroup, NotificationItem } from '../types/notification'
 
+function toLocalDateString(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
 function getGroupLabel(createdAt: string): string {
   const now = new Date()
   const date = new Date(createdAt)
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  if (diffDays === 0) return '오늘'
+  if (toLocalDateString(date) === toLocalDateString(now)) return '오늘'
+
+  const diffDays = Math.round((now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
   if (diffDays <= 6) return '이번 주'
   return '이전'
 }
