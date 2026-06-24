@@ -1,17 +1,17 @@
 .disc {
   fill: var(--color-primary);
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   animation: pop 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
 
 .ring {
+  opacity: 0;
   fill: none;
   stroke: var(--color-primary);
   stroke-width: 4;
-  opacity: 0;
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   animation: ripple 0.7s ease-out 0.15s both;
 }
 
@@ -27,17 +27,39 @@
 }
 
 @keyframes pop {
-  0%   { transform: scale(0); opacity: 0; }
-  55%  { transform: scale(1.12); opacity: 1; }
-  75%  { transform: scale(0.94); }
-  100% { transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  55% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+
+  75% {
+    transform: scale(0.94);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes ripple {
-  0%   { transform: scale(0.7); opacity: 0.45; }
-  100% { transform: scale(2.1); opacity: 0; }
+  0% {
+    opacity: 0.45;
+    transform: scale(0.7);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+  }
 }
 
 @keyframes draw {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
