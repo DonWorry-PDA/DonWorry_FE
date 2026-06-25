@@ -23,7 +23,7 @@ function NotificationSettingsPage() {
         <div className="h-[37px] shrink-0" />
 
         {/* 히어로 배너 */}
-        <div className="px-5">
+        <div className="px-6">
           <div
             className="rounded-card-xl px-6 pt-[23px] pb-6 flex flex-col gap-[10px]"
             style={{ background: 'linear-gradient(134.98deg, #0046FF 0%, #4F86FF 100%)' }}
@@ -42,7 +42,7 @@ function NotificationSettingsPage() {
         <div className="h-[10px] shrink-0" />
 
         {/* 설정 목록 */}
-        <div className="px-5 flex flex-col gap-4 pb-6">
+        <div className="px-6 flex flex-col gap-4 pb-6">
           {isLoading && (
             <div role="status" aria-live="polite" aria-busy="true" className="overflow-hidden rounded-card-xl border border-line shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)]">
               <span className="sr-only">알림 설정을 불러오는 중입니다.</span>

@@ -32,12 +32,12 @@ function TermsHistoryPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 페이지 설명 */}
-        <p className="px-5 pb-2 pt-6 text-sub leading-relaxed text-ink-sub">
+        <p className="px-6 pb-2 pt-6 text-sub leading-relaxed text-ink-sub">
           동의한 약관과 처리 방침을 한곳에서 확인하고, 선택 항목은 직접 켜고 끌 수 있어요.
         </p>
 
         {mutationError && (
-          <div className="flex items-center gap-2 px-5 pb-2">
+          <div className="flex items-center gap-2 px-6 pb-2">
             <InfoBox tone="danger" className="flex-1">
               {mutationError}
             </InfoBox>
@@ -53,10 +53,10 @@ function TermsHistoryPage() {
         )}
 
         {/* 필수 동의 항목 */}
-        <div className="px-5 pb-0.5 pt-4">
+        <div className="px-6 pb-0.5 pt-4">
           <span className="text-caption font-semibold text-ink-hint">필수 동의 항목</span>
         </div>
-        <div className="px-5">
+        <div className="px-6">
           {requiredTerms.map((term, idx) => (
             <div key={term.id}>
               <button
@@ -78,10 +78,10 @@ function TermsHistoryPage() {
         </div>
 
         {/* 선택 동의 항목 */}
-        <div className="px-5 pb-0.5 pt-[18px]">
+        <div className="px-6 pb-0.5 pt-[18px]">
           <span className="text-caption font-semibold text-ink-hint">선택 동의 항목</span>
         </div>
-        <div className="px-5">
+        <div className="px-6">
           {optionalTerms.map((term, idx) => (
             <div key={term.id}>
               <div className="flex items-center gap-3 py-[15px]">
@@ -105,7 +105,7 @@ function TermsHistoryPage() {
         </div>
 
         {/* 안내 박스 */}
-        <div className="px-5 pb-[26px] pt-[18px]">
+        <div className="px-6 pb-[26px] pt-[18px]">
           <div className="rounded-card bg-surface px-4 py-[14px]">
             <p className="text-sub leading-relaxed text-ink-sub">
               필수 항목은 서비스 이용에 반드시 필요해 철회할 수 없어요. 선택 항목 철회 시 일부

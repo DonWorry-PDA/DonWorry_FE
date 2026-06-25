@@ -1,9 +1,5 @@
-import { MOCK_USER_PROFILE } from '../../mypage/mock/mypage'
-import type { UserProfile } from '../../mypage/types/mypage'
+import useGetProfile from '../../mypage/hooks/useGetProfile'
 
-// Replace MOCK_USER_PROFILE with real session/API data when auth is implemented
-function useCurrentUser(): UserProfile {
-  return MOCK_USER_PROFILE
-}
+const useCurrentUser = () => useGetProfile()
 
 export default useCurrentUser

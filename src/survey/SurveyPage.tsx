@@ -55,7 +55,7 @@ function SurveyPage() {
 
   if (isSurveyLoading) {
     return (
-      <div role="status" aria-live="polite" className="flex h-dvh flex-col px-5 pt-[52px]">
+      <div role="status" aria-live="polite" className="flex h-dvh flex-col px-6 pt-[52px]">
         <span className="sr-only">설문을 불러오는 중입니다.</span>
         <div className="mb-8 h-6 w-20 animate-pulse rounded bg-surface-muted" />
         <div className="mb-3 h-7 w-3/4 animate-pulse rounded bg-surface-muted" />
@@ -70,7 +70,7 @@ function SurveyPage() {
   return (
     <div className="flex h-dvh flex-col">
       {/* 헤더 */}
-      <header className="flex h-[52px] shrink-0 items-center px-5">
+      <header className="flex h-[52px] shrink-0 items-center px-6">
         <button onClick={handleBack} className="flex size-7 items-center justify-center">
           <BackArrowIc className="text-ink" width={22} height={22} />
         </button>

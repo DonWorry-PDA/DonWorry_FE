@@ -3,101 +3,149 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import { formatKrw } from '../common/utils/formatKrw'
+import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
+import type { AssetRole, RoleContribution } from './types/investmentCheck'
 
-type CashflowType = 'MONTHLY' | 'MATURITY' | 'LOCKED' | 'NONE'
-
-type HoldingItem = {
-  name: string
-  memo: string
-  amountKrw: number
-  cashflowType: CashflowType
+// 역할별 점 색상. (기존 cashflowType 토큰 재활용)
+const ROLE_DOT: Record<AssetRole, string> = {
+  CASHFLOW: 'bg-success',
+  GROWTH: 'bg-dot-off',
+  IDLE: 'bg-event-interest',
+  PENSION: 'bg-event-maturity',
 }
 
-const MOCK = {
-  cashflowAssetRatio: 32,
-  summaryLines: [
-    '매달 현금이 들어오는 자산은 배당 ETF뿐이에요.',
-    '예금 5,000만원은 만기까지 이자가 묶여 있어요.',
-    '국내 주식 2,000만원은 배당이 거의 없어요.',
-  ],
-  holdings: [
-    { name: '배당 ETF', memo: '월 10만원 입금 중', amountKrw: 30_000_000, cashflowType: 'MONTHLY' },
-    { name: '예금', memo: '만기 2026.11 · 이자 일시 지급', amountKrw: 50_000_000, cashflowType: 'MATURITY' },
-    { name: '국내 주식', memo: '배당수익률 0.4%', amountKrw: 20_000_000, cashflowType: 'NONE' },
-    { name: 'IRP', memo: '55세 이후 연금으로 수령 가능', amountKrw: 100_000_000, cashflowType: 'LOCKED' },
-    { name: '연금저축', memo: '연금 수령 시 세율 3.3~5.5%', amountKrw: 50_000_000, cashflowType: 'LOCKED' },
-  ] satisfies HoldingItem[],
-  concentration: '낮음 · 안전',
-  missedBenefit: '연금저축 세액공제 한도 남음',
-}
+// roles에서 "세 줄 요약"을 규칙 생성한다. CASHFLOW 우선, 그 외는 금액 큰 순으로 최대 3줄.
+function buildSummaryLines(roles: RoleContribution[]): string[] {
+  const lines: string[] = []
 
-const TYPE_DOT: Record<CashflowType, string> = {
-  MONTHLY: 'bg-success',
-  MATURITY: 'bg-event-interest',
-  LOCKED: 'bg-event-maturity',
-  NONE: 'bg-dot-off',
+  const cashflow = roles.find((r) => r.role === 'CASHFLOW')
+  if (cashflow && cashflow.monthlyCashflow > 0) {
+    lines.push(`현금흐름 자산에서 매달 약 ${formatKrw(cashflow.monthlyCashflow)}이 들어와요.`)
+  }
+
+  const rest = roles
+    .filter((r) => r.role !== 'CASHFLOW')
+    .sort((a, b) => b.amount - a.amount)
+
+  for (const role of rest) {
+    if (role.role === 'IDLE') {
+      lines.push(`잠자는 돈 ${formatKrw(role.amount)}은 아직 일하지 않고 쉬고 있어요.`)
+    } else if (role.role === 'GROWTH') {
+      lines.push(`개별주 ${formatKrw(role.amount)}은 ${role.note}.`)
+    } else if (role.role === 'PENSION') {
+      lines.push(`연금 ${formatKrw(role.amount)}은 55세까지 묶여 있어요.`)
+    }
+  }
+
+  return lines.slice(0, 3)
 }
 
 function InvestmentCheckupPage() {
   const navigate = useNavigate()
+  const { data, isLoading, isFetching, refetch } = useGetInvestmentCheck()
 
   return (
-    <div className="bg-page flex h-dvh flex-col">
+    <div className="flex h-dvh flex-col bg-white">
       <AppBar title="투자 건강검진" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pb-6">
-        <h2 className="text-card text-ink mt-2 font-bold leading-snug">
-          갖고 계신 자산 중{'\n'}
-          <span className="text-primary">{MOCK.cashflowAssetRatio}%만 월급을 만들고 있어요</span>
-        </h2>
+      {isLoading ? (
+        <main className="flex-1 overflow-y-auto px-6 pb-6" role="status" aria-live="polite">
+          <span className="sr-only">투자 건강검진 결과를 불러오는 중입니다.</span>
+          <div className="mt-2 h-16 animate-pulse rounded-card-lg bg-surface-muted" />
+          <div className="mt-4 h-24 animate-pulse rounded-card-lg bg-surface-muted" />
+          <div className="mt-6 h-60 animate-pulse rounded-card-lg bg-surface-muted" />
+        </main>
+      ) : !data ? (
+        <main className="flex flex-1 flex-col items-center justify-center gap-4 px-[22px]">
+          <p className="text-body text-ink-sub text-center leading-[1.6]">
+            투자 건강검진 결과를 불러오지 못했어요.
+          </p>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink disabled:opacity-50"
+          >
+            {isFetching ? '불러오는 중…' : '다시 시도'}
+          </button>
+        </main>
+      ) : (
+        <>
+          <main className="flex-1 overflow-y-auto px-6 pb-6">
+            <h2 className="text-card text-ink mt-2 font-bold leading-snug whitespace-pre-line">
+              갖고 계신 자산 중{'\n'}
+              <span className="text-primary">{data.cashflowAssetRatio}%만 월급을 만들고 있어요</span>
+            </h2>
 
-        {/* 세 줄 요약 */}
-        <div className="rounded-card-lg bg-primary-tint mt-4 p-4">
-          <p className="text-body text-primary mb-2 font-bold">✦ 세 줄 요약</p>
-          <ul className="flex flex-col gap-1.5">
-            {MOCK.summaryLines.map((line) => (
-              <li key={line} className="text-body text-ink-sub flex gap-1.5">
-                <span className="text-ink-hint">·</span>
-                {line}
-              </li>
-            ))}
-          </ul>
-        </div>
+            {/* 세 줄 요약 (roles 규칙 생성) */}
+            {(() => {
+              const summaryLines = buildSummaryLines(data.roles)
+              if (summaryLines.length === 0) return null
+              return (
+                <div className="rounded-card-lg bg-primary-tint mt-4 p-4">
+                  <p className="text-body text-primary mb-2 font-bold">✦ 세 줄 요약</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {summaryLines.map((line) => (
+                      <li key={line} className="text-body text-ink-sub flex gap-1.5">
+                        <span className="text-ink-hint">·</span>
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            })()}
 
-        {/* 보유 자산별 현금흐름 기여 */}
-        <p className="text-body text-ink-hint mt-6 mb-2">보유 자산별 현금흐름 기여</p>
-        <div className="rounded-card-lg shadow-card flex flex-col bg-white">
-          {MOCK.holdings.map((h, i) => (
-            <div
-              key={h.name}
-              className={`flex items-center gap-3 px-4 py-3.5 ${i > 0 ? 'border-divider border-t' : ''}`}
-            >
-              <span className={`size-2 shrink-0 rounded-full ${TYPE_DOT[h.cashflowType]}`} />
-              <div className="min-w-0 flex-1">
-                <p className="text-md text-ink font-bold">{h.name}</p>
-                <p className="text-caption text-ink-hint mt-0.5">{h.memo}</p>
-              </div>
-              <span className="text-md text-ink shrink-0 font-bold">{formatKrw(h.amountKrw)}</span>
+            {/* 자산 역할별 현금흐름 기여 */}
+            <p className="text-body text-ink-hint mt-6 mb-2">자산 역할별 현금흐름 기여</p>
+            <div className="rounded-card-lg shadow-card flex flex-col bg-white">
+              {data.roles.map((role, i) => (
+                <div
+                  key={role.role}
+                  className={`flex items-center gap-3 px-4 py-3.5 ${i > 0 ? 'border-divider border-t' : ''}`}
+                >
+                  <span className={`size-2 shrink-0 rounded-full ${ROLE_DOT[role.role]}`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-md text-ink font-bold">
+                      {role.label}
+                      <span className="text-caption text-ink-hint ml-1.5 font-normal">{role.ratio}%</span>
+                    </p>
+                    <p className="text-caption text-ink-hint mt-0.5">
+                      {role.role === 'CASHFLOW' && role.monthlyCashflow > 0
+                        ? `월 ${formatKrw(role.monthlyCashflow)} 유입`
+                        : role.note}
+                    </p>
+                  </div>
+                  <span className="text-md text-ink shrink-0 font-bold">{formatKrw(role.amount)}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* 요약 푸터 */}
-        <div className="border-line mt-5 flex flex-col gap-2 border-t pt-4">
-          <div className="flex items-center justify-between">
-            <span className="text-body text-ink-hint">한 종목 쏠림</span>
-            <span className="text-body text-success font-bold">{MOCK.concentration}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-body text-ink-hint">놓치고 있는 혜택</span>
-            <span className="text-body text-ink font-bold">{MOCK.missedBenefit}</span>
-          </div>
-        </div>
-      </main>
+            {/* 성장 자산 블록 (개별주 보유 시에만) */}
+            {data.growthAsset && (
+              <div className="rounded-card-lg border-line mt-6 border bg-white p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-body text-ink font-bold">성장에 베팅한 자산</span>
+                  <span className="text-md text-ink font-bold">{formatKrw(data.growthAsset.amount)}</span>
+                </div>
+                <div className="border-line mt-3 flex items-center justify-between border-t pt-3">
+                  <span className="text-body text-ink-hint">한 종목 쏠림</span>
+                  <span className="text-body text-ink font-bold">
+                    {data.growthAsset.topStockName} · {data.growthAsset.concentrationLevel}
+                  </span>
+                </div>
+                <p className="text-caption text-ink-sub mt-3 leading-[1.6]">
+                  💡 {data.growthAsset.suggestion}
+                </p>
+              </div>
+            )}
+          </main>
 
-      <StickyFooter>
-        <Button onClick={() => navigate('/paycheck-plan/assets')}>이 자산으로 월급 만들어보기</Button>
-      </StickyFooter>
+          <StickyFooter>
+            <Button onClick={() => navigate('/paycheck-plan/assets')}>이 자산으로 월급 만들어보기</Button>
+          </StickyFooter>
+        </>
+      )}
     </div>
   )
 }

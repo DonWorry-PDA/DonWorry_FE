@@ -99,7 +99,7 @@ function OrderProductPage() {
     <div className="flex flex-col h-full">
       <AppBar title="상품 설명" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6">
+      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-1">
           사기 전에
           <br />

@@ -4,18 +4,10 @@ import { NotificationIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import StabilityCard from './components/StabilityCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
+import useGetProfile from '@/mypage/hooks/useGetProfile'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData, ReportItem } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
-
-// 사용자 헤더는 아직 mock(사용자 API 연동 전). 날짜만 오늘 기준으로 표시해 고정 오정보를 방지한다.
-const TODAY_LABEL = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'full' }).format(new Date())
-
-const MOCK_USER = {
-  name: '김영수',
-  initial: '김',
-  date: TODAY_LABEL,
-}
 
 // 월간 리포트(#6)는 아직 미구현이라 mock 유지
 const MOCK_REPORT_MONTH = '6월'
@@ -63,6 +55,7 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
 function HomePage() {
   const navigate = useNavigate()
   const { data: hub, isLoading, refetch } = useGetAssetHub()
+  const { data: profile } = useGetProfile()
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
@@ -70,24 +63,25 @@ function HomePage() {
   return (
     <div className="flex h-dvh flex-col bg-white">
       {/* User header */}
-      <header className="flex shrink-0 items-center gap-[11px] px-5 pt-[10px] pb-[14px]">
-        <div className="bg-primary flex size-[42px] shrink-0 items-center justify-center rounded-full">
-          <span className="text-btn font-bold text-white">{MOCK_USER.initial}</span>
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="text-md text-ink font-bold">{MOCK_USER.name}님</p>
-          <p className="text-caption text-ink-hint">{MOCK_USER.date}</p>
+      <header className="flex h-[52px] items-center pl-6 pr-[14px]">
+        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
+        <div className="flex-1 min-w-0">
+          {profile ? (
+            <p className="text-heading font-bold text-ink">{profile.name}님</p>
+          ) : (
+            <div className="h-5 w-20 animate-pulse rounded bg-surface-muted" />
+          )}
         </div>
         <button
           aria-label="알림"
-          className="-mr-[11px] flex size-11 shrink-0 items-center justify-center"
+          className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >
           <NotificationIc className="text-ink" width={22} height={22} />
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-6">
+      <main className="flex-1 overflow-y-auto pt-4 pb-6">
         {isLoading ? (
           <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
             <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
@@ -103,7 +97,7 @@ function HomePage() {
           // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
         ) : (
-          <div className="flex flex-col gap-5 px-5">
+          <div className="flex flex-col gap-5 px-6">
             {/* 총 자산 */}
             <section>
               <div className="mb-3 flex items-center justify-between">

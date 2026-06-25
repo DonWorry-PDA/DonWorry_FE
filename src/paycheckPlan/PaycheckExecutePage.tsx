@@ -58,7 +58,7 @@ function PaycheckExecutePage() {
     <div className="flex flex-col h-full">
       <AppBar title="실행 요약" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-5 pt-4">
+      <div className="flex-1 overflow-y-auto px-6 pt-4">
         <Badge tone="primary" className="mb-3">{summary.planName}</Badge>
 
         <h2 className="text-heading font-bold text-ink mb-1 mt-3">

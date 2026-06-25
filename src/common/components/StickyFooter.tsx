@@ -6,7 +6,7 @@ type StickyFooterProps = {
 
 function StickyFooter({ children }: StickyFooterProps) {
   return (
-    <footer className="shrink-0 bg-white px-5 pb-6 pt-3">
+    <footer className="shrink-0 bg-white px-6 pb-6 pt-3">
       {children}
     </footer>
   )

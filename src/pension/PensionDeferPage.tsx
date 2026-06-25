@@ -27,7 +27,7 @@ function PensionDeferPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 소개 텍스트 */}
-        <div className="px-5 pt-4 pb-5">
+        <div className="px-6 pt-4 pb-5">
           <p className="text-body text-ink-sub leading-[1.6]">
             얼마나 미룰지 비율로 정할 수 있어요.{' '}
             <br />

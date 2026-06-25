@@ -7,7 +7,7 @@ function OrderCompletePage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <div className="flex flex-1 flex-col items-center overflow-y-auto px-5 pt-[calc(5dvh+1.375rem)] pb-6">
+      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-[calc(5dvh+1.375rem)] pb-6">
         <CheckBadge />
 
         <h2 className="mt-6 text-heading font-bold text-ink text-center mb-1">실행을 마쳤어요</h2>

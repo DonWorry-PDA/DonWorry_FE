@@ -199,7 +199,7 @@ function AssetConsentDetailPage() {
     <div className="flex h-dvh flex-col bg-white">
       <AppBar title={consent.appBarTitle} onBack={() => navigate('/onboarding/asset-consent')} />
 
-      <main className="flex-1 overflow-y-auto px-5 pb-12">
+      <main className="flex-1 overflow-y-auto px-6 pb-12">
         <div className="mb-[22px] mt-6 flex items-center justify-between rounded-card-lg bg-surface p-[17px]">
           <p className="text-body font-bold text-ink">{consent.name}</p>
           <span className="ml-3 shrink-0 rounded-badge bg-primary-tint px-[9px] py-[3px] text-caption font-bold text-primary">

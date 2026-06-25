@@ -105,7 +105,7 @@ function AccountConnectPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 헤더 */}
-        <div className="px-5 pt-6 pb-1 flex flex-col gap-[8.8px]">
+        <div className="px-6 pt-6 pb-1 flex flex-col gap-[8.8px]">
           <h2 className="text-heading font-extrabold text-ink leading-[1.43]">
             빠진 자산,
             <br />
@@ -117,7 +117,7 @@ function AccountConnectPage() {
         </div>
 
         {/* 검색 */}
-        <div className="px-5 pt-4">
+        <div className="px-6 pt-4">
           <div className="bg-surface-muted flex h-12 items-center gap-[9px] rounded-[13px] px-[14px]">
             <svg width="17" height="18" viewBox="0 0 17 18" fill="none" className="shrink-0">
               <circle cx="7.5" cy="7.5" r="6" stroke="#9BA4AE" strokeWidth="1.8" />
@@ -134,7 +134,7 @@ function AccountConnectPage() {
         </div>
 
         {/* 이미 연결된 기관 */}
-        <div className="px-5 pt-5 flex flex-col gap-0.5">
+        <div className="px-6 pt-5 flex flex-col gap-0.5">
           <p className="text-caption font-semibold text-ink-hint">이미 연결된 기관</p>
           <div className="flex items-center gap-3 py-[14px]">
             <InstitutionBadge label={CONNECTED.label} bg={CONNECTED.bg} color={CONNECTED.color} />
@@ -150,7 +150,7 @@ function AccountConnectPage() {
 
         {/* 은행 섹션 */}
         {filtered.banks.length > 0 && (
-          <div className="px-5 pt-4">
+          <div className="px-6 pt-4">
             <p className="text-caption font-semibold text-ink-hint">은행</p>
             {filtered.banks.map((bank, i) => (
               <div key={bank.id}>
@@ -170,7 +170,7 @@ function AccountConnectPage() {
 
         {/* 증권사 섹션 */}
         {filtered.securities.length > 0 && (
-          <div className="px-5 pt-4">
+          <div className="px-6 pt-4">
             <p className="text-caption font-semibold text-ink-hint">증권사</p>
             {filtered.securities.map((sec, i) => (
               <div key={sec.id}>
@@ -197,7 +197,7 @@ function AccountConnectPage() {
         )}
 
         {/* 안내 문구 */}
-        <div className="px-5 pt-[18px] pb-4">
+        <div className="px-6 pt-[18px] pb-4">
           <div className="bg-[#f1f5fb] rounded-card px-4 py-[14px]">
             <p className="text-caption text-ink-sub leading-[1.65]">
               기관을 연결하면 자산정보 조회에 동의하게 돼요. 연결은 마이페이지에서 언제든 해제할 수 있어요.

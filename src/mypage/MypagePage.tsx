@@ -55,8 +55,9 @@ function MypagePage() {
   return (
     <div className="relative flex flex-col bg-white h-dvh">
       {/* 헤더 */}
-      <header className="flex h-[52px] items-center pl-5 pr-[14px]">
-        <h1 className="flex-1 text-card font-bold text-ink">마이페이지</h1>
+      <header className="flex h-[52px] items-center pl-6 pr-[14px]">
+        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
+        <h1 className="flex-1 text-heading font-bold text-ink">마이페이지</h1>
         <button
           className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
@@ -66,7 +67,7 @@ function MypagePage() {
       </header>
 
       {/* 스크롤 영역 */}
-      <main className="flex-1 overflow-y-auto px-5">
+      <main className="flex-1 overflow-y-auto px-6 pt-4">
         {/* 프로필 */}
         <div className="flex items-center gap-[14px] border-b border-line py-[19px] pt-2">
           <div className="bg-primary-tint flex size-[54px] shrink-0 items-center justify-center rounded-full">
@@ -116,7 +117,7 @@ function MypagePage() {
         </button>
 
         {/* 구분선 */}
-        <div className="relative -mx-5 h-7">
+        <div className="relative -mx-6 h-7">
           <div className="absolute inset-x-0 top-[10px] h-2 bg-surface" />
         </div>
 

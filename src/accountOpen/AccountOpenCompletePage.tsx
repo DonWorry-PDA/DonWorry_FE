@@ -25,7 +25,7 @@ function AccountOpenCompletePage() {
     <div className="flex flex-col bg-white h-dvh">
       <AppBar title="계좌 개설" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pt-2">
+      <main className="flex-1 overflow-y-auto px-6 pt-2">
         {/* 단계 표시 */}
         <div className="flex items-center justify-between pb-5 pt-[0.375rem]">
           {STEPS.map(({ step, label, state }, index) => (

@@ -68,7 +68,7 @@ function ProfileEditPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 타이틀 */}
-        <div className="px-5 pt-2 pb-[1.125rem]">
+        <div className="px-6 pt-2 pb-[1.125rem]">
           <h2 className="text-heading font-extrabold text-ink leading-[1.43] tracking-[-0.025em] mb-[0.5625rem]">
             내 정보를 바꾸면
             <br />
@@ -80,7 +80,7 @@ function ProfileEditPage() {
         </div>
 
         {/* 폼 */}
-        <div className="flex flex-col gap-[1.125rem] px-5 pb-6">
+        <div className="flex flex-col gap-[1.125rem] px-6 pb-6">
           {/* 이름 (읽기 전용) */}
           <div className="flex flex-col gap-2">
             <span className="text-sub font-semibold text-ink-sub">이름</span>

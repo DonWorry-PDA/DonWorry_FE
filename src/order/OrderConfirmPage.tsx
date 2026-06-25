@@ -16,7 +16,7 @@ function OrderConfirmPage() {
 
   return (
     <div className="flex flex-col h-full bg-white">
-      <div className="flex-1 flex flex-col items-center justify-center px-5 pb-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
         <ClockIcon />
 
         <h2 className="text-heading font-bold text-ink text-center mb-1">
@@ -43,7 +43,7 @@ function OrderConfirmPage() {
         </div>
       </div>
 
-      <div className="px-5 pb-4 shrink-0 flex flex-col gap-2">
+      <div className="px-6 pb-4 shrink-0 flex flex-col gap-2">
         <button
           onClick={() => navigate('/order/modify')}
           className="w-full h-[54px] rounded-btn border border-line text-btn font-semibold text-ink"

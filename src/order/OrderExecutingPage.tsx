@@ -120,7 +120,6 @@ function OrderExecutingPage() {
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="flex-1 flex flex-col px-5 pt-16">
-        {/* 타이틀 */}
         <div className="flex flex-col items-center mb-10">
           {phase === 'executing' ? (
             <svg className="animate-spin text-primary mb-6" width="48" height="48" viewBox="0 0 48 48" fill="none">

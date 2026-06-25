@@ -20,7 +20,7 @@ function formatPhone(value: string) {
 
 function IdentityVerifyPage() {
   const navigate = useNavigate()
-  const currentUser = useCurrentUser()
+  const { data: currentUser } = useCurrentUser()
 
   const [activeTab, setActiveTab] = useState<'phone' | 'shinhan'>('phone')
   const [ssnFront, setSsnFront] = useState('')
@@ -71,7 +71,7 @@ function IdentityVerifyPage() {
         </div>
 
         {/* 제목 */}
-        <div className="px-5">
+        <div className="px-6">
           <h2 className="text-heading font-extrabold text-ink leading-[1.47] tracking-[-0.025em]">
             본인 인증
           </h2>
@@ -81,7 +81,7 @@ function IdentityVerifyPage() {
         </div>
 
         {/* 탭 */}
-        <div className="mt-[1.125rem] flex border-b border-divider px-5">
+        <div className="mt-[1.125rem] flex border-b border-divider px-6">
           {(['phone', 'shinhan'] as const).map((tab) => (
             <button
               key={tab}
@@ -99,13 +99,15 @@ function IdentityVerifyPage() {
         </div>
 
         {/* 필드 */}
-        <div className="px-5">
+        <div className="px-6">
           {/* 이름 */}
           <div className="flex flex-col gap-[0.5625rem] border-b border-divider pb-[1.1875rem] pt-[1.125rem]">
             <span className="text-sub text-ink-sub">이름</span>
-            <span className="font-inter text-card font-bold text-ink">
-              {currentUser.name}
-            </span>
+            {currentUser ? (
+              <span className="font-inter text-card font-bold text-ink">{currentUser.name}</span>
+            ) : (
+              <div className="h-6 w-20 animate-pulse rounded bg-surface-muted" />
+            )}
           </div>
 
           {/* 주민등록번호 */}
@@ -164,7 +166,7 @@ function IdentityVerifyPage() {
         </div>
 
         {/* 안내 박스 */}
-        <div className="mx-5 mb-6 rounded-card-lg bg-[#f1f5fb] px-4 py-[1.125rem]">
+        <div className="mx-6 mb-6 rounded-card-lg bg-[#f1f5fb] px-4 py-[1.125rem]">
           <p className="text-sub text-ink-sub leading-[1.66]">
             주민등록번호 뒷자리와 휴대폰 번호를 확인하고 인증번호를 보내드려요. 입력 정보는 본인확인 용도로만 사용돼요.
           </p>

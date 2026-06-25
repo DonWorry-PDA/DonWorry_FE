@@ -89,7 +89,7 @@ function OrderReviewPage() {
     <div className="flex flex-col h-full">
       <AppBar title="주문 검토" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6">
+      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-6">이렇게 주문할게요</h2>
 
         {/* 살 자산 */}

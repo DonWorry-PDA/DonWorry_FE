@@ -79,7 +79,7 @@ function PaycheckAssetSelectPage() {
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
       <StepProgress current={1} total={2} />
 
-      <div className="flex-1 overflow-y-auto px-5">
+      <div className="flex-1 overflow-y-auto px-6">
         <h2 className="text-heading font-bold text-ink mb-1">
           월급 재료로 쓰지 않을
           <br />
