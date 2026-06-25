@@ -54,7 +54,16 @@ function StabilityPage() {
 
       <main className="flex-1 overflow-y-auto">
         {isLoading ? (
-          <StatusMessage text="생활 안정도를 불러오는 중이에요…" />
+          <div className="flex flex-col items-center px-[22px] pt-6">
+            <div className="mb-2 h-7 w-36 animate-pulse rounded bg-surface-muted" />
+            <div className="mb-8 h-5 w-52 animate-pulse rounded bg-surface-muted" />
+            <div className="mb-8 h-[120px] w-[220px] animate-pulse rounded-full bg-surface-muted" />
+            <div className="flex w-full flex-col gap-[9px]">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="h-[58px] animate-pulse rounded-btn bg-surface-muted" />
+              ))}
+            </div>
+          </div>
         ) : isError || !data ? (
           <StatusMessage
             text={
