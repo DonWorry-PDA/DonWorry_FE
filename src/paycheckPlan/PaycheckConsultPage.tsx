@@ -7,12 +7,35 @@ import SelectChip from '../common/components/SelectChip'
 import ConsultCard from './components/ConsultCard'
 import { mockConsultCards, mockTimeSlots } from './mock/paycheckPlan'
 import type { ConsultType } from './types/paycheckPlan'
+import { usePostConsultation } from '../mypage/hooks/consultation'
+import { buildScheduledAtIso } from '../mypage/utils/consultation'
 
 function PaycheckConsultPage() {
   const navigate = useNavigate()
   const [selectedType, setSelectedType] = useState<ConsultType>('pb')
   const [sendChecked, setSendChecked] = useState(true)
   const [selectedTime, setSelectedTime] = useState('10:30')
+  const createConsultation = usePostConsultation()
+
+  // 날짜 선택 UI 미연동 — 시연용으로 5일 뒤로 고정(표시·전송에 동일 값 사용)
+  const [reservationDate] = useState(() => {
+    const d = new Date()
+    d.setDate(d.getDate() + 5)
+    return d
+  })
+  const DOW = ['일', '월', '화', '수', '목', '금', '토']
+  const reservationDateLabel = `${reservationDate.getMonth() + 1}월 ${reservationDate.getDate()}일 (${DOW[reservationDate.getDay()]})`
+
+  const handleReserve = () => {
+    createConsultation.mutate(
+      {
+        consultType: selectedType === 'pb' ? 'PB' : 'INSURANCE',
+        scheduledAt: buildScheduledAtIso(reservationDate, selectedTime),
+        planId: null,
+      },
+      { onSuccess: () => navigate('/mypage/consult-history') },
+    )
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -53,7 +76,7 @@ function PaycheckConsultPage() {
           <div className="flex items-center justify-between py-3 border-t border-divider mb-4">
             <span className="text-body text-ink-sub">날짜</span>
             <button className="text-body font-medium text-ink flex items-center gap-1">
-              6월 19일 (금)
+              {reservationDateLabel}
               <span className="text-ink-hint">›</span>
             </button>
           </div>
@@ -74,8 +97,14 @@ function PaycheckConsultPage() {
 
       <StickyFooter>
         <div className="flex flex-col gap-1.5">
-          <Button onClick={() => {}}>상담 예약하기</Button>
-          <p className="text-sub text-ink-hint text-center">예약 변경·취소는 마이페이지에서 할 수 있어요</p>
+          <Button onClick={handleReserve} disabled={createConsultation.isPending}>
+            {createConsultation.isPending ? '예약 중…' : '상담 예약하기'}
+          </Button>
+          {createConsultation.isError ? (
+            <p className="text-sub text-danger text-center">예약에 실패했어요. 잠시 후 다시 시도해주세요.</p>
+          ) : (
+            <p className="text-sub text-ink-hint text-center">예약 변경·취소는 마이페이지에서 할 수 있어요</p>
+          )}
         </div>
       </StickyFooter>
     </div>

@@ -3,23 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import AppBar from '../common/components/AppBar'
 import DateTimePickerSheet, { formatTime24 } from '../common/components/DateTimePickerSheet'
-import { MOCK_CONSULT_RECORDS } from './mock/mypage'
+import {
+  useGetConsultation,
+  usePatchConsultationSchedule,
+  usePostConsultationCancel,
+} from './hooks/consultation'
+import { buildScheduledAtIso, parseScheduledAt } from './utils/consultation'
 
-type AlertState = 'save-success' | 'cancel-confirm' | 'cancel-done' | null
-
-function parseDateTime(dateTimeStr: string) {
-  const [datePart, time24] = dateTimeStr.split(' ')
-  const [year, month, day] = datePart.split('.').map(Number)
-  const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][new Date(year, month - 1, day).getDay()]
-  const displayTime = formatTime24(time24)
-
-  return {
-    date: new Date(year, month - 1, day),
-    fullDate: `${year}년 ${month}월 ${day}일 (${dayOfWeek})`,
-    time: displayTime,
-    time24,
-  }
-}
+type AlertState = 'save-success' | 'cancel-confirm' | 'cancel-done' | 'error' | null
 
 function formatShortDate(date: Date): string {
   const dow = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
@@ -118,15 +109,28 @@ function ConsultModifyPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const record = MOCK_CONSULT_RECORDS.find((r) => r.id === id)
-  const parsed = record ? parseDateTime(record.dateTime) : null
+  const { data: record, isLoading } = useGetConsultation(id)
+  const scheduleMutation = usePatchConsultationSchedule(id ?? '')
+  const cancelMutation = usePostConsultationCancel(id ?? '')
 
-  const [selectedDate, setSelectedDate] = useState<Date>(parsed?.date ?? new Date())
-  const [selectedTime24, setSelectedTime24] = useState<string>(parsed?.time24 ?? '14:00')
+  // 현재 예약 일시를 기본값으로 쓰고, 사용자가 고르면 draft가 우선 (effect-setState 회피)
+  const [dateDraft, setDateDraft] = useState<Date | null>(null)
+  const [time24Draft, setTime24Draft] = useState<string | null>(null)
   const [showDateTimePicker, setShowDateTimePicker] = useState(false)
   const [alertState, setAlertState] = useState<AlertState>(null)
 
-  if (!record || !parsed) {
+  if (isLoading) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="예약 변경·취소" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-sub text-ink-hint">불러오는 중이에요…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!record) {
     return (
       <div className="flex h-dvh flex-col bg-white">
         <AppBar title="예약 변경·취소" onBack={() => navigate(-1)} />
@@ -136,6 +140,22 @@ function ConsultModifyPage() {
       </div>
     )
   }
+
+  // 예약(RESERVED) 상태만 변경/취소 가능 — 완료/취소 건 직접 진입 방어
+  if (record.status !== 'RESERVED') {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="예약 변경·취소" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 items-center justify-center px-5 text-center">
+          <p className="text-body text-ink-sub">변경하거나 취소할 수 없는 상담이에요.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const parsed = parseScheduledAt(record.scheduledAt)
+  const selectedDate = dateDraft ?? parsed.date
+  const selectedTime24 = time24Draft ?? parsed.time24
 
   // 취소 확인창에 표시할 "6월 19일 (금) 오후 2:00 상담이 취소돼요." 텍스트
   const cancelPreviewText = `${formatShortDate(selectedDate)} ${formatTime24(selectedTime24)} 상담이 취소돼요.`
@@ -161,7 +181,7 @@ function ConsultModifyPage() {
         <div className="flex flex-col gap-2 px-5 pb-[1.125rem]">
           <p className="text-sub font-semibold text-ink-hint">현재 예약</p>
           <div className="rounded-card-lg border border-line px-[1.0625rem] py-[0.3125rem]">
-            <InfoRow label="상담원" value={record.counselor ?? '—'} />
+            <InfoRow label="상담원" value={record.counselorName ?? '—'} />
             <div className="h-px bg-divider" />
             <InfoRow label="날짜" value={parsed.fullDate} />
             <div className="h-px bg-divider" />
@@ -197,10 +217,16 @@ function ConsultModifyPage() {
           <div className="h-px bg-divider" />
 
           <button
-            className="mt-[1.125rem] flex h-[3.375rem] w-full items-center justify-center rounded-card bg-primary text-btn font-bold text-white"
-            onClick={() => setAlertState('save-success')}
+            className="mt-[1.125rem] flex h-[3.375rem] w-full items-center justify-center rounded-card bg-primary text-btn font-bold text-white disabled:opacity-50"
+            disabled={scheduleMutation.isPending}
+            onClick={() =>
+              scheduleMutation.mutate(buildScheduledAtIso(selectedDate, selectedTime24), {
+                onSuccess: () => setAlertState('save-success'),
+                onError: () => setAlertState('error'),
+              })
+            }
           >
-            변경 내용 저장
+            {scheduleMutation.isPending ? '저장 중…' : '변경 내용 저장'}
           </button>
         </div>
 
@@ -229,8 +255,8 @@ function ConsultModifyPage() {
         initialDate={selectedDate}
         initialTime24={selectedTime24}
         onConfirm={(date, time24) => {
-          setSelectedDate(date)
-          setSelectedTime24(time24)
+          setDateDraft(date)
+          setTime24Draft(time24)
         }}
         onClose={() => setShowDateTimePicker(false)}
       />
@@ -277,8 +303,14 @@ function ConsultModifyPage() {
                 닫기
               </button>
               <button
-                className="flex h-[50px] flex-1 items-center justify-center rounded-[13px] bg-[#e5484d] text-btn font-bold text-white"
-                onClick={() => setAlertState('cancel-done')}
+                className="flex h-[50px] flex-1 items-center justify-center rounded-[13px] bg-[#e5484d] text-btn font-bold text-white disabled:opacity-50"
+                disabled={cancelMutation.isPending}
+                onClick={() =>
+                  cancelMutation.mutate(undefined, {
+                    onSuccess: () => setAlertState('cancel-done'),
+                    onError: () => setAlertState('error'),
+                  })
+                }
               >
                 예약 취소
               </button>
@@ -303,6 +335,27 @@ function ConsultModifyPage() {
             <button
               className="flex h-[50px] w-full items-center justify-center rounded-[13px] bg-primary text-btn font-bold text-white"
               onClick={() => navigate('/mypage/consult-history')}
+            >
+              확인
+            </button>
+          </div>
+        </AlertCard>
+      )}
+
+      {/* ── 알림창 4: 처리 실패 ── */}
+      {alertState === 'error' && (
+        <AlertCard>
+          <div className="flex flex-col items-center gap-2">
+            <IconWarning />
+            <p className="pt-[7.5px] text-center text-[17px] font-extrabold text-ink">
+              처리하지 못했어요
+            </p>
+            <p className="pb-3 text-center text-sub leading-[1.63] text-ink-hint">
+              잠시 후 다시 시도해주세요.
+            </p>
+            <button
+              className="flex h-[50px] w-full items-center justify-center rounded-[13px] bg-primary text-btn font-bold text-white"
+              onClick={() => setAlertState(null)}
             >
               확인
             </button>

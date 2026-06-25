@@ -4,6 +4,8 @@ import queryClient from '../common/api/queryClient'
 import { clearTokens } from '../common/api/token'
 import usePostLogout from './hooks/usePostLogout'
 import useGetProfile from './hooks/useGetProfile'
+import { useGetConsultations } from './hooks/consultation'
+import { formatScheduledAt } from './utils/consultation'
 import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
@@ -29,6 +31,15 @@ function MypagePage() {
 
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
+  const { data: consultations } = useGetConsultations()
+
+  // 가장 가까운 예약(RESERVED)을 상담 내역 메뉴 부제로
+  const nextReserved = (consultations ?? [])
+    .filter((c) => c.status === 'RESERVED')
+    .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0]
+  const consultSubtitle = nextReserved
+    ? `${formatScheduledAt(nextReserved.scheduledAt)} 상담 예약됨`
+    : '예약·지난 상담 확인'
 
   // 로그아웃: API 호출 후 성공·실패 모두 클라이언트 토큰·캐시를 정리한다
   const handleLogout = () => {
@@ -123,7 +134,7 @@ function MypagePage() {
         />
         <MenuRow
           title="상담 내역"
-          subtitle="6월 19일 PB 상담 예약됨"
+          subtitle={consultSubtitle}
           onPress={() => navigate('/mypage/consult-history')}
         />
         <MenuRow title="약관 및 동의 내역" onPress={() => navigate('/mypage/terms')} />
