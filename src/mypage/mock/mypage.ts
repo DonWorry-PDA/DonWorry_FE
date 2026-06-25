@@ -4,6 +4,7 @@ export const MOCK_USER_PROFILE: UserProfile = {
   name: '김영수',
   age: 63,
   status: '은퇴',
+  pensionStatus: '수령 중',
   monthlyTargetKrw: 2200000,
 }
 

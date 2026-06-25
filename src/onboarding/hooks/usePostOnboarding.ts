@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/common/api/client'
 import { ApiResponse } from '@/common/types/api'
 import type { OnboardingAnswers, OnboardingRequest } from '../types/onboarding'
@@ -16,12 +16,18 @@ export const toOnboardingRequest = (answers: OnboardingAnswers): OnboardingReque
   monthlyExpectedMedicalCost: (answers.monthlyMedical ?? 0) * MAN,
 })
 
-const usePostOnboarding = () =>
-  useMutation({
+const usePostOnboarding = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
     mutationFn: (body: OnboardingRequest) =>
       client
         .post<ApiResponse<unknown>>('/api/user/onboarding/me', body)
         .then((res) => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
   })
+}
 
 export default usePostOnboarding
