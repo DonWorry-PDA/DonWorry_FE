@@ -30,7 +30,7 @@ function AssetSummaryCard({
   const changeArrow = changeDirection === 'UP' ? '▲' : '▼'
 
   return (
-    <div className="rounded-card-lg shadow-card bg-white p-5">
+    <div className="rounded-card-lg border border-line bg-white p-5">
       {/* 총 보유금 */}
       <p className="text-body text-ink-hint">총 보유금</p>
       <div className="mt-1 flex items-end gap-2">

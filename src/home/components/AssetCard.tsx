@@ -100,7 +100,7 @@ function AssetCard({ totalAmountKrw, segments, monthlyIncomeKrw }: Props) {
         <p className="font-inter text-[1.25rem] font-bold text-white leading-tight tracking-tight">
           {totalLabel}
         </p>
-        <div className="flex gap-[14px] opacity-90 pt-1 pb-[10px]">
+        <div className="flex flex-wrap gap-x-[14px] gap-y-1 opacity-90 pt-1 pb-[10px]">
           {segments.map(({ label, pct }) => (
             <span key={label} className="text-caption text-white">
               {label} {pct}%

@@ -39,7 +39,7 @@ function StabilityCard({ data }: { data: HomeStabilityData }) {
   return (
     <button
       onClick={() => navigate('/stability')}
-      className="w-full bg-white rounded-card-xl shadow-card p-5 text-left flex flex-col gap-[7px]"
+      className="w-full bg-white rounded-card-xl border border-line p-5 text-left flex flex-col gap-[7px]"
     >
       {/* Header row */}
       <div className="flex items-center justify-between">

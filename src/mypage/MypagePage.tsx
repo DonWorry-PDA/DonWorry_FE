@@ -16,7 +16,15 @@ type LogoutStep = 'idle' | 'confirm' | 'done'
 
 function MypagePage() {
   const navigate = useNavigate()
-  const [largeFontEnabled, setLargeFontEnabled] = useState(true)
+  const [largeFontEnabled, setLargeFontEnabled] = useState(
+    () => localStorage.getItem('largeFont') === 'true',
+  )
+
+  const handleLargeFontToggle = (enabled: boolean) => {
+    setLargeFontEnabled(enabled)
+    localStorage.setItem('largeFont', String(enabled))
+    document.documentElement.classList.toggle('large', enabled)
+  }
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
 
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
@@ -104,7 +112,7 @@ function MypagePage() {
         {/* 큰 글씨로 보기 */}
         <div className="flex items-center border-b border-divider py-4">
           <p className="flex-1 text-md font-semibold text-ink">큰 글씨로 보기</p>
-          <Toggle checked={largeFontEnabled} onChange={setLargeFontEnabled} size="sm" />
+          <Toggle checked={largeFontEnabled} onChange={handleLargeFontToggle} size="sm" aria-label="큰 글씨로 보기" />
         </div>
 
         {/* 설정 메뉴 */}

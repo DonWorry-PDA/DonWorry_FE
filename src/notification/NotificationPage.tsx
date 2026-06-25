@@ -38,8 +38,17 @@ function NotificationPage() {
 
       <main className="flex flex-1 flex-col overflow-y-auto px-5 pt-1">
 {isLoading && (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-sub text-ink-hint">불러오는 중...</p>
+          <div role="status" aria-live="polite" className="flex flex-col pt-2">
+            <span className="sr-only">알림을 불러오는 중입니다.</span>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 border-b border-divider py-4">
+                <div className="size-10 shrink-0 animate-pulse rounded-icon bg-surface-muted" />
+                <div className="flex flex-1 flex-col gap-2">
+                  <div className="h-4 w-3/4 animate-pulse rounded bg-surface-muted" />
+                  <div className="h-3 w-1/2 animate-pulse rounded bg-surface-muted" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

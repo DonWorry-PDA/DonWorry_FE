@@ -88,7 +88,11 @@ function PaycheckAssetSelectPage() {
         <p className="text-body text-ink-sub mb-6">연금 계좌나 오래 두고 싶은 자산은 그대로 지켜드려요.</p>
 
         {isLoading ? (
-          <p className="text-body text-ink-hint text-center pt-10">자산 목록을 불러오는 중이에요…</p>
+          <div className="flex flex-col gap-3 pt-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-[64px] animate-pulse rounded-card bg-surface-muted" />
+            ))}
+          </div>
         ) : isError ? (
           <p className="text-body text-danger text-center pt-10">자산 목록을 불러오지 못했어요.</p>
         ) : data?.assetGroups.length === 0 ? (

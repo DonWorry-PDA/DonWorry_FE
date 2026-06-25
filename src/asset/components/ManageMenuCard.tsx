@@ -22,8 +22,8 @@ function ManageMenuCard({ menu, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-card-lg shadow-card flex h-full flex-col items-start bg-white p-4 text-left ${
-        highlighted ? 'border-primary border' : 'border border-transparent'
+      className={`rounded-card-lg flex h-full flex-col items-start bg-white p-4 text-left border ${
+        highlighted ? 'border-primary' : 'border-line'
       }`}
     >
       <div className="flex w-full items-start justify-between">

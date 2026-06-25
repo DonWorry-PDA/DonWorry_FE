@@ -51,7 +51,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
               className="flex min-h-[46px] flex-col items-center gap-px py-[5px]"
             >
               <span
-                className={`flex h-6 min-w-[30px] items-center justify-center rounded-full text-sub font-medium ${
+                className={`flex h-6 min-w-[30px] items-center justify-center rounded-full text-sub font-medium leading-none ${
                   isToday
                     ? 'bg-primary font-bold text-white'
                     : isSelected

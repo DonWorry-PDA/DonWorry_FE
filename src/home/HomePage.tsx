@@ -68,7 +68,7 @@ function HomePage() {
   const stability = hub ? toStabilityData(hub) : null
 
   return (
-    <div className="bg-page flex h-dvh flex-col">
+    <div className="flex h-dvh flex-col bg-white">
       {/* User header */}
       <header className="flex shrink-0 items-center gap-[11px] px-5 pt-[10px] pb-[14px]">
         <div className="bg-primary flex size-[42px] shrink-0 items-center justify-center rounded-full">
@@ -89,7 +89,16 @@ function HomePage() {
 
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
-          <StatusMessage text="자산 정보를 불러오는 중이에요…" />
+          <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
+            <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
+            <div className="h-[168px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
+            <div className="h-[108px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
+            <div className="flex gap-2">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-[72px] flex-1 animate-pulse rounded-card border border-line bg-surface-muted" />
+              ))}
+            </div>
+          </div>
         ) : !hub || !asset ? (
           // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
@@ -120,7 +129,7 @@ function HomePage() {
             ) : (
               <button
                 onClick={() => navigate('/stability')}
-                className="w-full bg-white rounded-card-xl shadow-card p-5 text-left flex flex-col gap-[7px]"
+                className="w-full bg-white rounded-card-xl border border-line p-5 text-left flex flex-col gap-[7px]"
               >
                 <span className="text-card font-bold text-ink">생활 안정도</span>
                 <p className="text-sub text-ink-sub leading-[1.62]">
@@ -135,7 +144,7 @@ function HomePage() {
                 <span className="text-body text-ink font-bold">{MOCK_REPORT_MONTH} 리포트 ›</span>
                 <span className="text-sub text-ink-hint">전체보기</span>
               </div>
-              <div className="rounded-card-lg shadow-card bg-white px-3 py-[9px]">
+              <div className="rounded-card-lg border border-line bg-white px-3 py-[9px]">
                 <div className="flex gap-2">
                   {MOCK_REPORT.map(({ label, value, valueClass }) => (
                     <div

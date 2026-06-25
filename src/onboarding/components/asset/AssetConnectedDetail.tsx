@@ -30,7 +30,7 @@ interface Props {
 
 function AssetConnectedDetail({ onClose }: Props) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       {/* AppBar */}
       <div className="flex items-center justify-between px-6 pt-12 pb-4">
         <h2 className="text-card font-bold text-ink">자산 연결 결과</h2>

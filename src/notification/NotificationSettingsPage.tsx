@@ -44,8 +44,21 @@ function NotificationSettingsPage() {
         {/* 설정 목록 */}
         <div className="px-5 flex flex-col gap-4 pb-6">
           {isLoading && (
-            <div className="flex items-center justify-center py-10">
-              <p className="text-sub text-ink-hint">불러오는 중...</p>
+            <div role="status" aria-live="polite" aria-busy="true" className="overflow-hidden rounded-card-xl border border-line shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)]">
+              <span className="sr-only">알림 설정을 불러오는 중입니다.</span>
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`flex items-center gap-3 px-4 py-[18px] ${i < 2 ? 'border-b border-divider' : ''}`}
+                >
+                  <div className="size-11 shrink-0 animate-pulse rounded-btn bg-surface-muted" />
+                  <div className="flex flex-1 flex-col gap-2">
+                    <div className="h-4 w-28 animate-pulse rounded bg-surface-muted" />
+                    <div className="h-3 w-36 animate-pulse rounded bg-surface-muted" />
+                  </div>
+                  <div className="h-[26px] w-11 shrink-0 animate-pulse rounded-full bg-surface-muted" />
+                </div>
+              ))}
             </div>
           )}
 

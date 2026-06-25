@@ -14,7 +14,7 @@ function Button({
   children,
   ...props
 }: ButtonProps) {
-  const base = 'h-[54px] rounded-btn text-btn font-bold transition-opacity disabled:opacity-40'
+  const base = 'h-[54px] rounded-btn text-btn font-bold transition-[opacity,transform] duration-100 disabled:opacity-40'
   const width = fullWidth ? 'w-full' : ''
 
   const variants: Record<ButtonVariant, string> = {

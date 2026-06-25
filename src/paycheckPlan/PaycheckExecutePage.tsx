@@ -127,8 +127,8 @@ function PaycheckExecutePage() {
 
       <StickyFooter>
         <div className="flex flex-col gap-2">
-          <Button onClick={() => {}}>실행 시작하기</Button>
           <button className="text-body text-ink-hint text-center py-1">나중에 하기 · 임시저장</button>
+          <Button onClick={() => {}}>실행 시작하기</Button>
         </div>
       </StickyFooter>
     </div>

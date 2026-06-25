@@ -1,20 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import Button from '../common/components/Button'
+import CheckBadge from '../common/components/CheckBadge'
 
 function OrderCompletePage() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="flex-1 flex flex-col items-center px-5 pt-16 pb-6">
-        {/* 완료 아이콘 */}
-        <div className="size-16 rounded-full bg-success flex items-center justify-center mb-6">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M6 16.5L13 23.5L26 9.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+    <div className="flex h-dvh flex-col bg-white">
+      <div className="flex flex-1 flex-col items-center overflow-y-auto px-5 pt-[calc(5dvh+1.375rem)] pb-6">
+        <CheckBadge />
 
-        <h2 className="text-heading font-bold text-ink text-center mb-1">실행을 마쳤어요</h2>
+        <h2 className="mt-6 text-heading font-bold text-ink text-center mb-1">실행을 마쳤어요</h2>
         <p className="text-body text-ink-sub text-center mb-8">설계안이 실제 계좌에 반영됐어요</p>
 
         {/* 월수입 변화 카드 */}
@@ -52,13 +48,13 @@ function OrderCompletePage() {
       </div>
 
       <div className="px-5 pb-4 shrink-0 flex flex-col gap-2">
-        <Button onClick={() => navigate('/home')}>홈으로</Button>
         <button
           onClick={() => navigate('/order/modify')}
           className="w-full text-body text-ink-sub text-center py-3"
         >
           주문 내역 보기
         </button>
+        <Button onClick={() => navigate('/home')}>홈으로</Button>
       </div>
     </div>
   )

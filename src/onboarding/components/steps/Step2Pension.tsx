@@ -20,7 +20,7 @@ function Step2Pension({ onNext, onPrev }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       <div className="px-6 pt-12">
         <button type="button" onClick={onPrev} className="mb-4 text-ink">
           <BackArrowIc width={24} height={24} />
@@ -29,7 +29,7 @@ function Step2Pension({ onNext, onPrev }: Props) {
 
       <OnboardingProgressBar current={2} total={6} />
 
-      <div className="flex flex-1 flex-col px-6 pt-8">
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">
           국민연금은<br />받고 계신가요?
         </h1>
@@ -53,7 +53,7 @@ function Step2Pension({ onNext, onPrev }: Props) {
         </div>
       </div>
 
-      <div className="px-6 pb-10">
+      <div className="shrink-0 px-6 pb-10">
         <button
           type="button"
           onClick={onNext}
