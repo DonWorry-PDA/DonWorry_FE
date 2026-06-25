@@ -2,6 +2,7 @@ export type UserProfile = {
   name: string
   age: number
   status: string
+  pensionStatus: string
   monthlyTargetKrw: number
 }
 
