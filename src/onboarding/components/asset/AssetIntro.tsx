@@ -8,7 +8,7 @@ interface Props {
 
 function AssetIntro({ onNext, onPrev }: Props) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       {/* AppBar */}
       <div className="flex items-center justify-between px-6 pt-12 pb-4">
         <div className="flex items-center gap-3">
@@ -18,7 +18,7 @@ function AssetIntro({ onNext, onPrev }: Props) {
           <span className="text-card text-ink font-bold">자산연결</span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col items-center px-6 pt-8">
+      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-8">
         <h1 className="text-heading text-ink w-full font-bold">
           내 자산, 한눈에
           <br />
@@ -41,7 +41,7 @@ function AssetIntro({ onNext, onPrev }: Props) {
         </p>
       </div>
 
-      <div className="px-6 pb-10">
+      <div className="shrink-0 px-6 pb-10">
         <button
           type="button"
           onClick={onNext}

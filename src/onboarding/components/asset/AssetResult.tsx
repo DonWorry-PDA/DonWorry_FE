@@ -22,8 +22,8 @@ function AssetResult() {
   const totalAsset = connectResult?.assetSummary.totalAsset ?? null
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <div className="flex flex-1 flex-col items-center px-6 pt-16">
+    <div className="flex h-dvh flex-col bg-white">
+      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-16">
         <CheckBadge />
 
         <h1 className="mt-6 text-heading font-bold text-ink">자산 연결 결과</h1>
@@ -60,7 +60,7 @@ function AssetResult() {
         </p>
       </div>
 
-      <div className="px-6 pb-10">
+      <div className="shrink-0 px-6 pb-10">
         <button
           type="button"
           onClick={() => navigate('/home', { replace: true })}

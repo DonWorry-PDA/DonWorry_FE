@@ -30,7 +30,7 @@ interface Props {
 
 function AssetConnectedDetail({ onClose }: Props) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       {/* AppBar */}
       <div className="flex items-center justify-between px-6 pt-12 pb-4">
         <h2 className="text-card font-bold text-ink">자산 연결 결과</h2>
@@ -41,7 +41,7 @@ function AssetConnectedDetail({ onClose }: Props) {
         </button>
       </div>
 
-      <div className="flex flex-col items-center px-6 pt-6">
+      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-6">
         {/* 체크 아이콘 */}
         <div className="flex size-14 items-center justify-center rounded-full bg-primary">
           <svg width="24" height="18" viewBox="0 0 24 18" fill="none" aria-hidden="true">

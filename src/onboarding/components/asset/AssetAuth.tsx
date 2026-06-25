@@ -7,7 +7,7 @@ interface Props {
 
 function AssetAuth({ onNext, onPrev }: Props) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       {/* AppBar */}
       <div className="flex items-center justify-between px-6 pt-12 pb-4">
         <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
         <span className="bg-surface-muted text-sub text-ink-sub rounded-full px-3 py-0.5">2/3</span>
       </div>
 
-      <div className="flex flex-1 flex-col px-6 pt-8">
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading text-ink font-bold">
           이용 중이신 금융상품
           <br />
@@ -102,7 +102,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
         </button> */}
       </div>
 
-      <div className="px-6 pb-10">
+      <div className="shrink-0 px-6 pb-10">
         <button
           type="button"
           onClick={onNext}
