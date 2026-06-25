@@ -1,9 +1,12 @@
 import { createContext, useContext, useState } from 'react'
 import type { OnboardingAnswers } from '../types/onboarding'
+import type { MydataConnectResponse } from '@/asset/types/assetHub'
 
 type OnboardingContextValue = {
   answers: OnboardingAnswers
   updateAnswers: (partial: Partial<OnboardingAnswers>) => void
+  connectResult: MydataConnectResponse | null
+  setConnectResult: (result: MydataConnectResponse | null) => void
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null)
@@ -19,13 +22,14 @@ const INITIAL_ANSWERS: OnboardingAnswers = {
 
 export function OnboardingContextProvider({ children }: { children: React.ReactNode }) {
   const [answers, setAnswers] = useState<OnboardingAnswers>(INITIAL_ANSWERS)
+  const [connectResult, setConnectResult] = useState<MydataConnectResponse | null>(null)
 
   function updateAnswers(partial: Partial<OnboardingAnswers>) {
     setAnswers(prev => ({ ...prev, ...partial }))
   }
 
   return (
-    <OnboardingContext.Provider value={{ answers, updateAnswers }}>
+    <OnboardingContext.Provider value={{ answers, updateAnswers, connectResult, setConnectResult }}>
       {children}
     </OnboardingContext.Provider>
   )

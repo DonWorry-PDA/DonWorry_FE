@@ -8,7 +8,7 @@ interface Props {
 }
 
 function AssetLoading({ onNext }: Props) {
-  const { answers } = useOnboarding()
+  const { answers, setConnectResult } = useOnboarding()
   const { mutateAsync: submitOnboarding } = usePostOnboarding()
   const { mutateAsync: connectMydata } = usePostMydataConnect()
 
@@ -45,7 +45,8 @@ function AssetLoading({ onNext }: Props) {
     }
 
     try {
-      await connectMydata()
+      const result = await connectMydata()
+      setConnectResult(result)
     } catch (error) {
       stopTimer()
       console.error('[onboarding] 마이데이터 연결 실패', error)
@@ -56,7 +57,7 @@ function AssetLoading({ onNext }: Props) {
     stopTimer()
     setProgress(100)
     onNext()
-  }, [answers, submitOnboarding, connectMydata, onNext, stopTimer])
+  }, [answers, submitOnboarding, connectMydata, setConnectResult, onNext, stopTimer])
 
   useEffect(() => {
     if (startedRef.current) return

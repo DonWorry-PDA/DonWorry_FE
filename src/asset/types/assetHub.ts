@@ -1,6 +1,26 @@
 // GET /api/user/asset/hub 응답 원형 (BE AssetHubResponse)
 export type LifeStabilityGrade = 'STABLE' | 'NEED_COMPLEMENT' | 'NEED_IMPROVEMENT'
 
+// POST /api/user/mydata/mock/connect (및 /sync) 응답 (BE MydataSyncResponse)
+export type MydataAssetGroup = {
+  category: string
+  amount: number
+}
+
+export type MydataAssetSummary = {
+  totalAsset: number
+  totalDebt: number
+  netAsset: number
+  assetGroups: MydataAssetGroup[]
+}
+
+export type MydataConnectResponse = {
+  connectedInstitutions: number
+  syncedAt: string
+  message: string
+  assetSummary: MydataAssetSummary
+}
+
 export type AssetHubAllocationItem = {
   category: string
   ratio: number // 정수 % (합 100 보정)
