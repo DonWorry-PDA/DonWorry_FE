@@ -112,7 +112,7 @@ function MypagePage() {
         {/* 큰 글씨로 보기 */}
         <div className="flex items-center border-b border-divider py-4">
           <p className="flex-1 text-md font-semibold text-ink">큰 글씨로 보기</p>
-          <Toggle checked={largeFontEnabled} onChange={handleLargeFontToggle} size="sm" />
+          <Toggle checked={largeFontEnabled} onChange={handleLargeFontToggle} size="sm" aria-label="큰 글씨로 보기" />
         </div>
 
         {/* 설정 메뉴 */}
