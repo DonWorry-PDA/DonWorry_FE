@@ -2,6 +2,7 @@ export type EventCategory =
   | 'dividend' // 배당 입금
   | 'pension' // 연금 수령
   | 'payment' // 납입일
+  | 'transaction' // 소비 (카드/교통/공과금/통신/의료)
   | 'maturity' // 만기일
   | 'interest' // 예금 이자
   | 'etc' // 기타

@@ -34,6 +34,13 @@ export const CATEGORY_STYLE: Record<EventCategory, CategoryStyle> = {
     badgeBg: 'bg-event-payment/10',
     iconBg: 'bg-event-payment/15',
   },
+  transaction: {
+    label: '소비',
+    dot: 'bg-event-transaction',
+    text: 'text-event-transaction',
+    badgeBg: 'bg-event-transaction/10',
+    iconBg: 'bg-event-transaction/15',
+  },
   maturity: {
     label: '만기일',
     dot: 'bg-event-maturity',
@@ -62,6 +69,7 @@ export const LEGEND_ORDER: EventCategory[] = [
   'dividend',
   'pension',
   'payment',
+  'transaction',
   'maturity',
   'interest',
   'etc',
