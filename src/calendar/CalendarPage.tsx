@@ -60,6 +60,7 @@ function CalendarPage() {
         <button
           className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
+          aria-label="알림"
         >
           <NotificationIc className="text-ink" width={22} height={22} />
         </button>
