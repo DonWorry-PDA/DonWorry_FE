@@ -1,19 +1,24 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatKrw } from '../../../common/utils/formatKrw'
-import { MOCK_LINKED_ACCOUNTS } from '../../../mypage/mock/mypage'
+import { useOnboarding } from '../../contexts/OnboardingContext'
 import AssetConnectedDetail from './AssetConnectedDetail'
 import CheckBadge from '../../../common/components/CheckBadge'
 
-const totalAsset = MOCK_LINKED_ACCOUNTS.reduce((sum, a) => sum + a.amountKrw, 0)
-
 function AssetResult() {
   const navigate = useNavigate()
+  const { connectResult } = useOnboarding()
   const [showDetail, setShowDetail] = useState(false)
 
   if (showDetail) {
     return <AssetConnectedDetail onClose={() => setShowDetail(false)} />
   }
+
+  // 직접 진입 등으로 연결 결과가 없으면 구체 수치는 생략하고 폴백 문구를 보여준다.
+  const institutionsLabel = connectResult
+    ? `신한은행 외 ${Math.max(connectResult.connectedInstitutions - 1, 0)}개 자산 연결`
+    : '자산 연결 완료'
+  const totalAsset = connectResult?.assetSummary.totalAsset ?? null
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -32,7 +37,7 @@ function AssetResult() {
           <div className="flex items-center justify-between">
             <span className="text-sub text-ink-sub">마이데이터</span>
             <div className="flex items-center gap-1 text-body text-ink">
-              <span>신한은행 외 12개 자산 연결</span>
+              <span>{institutionsLabel}</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -40,12 +45,14 @@ function AssetResult() {
           </div>
         </button>
 
-        <div className="mt-4 w-full rounded-card bg-surface p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-body text-ink-sub">연결된 총자산</span>
-            <span className="font-inter text-card font-bold text-ink">{formatKrw(totalAsset)}</span>
+        {totalAsset != null && (
+          <div className="mt-4 w-full rounded-card bg-surface p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-body text-ink-sub">연결된 총자산</span>
+              <span className="font-inter text-card font-bold text-ink">{formatKrw(totalAsset)}</span>
+            </div>
           </div>
-        </div>
+        )}
 
         <p className="mt-4 text-center text-sub text-ink-sub">
           이제 생활비 충당 상태를 함께 살펴볼게요.
