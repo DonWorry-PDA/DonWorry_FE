@@ -166,7 +166,7 @@ function ConsultModifyPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 타이틀 */}
-        <div className="flex flex-col gap-[0.5625rem] px-5 pb-[1.125rem] pt-2">
+        <div className="flex flex-col gap-[0.5625rem] px-6 pb-[1.125rem] pt-2">
           <h2 className="text-heading font-extrabold leading-[1.43] tracking-[-0.025em] text-ink">
             예약을
             <br />
@@ -178,7 +178,7 @@ function ConsultModifyPage() {
         </div>
 
         {/* 현재 예약 */}
-        <div className="flex flex-col gap-2 px-5 pb-[1.125rem]">
+        <div className="flex flex-col gap-2 px-6 pb-[1.125rem]">
           <p className="text-sub font-semibold text-ink-hint">현재 예약</p>
           <div className="rounded-card-lg border border-line px-[1.0625rem] py-[0.3125rem]">
             <InfoRow label="상담원" value={record.counselorName ?? '—'} />
@@ -190,7 +190,7 @@ function ConsultModifyPage() {
         </div>
 
         {/* 날짜·시간 변경 */}
-        <div className="px-5 pt-1 pb-[1.125rem]">
+        <div className="px-6 pt-1 pb-[1.125rem]">
           <p className="text-sub font-semibold text-ink-hint">다른 날짜·시간으로 변경</p>
 
           <button
@@ -231,7 +231,7 @@ function ConsultModifyPage() {
         </div>
 
         {/* 예약 취소 */}
-        <div className="flex flex-col gap-[0.875rem] px-5 pt-1 pb-6">
+        <div className="flex flex-col gap-[0.875rem] px-6 pt-1 pb-6">
           <div className="h-px bg-divider" />
 
           <button

@@ -45,7 +45,7 @@ function InvestmentCheckupPage() {
     <div className="bg-page flex h-dvh flex-col">
       <AppBar title="투자 건강검진" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pb-6">
+      <main className="flex-1 overflow-y-auto px-6 pb-6">
         <h2 className="text-card text-ink mt-2 font-bold leading-snug">
           갖고 계신 자산 중{'\n'}
           <span className="text-primary">{MOCK.cashflowAssetRatio}%만 월급을 만들고 있어요</span>

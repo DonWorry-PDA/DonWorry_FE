@@ -39,7 +39,7 @@ function RetirementSimulationPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 소개 텍스트 */}
-        <div className="px-5 pt-4 pb-3">
+        <div className="px-6 pt-4 pb-3">
           <p className="text-body text-ink-sub leading-[1.6]">
             자산관리 정보로 미리 채워졌어요.{' '}
             <span className="font-semibold text-ink">숫자를 바꾸면 결과가 바로 달라져요.</span>
@@ -49,7 +49,7 @@ function RetirementSimulationPage() {
         {(isPending || (!isError && !activeParams)) && <SimParamsBarSkeleton />}
 
         {isError && (
-          <div className="flex flex-col items-center gap-3 px-5 py-4">
+          <div className="flex flex-col items-center gap-3 px-6 py-4">
             <p className="text-body text-ink-sub">데이터를 불러오지 못했어요.</p>
             <button
               type="button"

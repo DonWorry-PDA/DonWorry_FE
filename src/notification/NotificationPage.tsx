@@ -36,7 +36,7 @@ function NotificationPage() {
     <div className="flex h-dvh flex-col bg-white">
       <AppBar title="알림" onBack={() => navigate(-1)} rightAction={readAllButton} />
 
-      <main className="flex flex-1 flex-col overflow-y-auto px-5 pt-1">
+      <main className="flex flex-1 flex-col overflow-y-auto px-6 pt-1">
 {isLoading && (
           <div role="status" aria-live="polite" className="flex flex-col pt-2">
             <span className="sr-only">알림을 불러오는 중입니다.</span>

@@ -137,7 +137,7 @@ function ConsultSummaryPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 상담 헤더 */}
-        <div className="px-5 pt-6 pb-1 flex flex-col gap-[7px]">
+        <div className="px-6 pt-6 pb-1 flex flex-col gap-[7px]">
           <div className="flex items-center gap-2">
             <h2 className="text-card font-extrabold text-ink">{record.title}</h2>
             <span className="bg-success-bg text-success text-caption font-bold px-[9px] py-[3px] rounded-badge shrink-0">
@@ -148,7 +148,7 @@ function ConsultSummaryPage() {
         </div>
 
         {/* PB 요약 카드 */}
-        <div className="px-5 pt-[18px]">
+        <div className="px-6 pt-[18px]">
           <div className="border border-line rounded-card-xl p-[19px] flex flex-col gap-1">
             {/* 카드 헤더 */}
             <div className="flex items-center gap-[9px] mb-[4.8px]">
@@ -191,7 +191,7 @@ function ConsultSummaryPage() {
         </div>
 
         {/* 내 메모 */}
-        <div className="px-5 pt-6 pb-4 flex flex-col gap-[9px]">
+        <div className="px-6 pt-6 pb-4 flex flex-col gap-[9px]">
           <div className="flex items-baseline justify-between">
             <span className="text-sub font-semibold text-ink-hint">내 메모</span>
             <span className="text-caption text-disabled">나만 볼 수 있어요</span>

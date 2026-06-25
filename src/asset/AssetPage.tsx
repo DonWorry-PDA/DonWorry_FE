@@ -126,7 +126,7 @@ function AssetPage() {
   return (
     <div className="flex h-dvh flex-col bg-white">
       {/* 헤더 */}
-      <header className="flex h-[52px] shrink-0 items-center gap-2 px-5 w-full">
+      <header className="flex h-[52px] shrink-0 items-center gap-2 px-6 w-full">
         <button
           className="flex size-7 shrink-0 items-center justify-center"
           aria-label="뒤로 가기"

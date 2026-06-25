@@ -53,7 +53,7 @@ function OrderResultPage() {
     <div className="flex flex-col h-full">
       <AppBar title="실행 결과" onBack={() => navigate('/home')} />
 
-      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6">
+      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         {/* 부분 실패 경고 */}
         {failedCount > 0 && (
           <div className="rounded-btn bg-warning-bg border border-warning/20 px-4 py-3 flex gap-2 mb-5">

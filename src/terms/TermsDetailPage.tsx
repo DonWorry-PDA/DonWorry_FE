@@ -421,7 +421,7 @@ function TermsDetailPage() {
     <div className="flex h-dvh flex-col bg-white">
       <AppBar title={term.appBarTitle} onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pb-12">
+      <main className="flex-1 overflow-y-auto px-6 pb-12">
         {/* 약관 메타 카드 */}
         <div className="mb-[22px] mt-6 flex items-center justify-between rounded-card-lg bg-surface p-[17px]">
           <div className="flex flex-col gap-[5px]">

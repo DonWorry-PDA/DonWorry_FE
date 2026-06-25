@@ -28,7 +28,7 @@ function ConsultHistoryPage() {
 
         {/* 히어로 카드 */}
         <div
-          className="mx-5 rounded-[1.5rem] px-6 py-6"
+          className="mx-6 rounded-[1.5rem] px-6 py-6"
           style={{ background: 'linear-gradient(135deg, #0046FF 0%, #4F86FF 100%)' }}
         >
           <h2 className="text-display mb-0.5 leading-[1.4] font-bold text-white">
@@ -42,7 +42,7 @@ function ConsultHistoryPage() {
         </div>
 
         {/* 통계 + 상담 목록 */}
-        <div className="flex flex-col gap-[0.875rem] px-5 pt-6 pb-10">
+        <div className="flex flex-col gap-[0.875rem] px-6 pt-6 pb-10">
           {/* 통계 박스 */}
           <div className="flex gap-[0.625rem]">
             {(
