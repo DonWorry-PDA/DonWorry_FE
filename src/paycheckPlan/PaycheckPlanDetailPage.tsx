@@ -96,7 +96,7 @@ function PaycheckPlanDetailPage() {
 
       <StickyFooter>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute')}>
+          <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute', { state: { planId } })}>
             진행하기
           </Button>
           <Button onClick={() => navigate('/paycheck-plan/consult')}>전문가와 같이 보기</Button>

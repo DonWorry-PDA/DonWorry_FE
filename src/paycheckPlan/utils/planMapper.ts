@@ -5,6 +5,7 @@ import type {
   AllocationItem,
   PlanDetail,
   ComparisonTable,
+  ExecutionSummary,
 } from '../types/paycheckPlan'
 import type {
   BackendPlanType,
@@ -134,6 +135,22 @@ export const mapComparison = (response: RecommendationResponse): ComparisonTable
     notice: COMPARE_NOTICE,
   }
 }
+
+const EXECUTE_NOTICE = '주문은 장중에 시장가로 체결돼요. 지금은 거래 시간이라 바로 진행됩니다.'
+
+/** 실행 요약 화면용 매핑. items·estimatedFee는 BE 미제공 — 호출부에서 static으로 주입한다. */
+export const mapExecutionSummary = (
+  response: RecommendationResponse,
+  plan: RecommendationPlan,
+): Omit<ExecutionSummary, 'items' | 'estimatedFee'> => ({
+  planName: plan.displayName,
+  planType: TYPE_MAP[plan.type],
+  coverageFrom: Math.round(response.currentCoverageRate),
+  coverageTo: Math.min(100, Math.round(plan.totalCoverageRate)),
+  cashflowFrom: toManwon(response.currentMonthlyCashFlow),
+  cashflowTo: toManwon(plan.monthlyIncome),
+  notice: EXECUTE_NOTICE,
+})
 
 /** Q3 소진비율 라벨 (안정안 기준 상속 vs 소비 트레이드오프). */
 export const Q3_LABELS: Record<number, string> = {
