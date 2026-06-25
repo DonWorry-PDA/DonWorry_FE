@@ -187,7 +187,7 @@ function AssetConsentDetailPage() {
   if (!consent) {
     return (
       <div className="flex h-dvh flex-col bg-white">
-        <AppBar title="동의서" onBack={() => navigate(-1)} />
+        <AppBar title="동의서" onBack={() => navigate('/onboarding/asset-consent')} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-body text-ink-sub">동의서 정보를 찾을 수 없어요.</p>
         </div>
@@ -197,7 +197,7 @@ function AssetConsentDetailPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <AppBar title={consent.appBarTitle} onBack={() => navigate(-1)} />
+      <AppBar title={consent.appBarTitle} onBack={() => navigate('/onboarding/asset-consent')} />
 
       <main className="flex-1 overflow-y-auto px-5 pb-12">
         <div className="mb-[22px] mt-6 flex items-center justify-between rounded-card-lg bg-surface p-[17px]">
