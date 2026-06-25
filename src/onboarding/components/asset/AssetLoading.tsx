@@ -89,7 +89,7 @@ function AssetLoading({ onNext }: Props) {
     <div
       role="status"
       aria-live="polite"
-      className="flex h-dvh flex-col items-center justify-center bg-white px-6"
+      className="flex h-dvh flex-col items-center bg-white px-6 pt-[5dvh]"
     >
       <div className="relative flex size-32 items-center justify-center" aria-hidden="true">
         <div className="absolute inset-0 animate-spin">

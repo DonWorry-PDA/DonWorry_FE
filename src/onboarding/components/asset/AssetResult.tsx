@@ -23,7 +23,7 @@ function AssetResult() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-16">
+      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-[calc(5dvh+1.375rem)]">
         <CheckBadge />
 
         <h1 className="mt-6 text-heading font-bold text-ink">자산 연결 결과</h1>
