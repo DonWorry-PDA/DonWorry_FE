@@ -112,6 +112,13 @@ html.large {
     font-family: var(--font-sans);
   }
 
+  button {
+    transition: transform 100ms ease;
+  }
+  button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
   html,
   #root {
     height: 100%;
