@@ -13,6 +13,13 @@ export type LinkedAccount = {
   amountKrw: number
 }
 
+export type MydataInstitution = {
+  id: string
+  name: string
+  connected: boolean
+  connectedProducts: string[]
+}
+
 export type TermAgreement = {
   id: string
   label: string
