@@ -135,7 +135,7 @@ function AssetHubPage() {
   const { data: hub, isLoading, refetch } = useGetAssetHub()
 
   return (
-    <div className="bg-page flex h-dvh flex-col">
+    <div className="flex h-dvh flex-col bg-white">
       <header className="flex shrink-0 items-center justify-between px-5 pt-3 pb-2">
         <h1 className="text-heading text-ink font-bold">자산관리</h1>
         <button
@@ -150,10 +150,10 @@ function AssetHubPage() {
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
           <div className="flex flex-col gap-5 px-5">
-            <div className="h-[220px] animate-pulse rounded-card-xl bg-white shadow-card" />
+            <div className="h-[220px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
             <div className="grid grid-cols-2 gap-3">
               {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-[120px] animate-pulse rounded-card-lg bg-white shadow-card" />
+                <div key={i} className="h-[120px] animate-pulse rounded-card-lg border border-line bg-surface-muted" />
               ))}
             </div>
           </div>
