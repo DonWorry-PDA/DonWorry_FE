@@ -11,6 +11,19 @@ export type BackendPlanStatus = 'RECOMMENDED' | 'AVAILABLE'
 
 export type AllocationRole = 'SAFE' | 'RISK' | 'SHORT_TERM'
 
+export type BucketRole = 'SAFE' | 'RISK' | 'SHORT_TERM'
+
+export type CurrencyExposure = 'UNHEDGED' | 'HEDGED'
+
+export type Holding = {
+  ticker: string
+  productName: string
+  role: BucketRole
+  currency: CurrencyExposure
+  weight: number // 버킷 내 비중 (각 버킷 합=1.0)
+  amount: number // 원
+}
+
 export type AllocationView = {
   label: string
   role: AllocationRole
@@ -27,10 +40,14 @@ export type RecommendationPlan = {
   riskTarget: number
   safeTarget: number
   shortTermBucket: number
+  holdings: Holding[] // 개별 보유 종목
   allocations: AllocationView[]
-  monthlyIncome: number // 원
-  alphaCoverageRate: number | null // 이미 %, 100캡. 연금초과(PENSION_SUFFICIENT)면 null
+  monthlyIncome: number // 원, 총인출 기준
+  alphaCoverageRate: number | null // α충족률 %, 100캡. 연금초과(PENSION_SUFFICIENT)면 null
+  sustainableCoverageRate: number | null // α충족률 (지속가능 기준, 이자·배당만), 100캡
   inheritanceAmount: number // 원
+  totalCoverageRate: number // 설계안 적용 후 생활비 충당률 % (monthlyIncome / targetLivingCost)
+  residualMonthlyShortfall: number // 설계안 적용 후 월 부족액 (원, 0이면 초과 달성)
 }
 
 export type Q3Scenario = {
@@ -44,6 +61,10 @@ export type RecommendationResponse = {
   alpha: number
   band: GuidanceBand | null // NORMAL일 때만
   plans: RecommendationPlan[] // 구조적부족이면 []
+  targetMonthlyLivingCost: number // 목표 생활비 (원)
+  currentMonthlyCashFlow: number // 현재 월 현금흐름 — 국민연금 + 배당 (원)
+  currentCoverageRate: number // 현재 생활비 충당률 % (설계안 적용 전 baseline)
+  currentMonthlyShortfall: number // 현재 월 부족액 (원)
   q3ReferenceLabel: string | null
   q3Scenarios: Q3Scenario[]
 }
