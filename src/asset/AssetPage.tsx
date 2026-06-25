@@ -124,7 +124,7 @@ function AssetPage() {
   const [period, setPeriod] = useState<Period>('1개월')
 
   return (
-    <div className="bg-page flex h-dvh flex-col">
+    <div className="flex h-dvh flex-col bg-white">
       {/* 헤더 */}
       <header className="flex h-[52px] shrink-0 items-center gap-2 px-5 w-full">
         <button
@@ -148,7 +148,7 @@ function AssetPage() {
         <div className="flex flex-col gap-[14px] px-4 pt-1 pb-6">
 
           {/* ── 총자산 카드 ── */}
-          <div className="bg-white rounded-card-xl shadow-card px-5 py-[22px] flex flex-col gap-1">
+          <div className="bg-white rounded-card-xl border border-line px-5 py-[22px] flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <span className="text-sub font-semibold text-ink-sub">총자산</span>
               <span className="text-caption text-ink-hint">{formatRefDate(MOCK_REFERENCE_DATE)}</span>
@@ -202,7 +202,7 @@ function AssetPage() {
           </div>
 
           {/* ── 내 자산 구성 카드 ── */}
-          <div className="bg-white rounded-card-xl shadow-card p-5 flex flex-col gap-[6px]">
+          <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-[6px]">
             <p className="text-sub font-semibold text-ink-sub">내 자산 구성</p>
 
             <div className="flex overflow-hidden rounded-badge pt-[6px]">
@@ -269,7 +269,7 @@ function AssetPage() {
           </div>
 
           {/* ── 월 수입 차트 카드 ── */}
-          <div className="bg-white rounded-card-xl shadow-card p-5 flex flex-col gap-4">
+          <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-4">
             <div className="flex items-baseline justify-between">
               <p className="text-sub font-semibold text-ink-sub">월 평균 들어오는 돈</p>
               <p className="font-inter text-md font-bold text-primary">
@@ -306,7 +306,7 @@ function AssetPage() {
           </div>
 
           {/* ── 다가오는 현금 일정 카드 ── */}
-          <div className="bg-white rounded-card-xl shadow-card p-5 flex flex-col">
+          <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
             <p className="text-sub font-semibold text-ink-sub">다가오는 현금 일정</p>
 
             {MOCK_CASH_EVENTS.map((event, i) => (
@@ -348,7 +348,7 @@ function AssetPage() {
           </div>
 
           {/* ── 연금으로 받을 재원 카드 ── */}
-          <div className="bg-white rounded-card-xl shadow-card p-5 flex flex-col">
+          <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
             <p className="text-sub font-semibold text-ink-sub">연금으로 받을 재원</p>
 
             {MOCK_PENSION_ITEMS.map((item, i) => (
