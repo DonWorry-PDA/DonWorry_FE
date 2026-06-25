@@ -28,7 +28,10 @@ const useEtfPriceWebSocket = (ticker: string | undefined) => {
     }
 
     return () => {
-      ws.close()
+      ws.onmessage = null
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+        ws.close()
+      }
     }
   }, [ticker])
 

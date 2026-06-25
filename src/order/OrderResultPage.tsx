@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
+import Button from '../common/components/Button'
 
 type ItemStatus = 'done' | 'failed'
 
@@ -143,14 +144,10 @@ function OrderResultPage() {
           </>
         )}
 
-        {failedCount === 0 && (
-          <button
-            onClick={() => navigate('/order/complete')}
-            className="w-full h-[54px] rounded-btn bg-primary text-white text-btn font-bold"
-          >
-            완료 확인
-          </button>
-        )}
+      </div>
+
+      <div className="px-5 pb-4 shrink-0">
+        <Button onClick={() => navigate('/home')}>홈으로</Button>
       </div>
     </div>
   )
