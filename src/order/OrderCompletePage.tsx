@@ -1,9 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../common/components/Button'
 import CheckBadge from '../common/components/CheckBadge'
 
 function OrderCompletePage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -47,14 +48,8 @@ function OrderCompletePage() {
         </div>
       </div>
 
-      <div className="px-6 pb-4 shrink-0 flex flex-col gap-2">
-        <button
-          onClick={() => navigate('/order/modify')}
-          className="w-full text-body text-ink-sub text-center py-3"
-        >
-          주문 내역 보기
-        </button>
-        <Button onClick={() => navigate('/home')}>홈으로</Button>
+      <div className="px-5 pb-4 shrink-0">
+        <Button onClick={() => navigate('/order/result', { state })}>다음</Button>
       </div>
     </div>
   )

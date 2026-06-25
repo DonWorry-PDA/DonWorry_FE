@@ -54,6 +54,9 @@ import OrderResultPage from './order/OrderResultPage'
 import OrderCompletePage from './order/OrderCompletePage'
 import OrderModifyPage from './order/OrderModifyPage'
 import OrderConfirmPage from './order/OrderConfirmPage'
+import OrderPinPage from './order/OrderPinPage'
+import OrderReservedPage from './order/OrderReservedPage'
+import OrderTransferPage from './order/OrderTransferPage'
 import AssetPage from './asset/AssetPage'
 import RetirementSimulationPage from './retirement/RetirementSimulationPage'
 
@@ -120,6 +123,9 @@ const router = createBrowserRouter([
   { path: '/order/complete', element: <OrderCompletePage /> },
   { path: '/order/modify', element: <OrderModifyPage /> },
   { path: '/order/confirm', element: <OrderConfirmPage /> },
+  { path: '/order/pin', element: <OrderPinPage /> },
+  { path: '/order/reserved', element: <OrderReservedPage /> },
+  { path: '/order/transfer', element: <OrderTransferPage /> },
   { path: '/pension/defer', element: <PensionDeferPage /> },
   { path: '/retirement-simulation', element: <RetirementSimulationPage /> },
 ])

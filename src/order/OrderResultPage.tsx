@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
+import Button from '../common/components/Button'
 
 type ItemStatus = 'done' | 'failed'
 
@@ -9,12 +10,6 @@ interface ResultItem {
   detail: string
   status: ItemStatus
 }
-
-const ITEMS: ResultItem[] = [
-  { id: '1', name: '국내주식 매도', detail: '2,000만원 완료', status: 'done' },
-  { id: '2', name: '월지급식 ETF 매수', detail: '2,000만원 완료', status: 'done' },
-  { id: '3', name: '배당 ETF 매수', detail: '체결 실패 · 거래정지', status: 'failed' },
-]
 
 function CheckCircle() {
   return (
@@ -46,8 +41,10 @@ function ChevronRightIcon() {
 
 function OrderResultPage() {
   const navigate = useNavigate()
-  const failedCount = ITEMS.filter((i) => i.status === 'failed').length
-  const doneCount = ITEMS.filter((i) => i.status === 'done').length
+  const { state } = useLocation()
+  const items: ResultItem[] = (state as { results?: ResultItem[] } | null)?.results ?? []
+  const failedCount = items.filter((i) => i.status === 'failed').length
+  const doneCount = items.filter((i) => i.status === 'done').length
 
   return (
     <div className="flex flex-col h-full">
@@ -62,7 +59,7 @@ function OrderResultPage() {
               <path d="M6.8 2.6a1.4 1.4 0 0 1 2.4 0l4.9 8.4A1.4 1.4 0 0 1 12.9 13H3.1a1.4 1.4 0 0 1-1.2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
             </svg>
             <p className="text-sub font-semibold text-warning-text">
-              {ITEMS.length}가지 중 {doneCount}가지만 처리됐어요
+              {items.length}가지 중 {doneCount}가지만 처리됐어요
             </p>
           </div>
         )}
@@ -71,7 +68,7 @@ function OrderResultPage() {
 
         {/* 결과 리스트 */}
         <div className="flex flex-col gap-4 mb-6">
-          {ITEMS.map((item) => (
+          {items.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               {item.status === 'done' ? <CheckCircle /> : <XCircle />}
               <div className="flex-1">
@@ -90,7 +87,7 @@ function OrderResultPage() {
         {failedCount > 0 && (
           <div className="rounded-btn bg-surface px-4 py-3 mb-5">
             <p className="text-sub text-ink-sub">
-              실패 시 남은 1,000만원에 투자되지 않고 현금으로 계좌에 남아 있어요.
+              실패한 종목은 현금으로 계좌에 남아 있어요.
             </p>
           </div>
         )}
@@ -122,7 +119,7 @@ function OrderResultPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-body font-semibold text-ink">여기서 멈추기</p>
-                  <p className="text-sub text-ink-hint">남은 1,000만원은 계좌에 그대로 둬요</p>
+                  <p className="text-sub text-ink-hint">남은 금액은 계좌에 그대로 둬요</p>
                 </div>
                 <span className="text-ink-hint"><ChevronRightIcon /></span>
               </button>
@@ -143,14 +140,10 @@ function OrderResultPage() {
           </>
         )}
 
-        {failedCount === 0 && (
-          <button
-            onClick={() => navigate('/order/complete')}
-            className="w-full h-[54px] rounded-btn bg-primary text-white text-btn font-bold"
-          >
-            완료 확인
-          </button>
-        )}
+      </div>
+
+      <div className="px-5 pb-4 shrink-0">
+        <Button onClick={() => navigate('/home')}>홈으로</Button>
       </div>
     </div>
   )

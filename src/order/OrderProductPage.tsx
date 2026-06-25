@@ -255,8 +255,8 @@ function OrderProductPage() {
         )}
       </div>
 
-      <div className="px-6 pb-4 shrink-0">
-        <Button onClick={() => navigate('/order/terms')}>이해했어요 · 계속하기</Button>
+      <div className="px-5 pb-4 shrink-0">
+        <Button onClick={() => navigate(-1)}>이해했어요</Button>
       </div>
     </div>
   )

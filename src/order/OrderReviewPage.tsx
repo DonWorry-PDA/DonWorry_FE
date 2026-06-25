@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import { type BuyItem } from './components/BuyConfirmModal'
+import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
+import { findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
+import CenterMessage from '../paycheckPlan/components/CenterMessage'
 
 function ArrowUpIcon() {
   return (
@@ -11,26 +15,64 @@ function ArrowUpIcon() {
   )
 }
 
-function ArrowDownIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M7 3v8M3 7l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-const SELL_ITEMS = [
-  { name: '국내주식', detail: '시장가 약 320주', amount: '2,000만' },
-]
-
-const BUY_ITEMS = [
-  { name: '월지급식 ETF', detail: '약 1,720주 · 예상 11,600원', amount: '2,000만' },
-  { name: '배당 ETF', detail: '약 980주 · 예상 10,200원', amount: '1,000만' },
-]
-
 function OrderReviewPage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const planId = state?.planId as string | undefined
+
+  const { data, isLoading } = useGetRecommendation()
   const [confirmed, setConfirmed] = useState(false)
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="주문 검토" onBack={() => navigate(-1)} />
+        <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
+      </div>
+    )
+  }
+
+  const plan = data && planId ? findPlan(data, planId) : undefined
+  if (!data || !plan) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="주문 검토" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 이전 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
+      </div>
+    )
+  }
+
+  const summary = mapExecutionSummary(data, plan)
+  const buyItems = summary.items.filter((i) => i.action === 'buy')
+  const totalAmount = buyItems.reduce((sum, i) => sum + i.amount, 0)
+
+  const buyModalItems: BuyItem[] = buyItems.map((item) => ({
+    name: item.productName ?? item.name,
+    productType: 'ETF',
+    amount: `${item.amount.toLocaleString('ko-KR')}만`,
+    amountWon: item.amount * 10000,
+    ticker: item.ticker,
+    productId: item.productId,
+  }))
+
+  function isMarketOpen() {
+    if (import.meta.env.VITE_SKIP_MARKET_CHECK === 'true') return true
+    const now = new Date()
+    const kst = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }))
+    const day = kst.getDay()
+    if (day === 0 || day === 6) return false
+    const total = kst.getHours() * 60 + kst.getMinutes()
+    return total >= 9 * 60 && total < 15 * 60 + 30
+  }
+
+  function handleOrderStart() {
+    if (!isMarketOpen()) {
+      navigate('/order/reserved', { state: { itemCount: buyModalItems.length } })
+      return
+    }
+    const totalAmountWon = buyModalItems.reduce((sum, item) => sum + (item.amountWon ?? 0), 0)
+    navigate('/order/transfer', { state: { items: buyModalItems, totalAmountWon } })
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -39,36 +81,21 @@ function OrderReviewPage() {
       <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-6">이렇게 주문할게요</h2>
 
-        {/* 팔 자산 */}
-        <p className="text-sub text-ink-hint mb-2">팔 자산</p>
-        <div className="flex flex-col gap-3 mb-5">
-          {SELL_ITEMS.map((item) => (
-            <div key={item.name} className="flex items-center gap-3">
-              <div className="size-8 rounded-icon flex items-center justify-center shrink-0 bg-danger-bg text-danger">
-                <ArrowDownIcon />
-              </div>
-              <div className="flex-1">
-                <p className="text-body font-semibold text-ink">{item.name}</p>
-                <p className="text-sub text-ink-hint">{item.detail}</p>
-              </div>
-              <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount}</p>
-            </div>
-          ))}
-        </div>
-
         {/* 살 자산 */}
         <p className="text-sub text-ink-hint mb-2">살 자산</p>
         <div className="flex flex-col gap-3 mb-5">
-          {BUY_ITEMS.map((item) => (
-            <div key={item.name} className="flex items-center gap-3">
+          {buyItems.map((item) => (
+            <div key={item.id} className="flex items-center gap-3">
               <div className="size-8 rounded-icon flex items-center justify-center shrink-0 bg-success-bg text-success">
                 <ArrowUpIcon />
               </div>
               <div className="flex-1">
-                <p className="text-body font-semibold text-ink">{item.name}</p>
-                <p className="text-sub text-ink-hint">{item.detail}</p>
+                <p className="text-body font-semibold text-ink">{item.productName ?? item.name}</p>
+                <p className="text-sub text-ink-hint">{item.description}</p>
               </div>
-              <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount}</p>
+              <p className="font-inter text-body font-bold text-ink shrink-0">
+                {item.amount.toLocaleString('ko-KR')}만
+              </p>
             </div>
           ))}
         </div>
@@ -77,25 +104,18 @@ function OrderReviewPage() {
         <div className="border border-line rounded-card px-4 py-3 flex flex-col gap-2.5">
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">총 주문액</p>
-            <p className="font-inter text-body font-semibold text-ink">3,000만원</p>
+            <p className="font-inter text-body font-semibold text-ink">
+              {totalAmount.toLocaleString('ko-KR')}만원
+            </p>
           </div>
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">예상 수수료</p>
-            <p className="font-inter text-body text-ink">9,800원</p>
-          </div>
-          <div className="flex justify-between items-center">
-            <p className="text-body text-ink-sub">증권거래세 (매도분)</p>
-            <p className="font-inter text-body text-ink">36,000원</p>
-          </div>
-          <div className="h-px bg-divider" />
-          <div className="flex justify-between items-center">
-            <p className="text-body font-semibold text-ink">예상 차감 합계</p>
-            <p className="font-inter text-body font-bold text-ink">약 4만 5,800원</p>
+            <p className="font-inter text-body text-ink">협의 예정</p>
           </div>
         </div>
 
         <p className="text-sub text-ink-hint mt-3 px-1">
-          예상은 실시간 시세라 체결 가격과 달라질 수 있어요. 본 문서 내용은 자동으로 최소화해요.
+          예상은 실시간 시세라 체결 가격과 달라질 수 있어요.
         </p>
 
         {/* 확인 체크 */}
@@ -120,11 +140,12 @@ function OrderReviewPage() {
         </button>
       </div>
 
-      <div className="px-6 pb-4 shrink-0">
-        <Button disabled={!confirmed} onClick={() => navigate('/order/executing')}>
+      <div className="px-5 pb-4 shrink-0">
+        <Button disabled={!confirmed} onClick={handleOrderStart}>
           주문 실행
         </Button>
       </div>
+
     </div>
   )
 }

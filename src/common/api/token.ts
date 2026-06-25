@@ -11,3 +11,15 @@ export const clearTokens = () => {
   sessionStorage.removeItem(ACCESS_KEY)
   sessionStorage.removeItem(REFRESH_KEY)
 }
+
+export const getUserIdFromToken = (): number | null => {
+  const token = getAccessToken()
+  if (!token) return null
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const payload = JSON.parse(atob(base64))
+    return payload.sub ? Number(payload.sub) : null
+  } catch {
+    return null
+  }
+}
