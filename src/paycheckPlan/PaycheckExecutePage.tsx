@@ -44,16 +44,7 @@ function PaycheckExecutePage() {
   const base = plan && data ? mapExecutionSummary(data, plan) : null
 
   const summary = {
-    ...(base ?? {
-      planName: mockExecutionSummary.planName,
-      planType: mockExecutionSummary.planType,
-      coverageFrom: mockExecutionSummary.coverageFrom,
-      coverageTo: mockExecutionSummary.coverageTo,
-      cashflowFrom: mockExecutionSummary.cashflowFrom,
-      cashflowTo: mockExecutionSummary.cashflowTo,
-      notice: mockExecutionSummary.notice,
-    }),
-    items: mockExecutionSummary.items, // TODO: BE 미제공
+    ...(base ?? mockExecutionSummary),
     estimatedFee: mockExecutionSummary.estimatedFee, // TODO: BE 미제공
   }
 

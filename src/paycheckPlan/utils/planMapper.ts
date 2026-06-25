@@ -6,6 +6,7 @@ import type {
   PlanDetail,
   ComparisonTable,
   ExecutionSummary,
+  ExecutionItem,
 } from '../types/paycheckPlan'
 import type {
   BackendPlanType,
@@ -138,17 +139,33 @@ export const mapComparison = (response: RecommendationResponse): ComparisonTable
 
 const EXECUTE_NOTICE = '주문은 장중에 시장가로 체결돼요. 지금은 거래 시간이라 바로 진행됩니다.'
 
-/** 실행 요약 화면용 매핑. items·estimatedFee는 BE 미제공 — 호출부에서 static으로 주입한다. */
+const HOLDING_ROLE_DESC: Record<string, string> = {
+  SAFE: '이자·분배금으로 안정적 수입을 만들어요',
+  RISK: '배당·분배금으로 월급을 만들어요',
+  SHORT_TERM: '단기 유동성을 확보해요',
+}
+
+const mapExecutionItems = (plan: RecommendationPlan): ExecutionItem[] =>
+  plan.holdings.map((h, i) => ({
+    id: String(i + 1),
+    action: 'buy' as const,
+    name: `${h.productName} 사기`,
+    description: HOLDING_ROLE_DESC[h.role] ?? '',
+    amount: toManwon(h.amount),
+  }))
+
+/** 실행 요약 화면용 매핑. estimatedFee는 BE 미제공 — 호출부에서 static으로 주입한다. */
 export const mapExecutionSummary = (
   response: RecommendationResponse,
   plan: RecommendationPlan,
-): Omit<ExecutionSummary, 'items' | 'estimatedFee'> => ({
+): Omit<ExecutionSummary, 'estimatedFee'> => ({
   planName: plan.displayName,
   planType: TYPE_MAP[plan.type],
   coverageFrom: Math.round(response.currentCoverageRate),
   coverageTo: Math.min(100, Math.round(plan.totalCoverageRate)),
   cashflowFrom: toManwon(response.currentMonthlyCashFlow),
   cashflowTo: toManwon(plan.monthlyIncome),
+  items: mapExecutionItems(plan),
   notice: EXECUTE_NOTICE,
 })
 
