@@ -69,10 +69,10 @@ function MonthlyReportPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="bg-page flex h-dvh flex-col">
+    <div className="flex h-dvh flex-col bg-white">
       <AppBar title="월간 리포트" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pb-8">
+      <main className="flex-1 overflow-y-auto px-6 pb-8">
         {/* 월 선택 (월 이동 기능은 API 연동 시 구현 예정) */}
         <div className="flex items-center justify-center gap-6 py-2">
           <button aria-label="이전 달" disabled className="text-disabled text-md">
@@ -114,7 +114,7 @@ function MonthlyReportPage() {
         {/* 연금·배당 들어온 돈 */}
         <section className="mt-6">
           <p className="text-body text-ink-hint mb-2">연금·배당 들어온 돈</p>
-          <div className="rounded-card-lg shadow-card flex flex-col bg-white">
+          <div className="rounded-card-lg border border-line flex flex-col bg-white">
             {MOCK.incomes.map(({ label, value, delta }, i) => (
               <div
                 key={label}
@@ -135,7 +135,7 @@ function MonthlyReportPage() {
         {/* 소비 */}
         <section className="mt-6">
           <p className="text-body text-ink-hint mb-2">소비</p>
-          <div className="rounded-card-lg shadow-card bg-white p-4">
+          <div className="rounded-card-lg border border-line bg-white p-4">
             <div className="flex items-center justify-between">
               <span className="text-body text-ink-sub">이번 달 소비</span>
               <span className="text-md text-ink font-bold">
@@ -154,7 +154,7 @@ function MonthlyReportPage() {
         {/* 다음 달 미리 보기 */}
         <section className="mt-6">
           <p className="text-body text-ink-hint mb-2">다음 달 미리 보기</p>
-          <div className="rounded-card-lg shadow-card flex flex-col bg-white">
+          <div className="rounded-card-lg border border-line flex flex-col bg-white">
             <div className="flex items-center justify-between px-4 py-3.5">
               <span className="text-body text-ink-sub">들어올 돈</span>
               <span className="text-md text-ink font-bold">{MOCK.nextIncome}</span>
