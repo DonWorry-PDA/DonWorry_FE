@@ -7,12 +7,29 @@ import SelectChip from '../common/components/SelectChip'
 import ConsultCard from './components/ConsultCard'
 import { mockConsultCards, mockTimeSlots } from './mock/paycheckPlan'
 import type { ConsultType } from './types/paycheckPlan'
+import { usePostConsultation } from '../mypage/hooks/consultation'
+import { buildScheduledAtIso } from '../mypage/utils/consultation'
 
 function PaycheckConsultPage() {
   const navigate = useNavigate()
   const [selectedType, setSelectedType] = useState<ConsultType>('pb')
   const [sendChecked, setSendChecked] = useState(true)
   const [selectedTime, setSelectedTime] = useState('10:30')
+  const createConsultation = usePostConsultation()
+
+  const handleReserve = () => {
+    // 날짜 선택 UI 미연동 상태 — 시연용으로 5일 뒤 선택 시간에 예약
+    const date = new Date()
+    date.setDate(date.getDate() + 5)
+    createConsultation.mutate(
+      {
+        consultType: selectedType === 'pb' ? 'PB' : 'INSURANCE',
+        scheduledAt: buildScheduledAtIso(date, selectedTime),
+        planId: null,
+      },
+      { onSuccess: () => navigate('/mypage/consult-history') },
+    )
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -74,7 +91,9 @@ function PaycheckConsultPage() {
 
       <StickyFooter>
         <div className="flex flex-col gap-1.5">
-          <Button onClick={() => {}}>상담 예약하기</Button>
+          <Button onClick={handleReserve} disabled={createConsultation.isPending}>
+            {createConsultation.isPending ? '예약 중…' : '상담 예약하기'}
+          </Button>
           <p className="text-sub text-ink-hint text-center">예약 변경·취소는 마이페이지에서 할 수 있어요</p>
         </div>
       </StickyFooter>
