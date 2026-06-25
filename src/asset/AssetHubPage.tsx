@@ -149,7 +149,14 @@ function AssetHubPage() {
 
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
-          <StatusMessage text="자산 정보를 불러오는 중이에요…" />
+          <div className="flex flex-col gap-5 px-5">
+            <div className="h-[220px] animate-pulse rounded-card-xl bg-white shadow-card" />
+            <div className="grid grid-cols-2 gap-3">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-[120px] animate-pulse rounded-card-lg bg-white shadow-card" />
+              ))}
+            </div>
+          </div>
         ) : !hub ? (
           // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />

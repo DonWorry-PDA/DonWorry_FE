@@ -89,7 +89,15 @@ function HomePage() {
 
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
-          <StatusMessage text="자산 정보를 불러오는 중이에요…" />
+          <div className="flex flex-col gap-5 px-5 pt-1">
+            <div className="h-[168px] animate-pulse rounded-card-xl bg-white shadow-card" />
+            <div className="h-[108px] animate-pulse rounded-card-xl bg-white shadow-card" />
+            <div className="flex gap-2">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-[72px] flex-1 animate-pulse rounded-card bg-white shadow-card" />
+              ))}
+            </div>
+          </div>
         ) : !hub || !asset ? (
           // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
