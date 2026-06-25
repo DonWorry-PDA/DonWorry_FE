@@ -93,7 +93,7 @@ export const mapPlanDetail = (response: RecommendationResponse, plan: Recommenda
     planName: plan.displayName,
     expectedMonthlyIncome: expected, // BE
     afterTaxIncome: Math.round(expected * 0.96), // TODO(static): 세후 미제공 — 임시 96% 추정
-    coverageFrom: Math.round(response.currentCoverageRate), // BE
+    coverageFrom: Math.min(100, Math.round(response.currentCoverageRate)), // BE
     coverageTo: Math.min(100, Math.round(plan.totalCoverageRate)), // BE
     shortfallFrom: toManwon(response.currentMonthlyShortfall), // BE
     shortfallTo: toManwon(plan.residualMonthlyShortfall), // BE
