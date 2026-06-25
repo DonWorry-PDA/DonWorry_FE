@@ -85,7 +85,16 @@ function PaycheckExecutePage() {
 
         <div className="flex flex-col gap-3 mb-4">
           {summary.items.map((item) => (
-            <div key={item.id} className="flex items-center gap-3">
+            <button
+              key={item.id}
+              className="flex items-center gap-3 w-full text-left"
+              onClick={() =>
+                item.productName &&
+                navigate('/order/product', {
+                  state: { ticker: item.ticker, productName: item.productName },
+                })
+              }
+            >
               <div
                 className={`size-8 rounded-icon flex items-center justify-center shrink-0 ${
                   item.action === 'sell' ? 'bg-danger-bg text-danger' : 'bg-success-bg text-success'
@@ -98,7 +107,7 @@ function PaycheckExecutePage() {
                 <p className="text-sub text-ink-hint">{item.description}</p>
               </div>
               <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount.toLocaleString()}만</p>
-            </div>
+            </button>
           ))}
         </div>
 
