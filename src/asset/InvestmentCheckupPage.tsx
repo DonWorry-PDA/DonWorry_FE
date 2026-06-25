@@ -31,7 +31,7 @@ function buildSummaryLines(roles: RoleContribution[]): string[] {
     if (role.role === 'IDLE') {
       lines.push(`잠자는 돈 ${formatKrw(role.amount)}은 아직 일하지 않고 쉬고 있어요.`)
     } else if (role.role === 'GROWTH') {
-      lines.push(`개별주 ${formatKrw(role.amount)}은 배당이 거의 없어요.`)
+      lines.push(`개별주 ${formatKrw(role.amount)}은 ${role.note}.`)
     } else if (role.role === 'PENSION') {
       lines.push(`연금 ${formatKrw(role.amount)}은 55세까지 묶여 있어요.`)
     }
@@ -42,7 +42,7 @@ function buildSummaryLines(roles: RoleContribution[]): string[] {
 
 function InvestmentCheckupPage() {
   const navigate = useNavigate()
-  const { data, isLoading, refetch } = useGetInvestmentCheck()
+  const { data, isLoading, isFetching, refetch } = useGetInvestmentCheck()
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -63,15 +63,16 @@ function InvestmentCheckupPage() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+            disabled={isFetching}
+            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink disabled:opacity-50"
           >
-            다시 시도
+            {isFetching ? '불러오는 중…' : '다시 시도'}
           </button>
         </main>
       ) : (
         <>
           <main className="flex-1 overflow-y-auto px-6 pb-6">
-            <h2 className="text-card text-ink mt-2 font-bold leading-snug">
+            <h2 className="text-card text-ink mt-2 font-bold leading-snug whitespace-pre-line">
               갖고 계신 자산 중{'\n'}
               <span className="text-primary">{data.cashflowAssetRatio}%만 월급을 만들고 있어요</span>
             </h2>
