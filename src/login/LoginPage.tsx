@@ -7,10 +7,10 @@ function LoginPage() {
   const { pin, isError, appendDigit, deleteDigit, reset } = usePinInput(1)
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       {/* 헤더 + 인사말 */}
       <div>
-        <p className="px-6 pt-12 text-center text-sub text-ink-sub">신한 은퇴솔루션</p>
+        <p className="px-6 pt-12 text-center text-sub text-ink-sub">신한 연금SOL사</p>
         <div className="mt-10 px-6 text-center">
           <h1 className="text-heading font-bold text-ink">
             다시 만나서 반가워요
