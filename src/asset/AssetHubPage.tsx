@@ -9,8 +9,8 @@ import type { AssetHubSummary, ManageMenu } from './types/asset'
 import type { StabilityStatus } from '../stability/types/stability'
 
 // API로 채우지 않는 메뉴 메타데이터(제목/경로/아이콘/기본 캡션).
-// salaryMaking·lifeStability·retirementSim은 asset/hub 응답으로 덮어쓰고,
-// investmentCheck(#2)·pensionDefer(#5)·monthlyReport(#6)은 BE 미구현이라 정적 캡션을 유지한다.
+// salaryMaking·lifeStability·retirementSim·investmentCheck는 asset/hub 응답으로 덮어쓰고,
+// pensionDefer(#5)·monthlyReport(#6)은 BE 미구현이라 정적 캡션을 유지한다.
 const MENU_BASE: ManageMenu[] = [
   {
     key: 'salaryMaking',
@@ -118,6 +118,12 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
       }
     }
 
+    if (menu.key === 'investmentCheck') {
+      const ratio = hub.menus.investmentCheck?.cashflowAssetRatio
+      if (ratio == null) return menu
+      return { ...menu, caption: `월급 만드는 자산\n${ratio}%뿐이에요` }
+    }
+
     if (menu.key === 'retirementSim') {
       const retirementSim = hub.menus.retirementSim
       if (retirementSim && retirementSim.available === false) {
@@ -126,7 +132,7 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
       return menu
     }
 
-    // investmentCheck(#2) / pensionDefer(#5) / monthlyReport(#6): BE 미구현 → 정적 캡션 유지
+    // pensionDefer(#5) / monthlyReport(#6): BE 미구현 → 정적 캡션 유지
     return menu
   })
 
