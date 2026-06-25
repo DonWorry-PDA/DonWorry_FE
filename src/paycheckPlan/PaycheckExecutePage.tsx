@@ -7,7 +7,6 @@ import InfoBox from '../common/components/InfoBox'
 import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from './utils/planMapper'
-import { mockExecutionSummary } from './mock/paycheckPlan'
 
 function ArrowUpIcon() {
   return (
@@ -41,11 +40,18 @@ function PaycheckExecutePage() {
   }
 
   const plan = data && planId ? findPlan(data, planId) : undefined
-  const base = plan && data ? mapExecutionSummary(data, plan) : null
+  if (!data || !plan) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 설계안 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
+      </div>
+    )
+  }
 
   const summary = {
-    ...(base ?? mockExecutionSummary),
-    estimatedFee: mockExecutionSummary.estimatedFee, // TODO: BE 미제공
+    ...mapExecutionSummary(data, plan),
+    estimatedFee: 0, // TODO: BE 미제공
   }
 
   return (
