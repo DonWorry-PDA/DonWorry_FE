@@ -152,6 +152,8 @@ const mapExecutionItems = (plan: RecommendationPlan): ExecutionItem[] =>
     name: `${h.productName} 사기`,
     description: HOLDING_ROLE_DESC[h.role] ?? '',
     amount: toManwon(h.amount),
+    ticker: h.ticker,
+    productName: h.productName,
   }))
 
 /** 실행 요약 화면용 매핑. estimatedFee는 BE 미제공 — 호출부에서 static으로 주입한다. */

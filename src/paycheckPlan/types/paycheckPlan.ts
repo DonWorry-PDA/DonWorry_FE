@@ -117,6 +117,8 @@ export type ExecutionItem = {
   name: string
   description: string
   amount: number
+  ticker?: string
+  productName?: string
 }
 
 export type ExecutionSummary = {
