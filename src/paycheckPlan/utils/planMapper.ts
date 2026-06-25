@@ -152,6 +152,7 @@ const mapExecutionItems = (plan: RecommendationPlan): ExecutionItem[] =>
     name: `${h.productName} 사기`,
     description: HOLDING_ROLE_DESC[h.role] ?? '',
     amount: toManwon(h.amount),
+    productId: h.productId,
     ticker: h.ticker,
     productName: h.productName,
   }))

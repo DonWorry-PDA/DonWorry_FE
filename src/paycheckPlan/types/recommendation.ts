@@ -16,6 +16,7 @@ export type BucketRole = 'SAFE' | 'RISK' | 'SHORT_TERM'
 export type CurrencyExposure = 'UNHEDGED' | 'HEDGED'
 
 export type Holding = {
+  productId: number
   ticker: string
   productName: string
   role: BucketRole
