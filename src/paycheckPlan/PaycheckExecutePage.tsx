@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import Badge from '../common/components/Badge'
 import InfoBox from '../common/components/InfoBox'
-import { mockExecutionSummary } from './mock/paycheckPlan'
+import CenterMessage from './components/CenterMessage'
+import useGetRecommendation from './hooks/useGetRecommendation'
+import { findPlan, mapExecutionSummary } from './utils/planMapper'
 
 function ArrowUpIcon() {
   return (
@@ -24,7 +26,33 @@ function ArrowDownIcon() {
 
 function PaycheckExecutePage() {
   const navigate = useNavigate()
-  const summary = mockExecutionSummary
+  const { state } = useLocation()
+  const planId = state?.planId as string | undefined
+  const { data, isLoading } = useGetRecommendation()
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
+      </div>
+    )
+  }
+
+  const plan = data && planId ? findPlan(data, planId) : undefined
+  if (!data || !plan) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 설계안 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
+      </div>
+    )
+  }
+
+  const summary = {
+    ...mapExecutionSummary(data, plan),
+    estimatedFee: 0, // TODO: BE 미제공
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -63,7 +91,16 @@ function PaycheckExecutePage() {
 
         <div className="flex flex-col gap-3 mb-4">
           {summary.items.map((item) => (
-            <div key={item.id} className="flex items-center gap-3">
+            <button
+              key={item.id}
+              className="flex items-center gap-3 w-full text-left"
+              onClick={() =>
+                item.productName &&
+                navigate('/order/product', {
+                  state: { ticker: item.ticker, productName: item.productName },
+                })
+              }
+            >
               <div
                 className={`size-8 rounded-icon flex items-center justify-center shrink-0 ${
                   item.action === 'sell' ? 'bg-danger-bg text-danger' : 'bg-success-bg text-success'
@@ -76,7 +113,7 @@ function PaycheckExecutePage() {
                 <p className="text-sub text-ink-hint">{item.description}</p>
               </div>
               <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount.toLocaleString()}만</p>
-            </div>
+            </button>
           ))}
         </div>
 

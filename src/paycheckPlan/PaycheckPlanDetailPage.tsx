@@ -40,7 +40,7 @@ function PaycheckPlanDetailPage() {
   // 캐시된 설계안이 있으면 백그라운드 재요청 실패(isError)와 무관하게 그대로 보여준다.
   // 정말 해당 안이 없을 때만(!plan) 안내한다.
   const plan = data && planId ? findPlan(data, planId) : undefined
-  if (!plan) {
+  if (!data || !plan) {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="설계안" onBack={() => navigate(-1)} />
@@ -49,7 +49,7 @@ function PaycheckPlanDetailPage() {
     )
   }
 
-  const detail = mapPlanDetail(plan)
+  const detail = mapPlanDetail(data, plan)
 
   return (
     <div className="flex flex-col h-full">
@@ -96,7 +96,7 @@ function PaycheckPlanDetailPage() {
 
       <StickyFooter>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute')}>
+          <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute', { state: { planId } })}>
             진행하기
           </Button>
           <Button onClick={() => navigate('/paycheck-plan/consult')}>전문가와 같이 보기</Button>
