@@ -40,14 +40,14 @@ const RISK_LABEL: Record<number, { label: string; tone: string }> = {
   6: { label: '6등급 · 매우낮은위험', tone: 'text-ink-sub' },
 }
 
-function PriceChangeSign({ sign, value }: { sign: string; value: number }) {
+function PriceChangeSign({ sign, changePrice, changeRate }: { sign: string; changePrice: number; changeRate: number }) {
   const isUp = sign === '2'
   const isDown = sign === '5'
   const color = isUp ? 'text-danger' : isDown ? 'text-primary' : 'text-ink-sub'
   const prefix = isUp ? '+' : isDown ? '-' : ''
   return (
     <span className={`font-inter text-body font-medium ${color}`}>
-      {prefix}{Math.abs(value).toLocaleString('ko-KR')}원 ({prefix}{Math.abs(value)})%
+      {prefix}{Math.abs(changePrice).toLocaleString('ko-KR')}원 ({prefix}{Math.abs(changeRate).toFixed(2)}%)
     </span>
   )
 }
@@ -188,7 +188,7 @@ function OrderProductPage() {
               {currentPrice.toLocaleString('ko-KR')}원
             </p>
             {changePrice != null && changeRate != null && (
-              <PriceChangeSign sign={sign} value={changePrice} />
+              <PriceChangeSign sign={sign} changePrice={changePrice} changeRate={changeRate} />
             )}
             <div className="flex gap-4 mt-2">
               <div>
