@@ -1,9 +1,12 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import Badge from '../common/components/Badge'
 import InfoBox from '../common/components/InfoBox'
+import CenterMessage from './components/CenterMessage'
+import useGetRecommendation from './hooks/useGetRecommendation'
+import { findPlan, mapExecutionSummary } from './utils/planMapper'
 import { mockExecutionSummary } from './mock/paycheckPlan'
 
 function ArrowUpIcon() {
@@ -24,7 +27,35 @@ function ArrowDownIcon() {
 
 function PaycheckExecutePage() {
   const navigate = useNavigate()
-  const summary = mockExecutionSummary
+  const { state } = useLocation()
+  const planId = state?.planId as string | undefined
+  const { data, isLoading } = useGetRecommendation()
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
+      </div>
+    )
+  }
+
+  const plan = data && planId ? findPlan(data, planId) : undefined
+  const base = plan && data ? mapExecutionSummary(data, plan) : null
+
+  const summary = {
+    ...(base ?? {
+      planName: mockExecutionSummary.planName,
+      planType: mockExecutionSummary.planType,
+      coverageFrom: mockExecutionSummary.coverageFrom,
+      coverageTo: mockExecutionSummary.coverageTo,
+      cashflowFrom: mockExecutionSummary.cashflowFrom,
+      cashflowTo: mockExecutionSummary.cashflowTo,
+      notice: mockExecutionSummary.notice,
+    }),
+    items: mockExecutionSummary.items, // TODO: BE 미제공
+    estimatedFee: mockExecutionSummary.estimatedFee, // TODO: BE 미제공
+  }
 
   return (
     <div className="flex flex-col h-full">
