@@ -10,7 +10,7 @@ import {
 } from './hooks/consultation'
 import { buildScheduledAtIso, parseScheduledAt } from './utils/consultation'
 
-type AlertState = 'save-success' | 'cancel-confirm' | 'cancel-done' | null
+type AlertState = 'save-success' | 'cancel-confirm' | 'cancel-done' | 'error' | null
 
 function formatShortDate(date: Date): string {
   const dow = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
@@ -222,6 +222,7 @@ function ConsultModifyPage() {
             onClick={() =>
               scheduleMutation.mutate(buildScheduledAtIso(selectedDate, selectedTime24), {
                 onSuccess: () => setAlertState('save-success'),
+                onError: () => setAlertState('error'),
               })
             }
           >
@@ -307,6 +308,7 @@ function ConsultModifyPage() {
                 onClick={() =>
                   cancelMutation.mutate(undefined, {
                     onSuccess: () => setAlertState('cancel-done'),
+                    onError: () => setAlertState('error'),
                   })
                 }
               >
@@ -333,6 +335,27 @@ function ConsultModifyPage() {
             <button
               className="flex h-[50px] w-full items-center justify-center rounded-[13px] bg-primary text-btn font-bold text-white"
               onClick={() => navigate('/mypage/consult-history')}
+            >
+              확인
+            </button>
+          </div>
+        </AlertCard>
+      )}
+
+      {/* ── 알림창 4: 처리 실패 ── */}
+      {alertState === 'error' && (
+        <AlertCard>
+          <div className="flex flex-col items-center gap-2">
+            <IconWarning />
+            <p className="pt-[7.5px] text-center text-[17px] font-extrabold text-ink">
+              처리하지 못했어요
+            </p>
+            <p className="pb-3 text-center text-sub leading-[1.63] text-ink-hint">
+              잠시 후 다시 시도해주세요.
+            </p>
+            <button
+              className="flex h-[50px] w-full items-center justify-center rounded-[13px] bg-primary text-btn font-bold text-white"
+              onClick={() => setAlertState(null)}
             >
               확인
             </button>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -14,13 +15,24 @@ function ConsultSummaryPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const { data: record, isLoading: isRecordLoading } = useGetConsultation(id)
-  const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } =
-    useGetConsultationSummary(id)
+  const {
+    data: record,
+    isLoading: isRecordLoading,
+    isError: isRecordError,
+    refetch: refetchRecord,
+  } = useGetConsultation(id)
+  const {
+    data: summary,
+    isLoading: isSummaryLoading,
+    isError: isSummaryError,
+    error: summaryError,
+    refetch: refetchSummary,
+  } = useGetConsultationSummary(id)
   const memoMutation = usePatchConsultationMemo(id ?? '')
 
-  // 저장된 메모를 기본값으로 쓰고, 사용자가 입력하면 draft가 우선 (effect-setState 회피)
-  const [memoDraft, setMemoDraft] = useState<string | null>(null)
+  // 저장된 메모를 기본값으로, 사용자가 입력하면 draft 우선. draft를 상담 id에 묶어 다른 상담과 섞이지 않게 한다.
+  const [memoDraft, setMemoDraft] = useState<{ id: string; value: string } | null>(null)
+  const draftMemo = memoDraft && memoDraft.id === id ? memoDraft.value : null
   const [showToast, setShowToast] = useState(false)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -31,7 +43,7 @@ function ConsultSummaryPage() {
   }, [])
 
   const handleSave = () => {
-    const value = memoDraft ?? summary?.memo ?? ''
+    const value = draftMemo ?? summary?.memo ?? ''
     if (!value.trim() || !id) return
     memoMutation.mutate(value, {
       onSuccess: () => {
@@ -52,19 +64,69 @@ function ConsultSummaryPage() {
     )
   }
 
-  if (!record || !summary || isSummaryError) {
+  if (isRecordError) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 요약" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5">
+          <p className="text-body text-ink-sub">상담 정보를 불러오지 못했어요.</p>
+          <button
+            onClick={() => refetchRecord()}
+            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!record) {
     return (
       <div className="flex h-dvh flex-col bg-white">
         <AppBar title="상담 요약" onBack={() => navigate(-1)} />
         <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5">
-          <p className="text-md font-medium text-ink">상담 요약을 찾을 수 없어요</p>
+          <p className="text-md font-medium text-ink">상담 기록을 찾을 수 없어요</p>
           <button onClick={() => navigate(-1)} className="text-sub text-primary">돌아가기</button>
         </div>
       </div>
     )
   }
 
-  const memo = memoDraft ?? summary.memo ?? ''
+  // 요약 없는 완료 건(404)은 "요약 없음", 그 외 오류는 재시도 가능 화면
+  const summaryNotFound =
+    isSummaryError && isAxiosError(summaryError) && summaryError.response?.status === 404
+
+  if (summaryNotFound) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 요약" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5">
+          <p className="text-md font-medium text-ink">아직 상담 요약이 없어요</p>
+          <button onClick={() => navigate(-1)} className="text-sub text-primary">돌아가기</button>
+        </div>
+      </div>
+    )
+  }
+
+  if (isSummaryError || !summary) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 요약" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5">
+          <p className="text-body text-ink-sub">상담 요약을 불러오지 못했어요.</p>
+          <button
+            onClick={() => refetchSummary()}
+            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const memo = draftMemo ?? summary.memo ?? ''
   const metaLine = [formatScheduledAt(record.scheduledAt), record.location, record.counselorName]
     .filter(Boolean)
     .join(' · ')
@@ -139,7 +201,7 @@ function ConsultSummaryPage() {
             className="w-full min-h-[118px] border border-line rounded-card px-[15px] pt-[15px] pb-4 text-body text-ink placeholder:text-ink-hint resize-none focus:outline-none focus:border-primary transition-colors leading-[1.72]"
             placeholder={`상담에서 기억하고 싶은 내용을 적어보세요.\n예) IRP 추가 납입 7월 안에 알아보기`}
             value={memo}
-            onChange={(e) => setMemoDraft(e.target.value)}
+            onChange={(e) => setMemoDraft({ id: id ?? '', value: e.target.value })}
           />
         </div>
       </main>

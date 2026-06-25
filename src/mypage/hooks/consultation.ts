@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import client from '@/common/api/client'
 import { ApiResponse } from '@/common/types/api'
 import type {
@@ -34,7 +35,9 @@ export const useGetConsultationSummary = (id: string | undefined) =>
   useQuery({
     queryKey: summaryKey(id ?? ''),
     enabled: !!id,
-    retry: false, // 요약 없는 완료 건은 404 — 재시도 불필요
+    // 요약 없는 완료 건(404 CONSULTATION_002)은 재시도하지 않고, 네트워크/5xx는 재시도 허용
+    retry: (failureCount, error) =>
+      isAxiosError(error) && error.response?.status === 404 ? false : failureCount < 2,
     queryFn: () =>
       client
         .get<ApiResponse<ConsultationSummaryResponse>>(`/api/user/consultations/${id}/summary`)

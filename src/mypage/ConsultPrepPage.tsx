@@ -48,7 +48,7 @@ function CheckIcon({ checked }: { checked: boolean }) {
 function ConsultPrepPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const { data: record, isLoading } = useGetConsultation(id)
+  const { data: record, isLoading, isError, refetch } = useGetConsultation(id)
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set(['id-card', 'account']))
 
   const toggle = (itemId: string) =>
@@ -68,6 +68,23 @@ function ConsultPrepPage() {
         <AppBar title="상담 준비사항" onBack={() => navigate(-1)} />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-sub text-ink-hint">불러오는 중이에요…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 준비사항" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3">
+          <p className="text-body text-ink-sub">상담 정보를 불러오지 못했어요.</p>
+          <button
+            onClick={() => refetch()}
+            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+          >
+            다시 시도
+          </button>
         </div>
       </div>
     )

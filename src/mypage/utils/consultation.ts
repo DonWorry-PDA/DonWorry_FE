@@ -49,5 +49,8 @@ export const parseScheduledAt = (iso: string) => {
 /** Date + "HH:mm" → "YYYY-MM-DDTHH:mm:00" (BE LocalDateTime). */
 export const buildScheduledAtIso = (date: Date, time24: string): string => {
   const [h, m] = time24.split(':').map(Number)
+  if (Number.isNaN(date.getTime()) || Number.isNaN(h) || Number.isNaN(m)) {
+    throw new Error(`Invalid schedule input: date=${String(date)}, time24=${time24}`)
+  }
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(h)}:${pad(m)}:00`
 }
