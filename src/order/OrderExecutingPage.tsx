@@ -80,7 +80,7 @@ function OrderExecutingPage() {
 
   return (
     <div className="flex flex-col h-full bg-white">
-      <div className="flex-1 flex flex-col px-5 pt-16">
+      <div className="flex-1 flex flex-col px-6 pt-16">
         {/* 타이틀 영역 */}
         <div className="flex flex-col items-center mb-10">
           <svg
@@ -123,7 +123,7 @@ function OrderExecutingPage() {
       </div>
 
       {doneCount === ITEMS.length && (
-        <div className="px-5 pb-4 shrink-0">
+        <div className="px-6 pb-4 shrink-0">
           <button
             onClick={() => navigate('/order/result')}
             className="w-full h-[54px] rounded-btn bg-primary text-white text-btn font-bold"

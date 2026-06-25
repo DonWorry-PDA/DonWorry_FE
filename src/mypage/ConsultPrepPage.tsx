@@ -116,7 +116,7 @@ function ConsultPrepPage() {
 
       <main className="flex-1 overflow-y-auto">
         {/* 헤더 */}
-        <div className="px-5 pt-6 pb-1">
+        <div className="px-6 pt-6 pb-1">
           <h2 className="text-heading font-extrabold text-ink leading-[1.47]">
             상담 전,
             <br />
@@ -128,7 +128,7 @@ function ConsultPrepPage() {
         </div>
 
         {/* 예약 정보 카드 */}
-        <div className="px-5 pt-5">
+        <div className="px-6 pt-5">
           <div className="border border-line rounded-card-xl px-[1.0625rem] py-[0.3125rem]">
             {reservationRows.map(({ label, value }, i) => (
               <div key={label}>
@@ -143,7 +143,7 @@ function ConsultPrepPage() {
         </div>
 
         {/* 준비물 체크리스트 */}
-        <div className="px-5 pt-[1.375rem]">
+        <div className="px-6 pt-[1.375rem]">
           <p className="text-caption font-semibold text-ink-hint mb-[0.9375rem]">준비물 체크리스트</p>
           {PREP_ITEMS.map((item, i) => (
             <div key={item.id}>
@@ -170,7 +170,7 @@ function ConsultPrepPage() {
         </div>
 
         {/* 이번 상담 주제 */}
-        <div className="px-5 pt-[1.375rem]">
+        <div className="px-6 pt-[1.375rem]">
           <p className="text-caption font-semibold text-ink-hint mb-2">이번 상담에서 다룰 내용</p>
           <div className="bg-surface rounded-card-xl px-[1.1875rem] py-[1.0625rem] flex flex-col gap-[0.6875rem]">
             {TOPICS.map((topic) => (

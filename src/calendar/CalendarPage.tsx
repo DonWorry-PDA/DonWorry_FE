@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AppBar from '../common/components/AppBar'
 import BottomNav from '../common/components/BottomNav'
 import MonthGrid from './components/MonthGrid'
 import EventLegend from './components/EventLegend'
 import DaySchedule from './components/DaySchedule'
 import TransactionList from './components/TransactionList'
 import useGetCalendar from './hooks/useGetCalendar'
-import { BackArrowIc } from '../common/assets/icons'
+import { BackArrowIc, NotificationIc } from '../common/assets/icons'
 import { formatDayTitle, formatMonthTitle, parseIso, toIso } from './utils/monthGrid'
 
 function CalendarPage() {
@@ -55,9 +54,19 @@ function CalendarPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <AppBar title="캘린더" onBack={() => navigate(-1)} />
+      <header className="flex h-[52px] items-center pl-6 pr-[14px]">
+        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
+        <h1 className="flex-1 text-heading font-bold text-ink">캘린더</h1>
+        <button
+          className="flex size-11 items-center justify-center"
+          onClick={() => navigate('/notification')}
+          aria-label="알림"
+        >
+          <NotificationIc className="text-ink" width={22} height={22} />
+        </button>
+      </header>
 
-      <main className="flex-1 overflow-y-auto px-[18px] pb-6">
+      <main className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         {/* 월 헤더 */}
         <div className="relative flex items-center justify-center pt-1 pb-[14px]">
           <div className="flex items-center gap-3">

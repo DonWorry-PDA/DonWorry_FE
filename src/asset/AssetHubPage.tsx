@@ -136,20 +136,21 @@ function AssetHubPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <header className="flex shrink-0 items-center justify-between px-5 pt-3 pb-2">
-        <h1 className="text-heading text-ink font-bold">자산관리</h1>
+      <header className="flex h-[52px] items-center pl-6 pr-[14px]">
+        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
+        <h1 className="flex-1 text-heading font-bold text-ink">자산관리</h1>
         <button
           aria-label="알림"
           onClick={() => navigate('/notification')}
-          className="-mr-2 flex size-11 items-center justify-center"
+          className="flex size-11 items-center justify-center"
         >
           <NotificationIc className="text-ink" width={22} height={22} />
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-6">
+      <main className="flex-1 overflow-y-auto pt-4 pb-6">
         {isLoading ? (
-          <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5">
+          <div role="status" aria-live="polite" className="flex flex-col gap-5 px-6">
             <span className="sr-only">자산 정보를 불러오는 중입니다.</span>
             <div className="h-[220px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
             <div className="grid grid-cols-2 gap-3">
@@ -162,7 +163,7 @@ function AssetHubPage() {
           // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
         ) : (
-          <div className="flex flex-col gap-5 px-5">
+          <div className="flex flex-col gap-5 px-6">
             <AssetSummaryCard {...toSummary(hub)} />
 
             <section>

@@ -15,7 +15,7 @@ function PaycheckComparePage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
-        <div className="flex-1 overflow-y-auto px-5 pt-4">
+        <div className="flex-1 overflow-y-auto px-6 pt-4">
           <div className="mb-4 h-10 animate-pulse rounded-card bg-surface-muted" />
           <div className="flex flex-col gap-0">
             {[0, 1, 2, 3, 4].map((i) => (
@@ -54,7 +54,7 @@ function PaycheckComparePage() {
     <div className="flex flex-col h-full">
       <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-5 pt-4">
+      <div className="flex-1 overflow-y-auto px-6 pt-4">
         <p className="text-body text-ink-sub mb-6">
           같은 잣대로 나란히 놓고 비교해요. 숫자가 아니라{' '}
           <span className="font-bold text-ink">상황</span>으로 골라보세요.

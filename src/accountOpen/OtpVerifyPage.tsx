@@ -80,7 +80,7 @@ function OtpVerifyPage() {
           ))}
         </div>
 
-        <div className="px-5">
+        <div className="px-6">
           <h2 className="text-heading font-bold text-ink leading-[1.47]">인증번호 입력</h2>
           <p className="mt-[0.4375rem] text-body text-ink-sub">
             휴대폰으로 받은 6자리 숫자를 입력해주세요.

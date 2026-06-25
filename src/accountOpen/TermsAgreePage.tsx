@@ -95,7 +95,7 @@ function TermsAgreePage() {
     <div className="flex flex-col bg-white h-dvh">
       <AppBar title="약관 동의" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-5 pb-6">
+      <main className="flex-1 overflow-y-auto px-6 pb-6">
         <h2 className="mt-[1.375rem] text-heading font-extrabold text-ink leading-[1.43] tracking-[-0.025em] mb-3">
           계좌 개설을 위해
           <br />

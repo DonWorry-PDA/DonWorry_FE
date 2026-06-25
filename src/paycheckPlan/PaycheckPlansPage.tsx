@@ -19,7 +19,7 @@ function PaycheckPlansPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
-        <div className="flex-1 overflow-y-auto px-5 pt-4">
+        <div className="flex-1 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-8 w-48 animate-pulse rounded bg-surface-muted" />
           <div className="mb-6 h-5 w-56 animate-pulse rounded bg-surface-muted" />
           <div className="flex flex-col gap-3">
@@ -57,7 +57,7 @@ function PaycheckPlansPage() {
         </CenterMessage>
       ) : (
         <>
-          <div className="flex-1 overflow-y-auto px-5 pt-4">
+          <div className="flex-1 overflow-y-auto px-6 pt-4">
             <h2 className="text-heading font-bold text-ink mb-1">
               {userName}님 자산으로 만든
               <br />

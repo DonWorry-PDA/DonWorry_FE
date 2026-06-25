@@ -32,7 +32,7 @@ function PaycheckPlanDetailPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="설계안" onBack={() => navigate(-1)} />
-        <div className="flex-1 overflow-y-auto px-5 pt-4">
+        <div className="flex-1 overflow-y-auto px-6 pt-4">
           <div className="mb-4 h-[56px] animate-pulse rounded-card bg-surface-muted" />
           <div className="flex flex-col gap-3">
             {[0, 1, 2, 3].map((i) => (
@@ -64,7 +64,7 @@ function PaycheckPlanDetailPage() {
 
       <div className="flex-1 overflow-y-auto">
         {/* 헤더 카드 */}
-        <div className="bg-primary px-5 pt-4 pb-6 mx-5 mt-4 rounded-card-xl">
+        <div className="bg-primary px-5 pt-4 pb-6 mx-6 mt-4 rounded-card-xl">
           <p className="text-sub text-white/70 mb-1">이 설계안의 예상 월급</p>
           <p className="font-inter text-display font-bold text-white">
             {detail.expectedMonthlyIncome}만원
@@ -75,7 +75,7 @@ function PaycheckPlanDetailPage() {
           </p>
         </div>
 
-        <div className="px-5 pt-6">
+        <div className="px-6 pt-6">
           <p className="text-body font-semibold text-ink mb-3">무엇으로 만들어지나요</p>
           <AllocationStackBar allocations={detail.allocations} />
 
