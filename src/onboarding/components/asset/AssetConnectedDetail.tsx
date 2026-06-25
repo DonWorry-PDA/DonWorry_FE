@@ -41,7 +41,7 @@ function AssetConnectedDetail({ onClose }: Props) {
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-6">
+      <div className="flex flex-col items-center px-6 pt-6">
         {/* 체크 아이콘 */}
         <div className="flex size-14 items-center justify-center rounded-full bg-primary">
           <svg width="24" height="18" viewBox="0 0 24 18" fill="none" aria-hidden="true">
