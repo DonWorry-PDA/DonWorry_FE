@@ -15,8 +15,9 @@ function AssetResult() {
   }
 
   // 직접 진입 등으로 연결 결과가 없으면 구체 수치는 생략하고 폴백 문구를 보여준다.
+  // connect 응답엔 기관명이 없고 개수(connectedInstitutions)만 있으므로 개수만 노출한다.
   const institutionsLabel = connectResult
-    ? `신한은행 외 ${Math.max(connectResult.connectedInstitutions - 1, 0)}개 자산 연결`
+    ? `${connectResult.connectedInstitutions}개 기관 연결`
     : '자산 연결 완료'
   const totalAsset = connectResult?.assetSummary.totalAsset ?? null
 
