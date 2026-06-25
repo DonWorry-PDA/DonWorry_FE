@@ -89,7 +89,8 @@ function HomePage() {
 
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
-          <div className="flex flex-col gap-5 px-5 pt-1">
+          <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
+            <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
             <div className="h-[168px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
             <div className="h-[108px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
             <div className="flex gap-2">

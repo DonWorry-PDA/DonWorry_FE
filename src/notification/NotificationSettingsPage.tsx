@@ -44,7 +44,8 @@ function NotificationSettingsPage() {
         {/* 설정 목록 */}
         <div className="px-5 flex flex-col gap-4 pb-6">
           {isLoading && (
-            <div className="overflow-hidden rounded-card-xl border border-line shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)]">
+            <div role="status" aria-live="polite" aria-busy="true" className="overflow-hidden rounded-card-xl border border-line shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)]">
+              <span className="sr-only">알림 설정을 불러오는 중입니다.</span>
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}

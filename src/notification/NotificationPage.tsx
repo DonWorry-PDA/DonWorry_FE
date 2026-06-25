@@ -38,7 +38,8 @@ function NotificationPage() {
 
       <main className="flex flex-1 flex-col overflow-y-auto px-5 pt-1">
 {isLoading && (
-          <div className="flex flex-col pt-2">
+          <div role="status" aria-live="polite" className="flex flex-col pt-2">
+            <span className="sr-only">알림을 불러오는 중입니다.</span>
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="flex items-center gap-3 border-b border-divider py-4">
                 <div className="size-10 shrink-0 animate-pulse rounded-icon bg-surface-muted" />

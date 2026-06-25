@@ -54,7 +54,8 @@ function StabilityPage() {
 
       <main className="flex-1 overflow-y-auto">
         {isLoading ? (
-          <div className="flex flex-col items-center px-[22px] pt-6">
+          <div role="status" aria-live="polite" className="flex flex-col items-center px-[22px] pt-6">
+            <span className="sr-only">생활 안정도를 불러오는 중입니다.</span>
             <div className="mb-2 h-7 w-36 animate-pulse rounded bg-surface-muted" />
             <div className="mb-8 h-5 w-52 animate-pulse rounded bg-surface-muted" />
             <div className="mb-8 h-[120px] w-[220px] animate-pulse rounded-full bg-surface-muted" />

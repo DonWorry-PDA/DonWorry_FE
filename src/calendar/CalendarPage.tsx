@@ -107,7 +107,8 @@ function CalendarPage() {
             캘린더를 불러오지 못했어요
           </p>
         ) : isLoading ? (
-          <div className="flex flex-col gap-3 pt-4">
+          <div role="status" aria-live="polite" className="flex flex-col gap-3 pt-4">
+            <span className="sr-only">캘린더 일정을 불러오는 중입니다.</span>
             <div className="h-5 w-32 animate-pulse rounded bg-surface-muted" />
             {[0, 1, 2].map((i) => (
               <div key={i} className="h-[60px] animate-pulse rounded-card bg-surface-muted" />

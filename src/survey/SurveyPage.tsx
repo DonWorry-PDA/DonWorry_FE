@@ -55,7 +55,8 @@ function SurveyPage() {
 
   if (isSurveyLoading) {
     return (
-      <div className="flex h-dvh flex-col px-5 pt-[52px]">
+      <div role="status" aria-live="polite" className="flex h-dvh flex-col px-5 pt-[52px]">
+        <span className="sr-only">설문을 불러오는 중입니다.</span>
         <div className="mb-8 h-6 w-20 animate-pulse rounded bg-surface-muted" />
         <div className="mb-3 h-7 w-3/4 animate-pulse rounded bg-surface-muted" />
         <div className="mb-8 h-5 w-1/2 animate-pulse rounded bg-surface-muted" />

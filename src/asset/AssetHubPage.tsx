@@ -149,7 +149,8 @@ function AssetHubPage() {
 
       <main className="flex-1 overflow-y-auto pb-6">
         {isLoading ? (
-          <div className="flex flex-col gap-5 px-5">
+          <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5">
+            <span className="sr-only">자산 정보를 불러오는 중입니다.</span>
             <div className="h-[220px] animate-pulse rounded-card-xl border border-line bg-surface-muted" />
             <div className="grid grid-cols-2 gap-3">
               {[0, 1, 2, 3, 4, 5].map((i) => (
