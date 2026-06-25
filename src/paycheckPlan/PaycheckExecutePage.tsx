@@ -95,9 +95,9 @@ function PaycheckExecutePage() {
               key={item.id}
               className="flex items-center gap-3 w-full text-left"
               onClick={() =>
-                item.productName &&
+                item.productId != null &&
                 navigate('/order/product', {
-                  state: { ticker: item.ticker, productName: item.productName },
+                  state: { productId: item.productId, ticker: item.ticker },
                 })
               }
             >
