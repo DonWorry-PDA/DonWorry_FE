@@ -48,13 +48,13 @@ function OrderCompletePage() {
       </div>
 
       <div className="px-5 pb-4 shrink-0 flex flex-col gap-2">
-        <Button onClick={() => navigate('/home')}>홈으로</Button>
         <button
           onClick={() => navigate('/order/modify')}
           className="w-full text-body text-ink-sub text-center py-3"
         >
           주문 내역 보기
         </button>
+        <Button onClick={() => navigate('/home')}>홈으로</Button>
       </div>
     </div>
   )
