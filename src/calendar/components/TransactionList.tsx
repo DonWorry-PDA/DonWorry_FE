@@ -32,9 +32,8 @@ function TransactionList({ items }: Props) {
                 >
                   <span className={`text-body ${style.text}`}>₩</span>
                 </span>
-                <div className="flex min-w-0 flex-1 flex-col">
+                <div className="flex min-w-0 flex-1">
                   <span className="truncate text-body text-ink">{item.title}</span>
-                  <span className="text-caption text-ink-hint">{item.date}</span>
                 </div>
                 <span className={`text-body font-bold ${amountColor}`}>
                   {formatSignedWon(item.amountKrw)}
