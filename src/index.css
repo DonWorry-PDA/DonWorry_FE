@@ -92,6 +92,18 @@
   --shadow-float: 0 5px 20px 0 rgb(0, 0, 0, 0.1);
 }
 
+/* 큰 글씨 모드 — html.large 클래스로 활성화 */
+html.large {
+  --text-caption: 0.875rem;
+  --text-sub: 0.9375rem;
+  --text-body: 1rem;
+  --text-md: 1.0625rem;
+  --text-btn: 1.1875rem;
+  --text-card: 1.25rem;
+  --text-heading: 1.5625rem;
+  --text-display: 1.6875rem;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
