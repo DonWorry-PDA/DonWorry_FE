@@ -1,9 +1,12 @@
+import { CATEGORY_STYLE } from '../eventCategory'
 import type { TransactionItem } from '../types/calendar'
 import { formatSignedWon } from '../utils/monthGrid'
 
 type Props = {
   items: TransactionItem[]
 }
+
+const style = CATEGORY_STYLE['transaction']
 
 function TransactionList({ items }: Props) {
   return (
@@ -17,18 +20,28 @@ function TransactionList({ items }: Props) {
         <p className="py-6 text-center text-sub text-ink-hint">거래 내역이 없어요</p>
       ) : (
         <ul>
-          {items.map((item) => (
-            <li key={item.id} className="flex items-center justify-between py-[13px]">
-              <span className="text-body text-ink-sub">
-                {item.date}
-                <span className="px-3" />
-                {item.title}
-              </span>
-              <span className="text-body font-bold text-ink">
-                {formatSignedWon(item.amountKrw)}
-              </span>
-            </li>
-          ))}
+          {items.map((item) => {
+            const amountColor = item.amountKrw < 0 ? 'text-ink' : style.text
+            return (
+              <li
+                key={item.id}
+                className="flex items-center gap-3 border-b border-divider py-[13px] last:border-b-0"
+              >
+                <span
+                  className={`flex size-[34px] shrink-0 items-center justify-center rounded-full ${style.iconBg}`}
+                >
+                  <span className={`text-body ${style.text}`}>₩</span>
+                </span>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-body text-ink">{item.title}</span>
+                  <span className="text-caption text-ink-hint">{item.date}</span>
+                </div>
+                <span className={`text-body font-bold ${amountColor}`}>
+                  {formatSignedWon(item.amountKrw)}
+                </span>
+              </li>
+            )
+          })}
         </ul>
       )}
     </section>
