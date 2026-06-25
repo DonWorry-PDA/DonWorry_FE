@@ -90,7 +90,8 @@ function OrderProductPage() {
   const currentPrice = realtimePrice?.currentPrice ?? etf?.closingPrice
   const changePrice = realtimePrice?.changePrice ?? etf?.priceChange
   const changeRate = realtimePrice?.changeRate ?? etf?.changeRate
-  const sign = realtimePrice?.sign ?? '3'
+  const etfSign = etf ? (etf.priceChange > 0 ? '2' : etf.priceChange < 0 ? '5' : '3') : '3'
+  const sign = realtimePrice?.sign ?? etfSign
 
   const riskInfo = etf ? (RISK_LABEL[etf.riskGrade] ?? { label: `${etf.riskGrade}등급`, tone: 'text-ink-sub' }) : null
 
