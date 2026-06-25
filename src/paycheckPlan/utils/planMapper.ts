@@ -72,30 +72,29 @@ const mapAllocations = (plan: RecommendationPlan): AllocationItem[] =>
     color: ALLOCATION_COLORS[index % ALLOCATION_COLORS.length],
   }))
 
-// ── BE 미제공 필드용 static placeholder (안별 서사용 수치). TODO: BE 확장 시 제거 ──
-const DETAIL_PLACEHOLDER: Record<PlanType, { coverageFrom: number; shortfallFrom: number; shortfallTo: number; operationIncome: number }> = {
-  stable: { coverageFrom: 59, shortfallFrom: 90, shortfallTo: 50, operationIncome: 50 },
-  balanced: { coverageFrom: 59, shortfallFrom: 90, shortfallTo: 35, operationIncome: 65 },
-  growth: { coverageFrom: 59, shortfallFrom: 90, shortfallTo: 25, operationIncome: 75 },
+// ── BE 미제공 필드용 static placeholder. TODO: BE 확장 시 제거 ──
+const DETAIL_PLACEHOLDER: Record<PlanType, { operationIncome: number }> = {
+  stable: { operationIncome: 50 },
+  balanced: { operationIncome: 65 },
+  growth: { operationIncome: 75 },
 }
 const DETAIL_NOTICE =
   '월급이 보장되는 건 아니에요. 분배금·배당이 줄면 알림으로 알려드리고, 다시 조정하도록 도와드려요.'
 
-export const mapPlanDetail = (plan: RecommendationPlan): PlanDetail => {
+export const mapPlanDetail = (response: RecommendationResponse, plan: RecommendationPlan): PlanDetail => {
   const type = TYPE_MAP[plan.type]
   const expected = toManwon(plan.monthlyIncome)
   const placeholder = DETAIL_PLACEHOLDER[type]
-  const coverage = roundCoverage(plan.alphaCoverageRate)
   const principal = toManwon(plan.allocations.reduce((sum, a) => sum + a.amount, 0))
   return {
     planId: type,
     planName: plan.displayName,
     expectedMonthlyIncome: expected, // BE
-    afterTaxIncome: Math.round(expected * 0.96), // TODO(static): BE 세후 미제공 — 임시 96% 추정
-    coverageFrom: placeholder.coverageFrom, // TODO(static): baseline 미제공
-    coverageTo: coverage ?? 100, // BE (연금초과면 충분=100)
-    shortfallFrom: placeholder.shortfallFrom, // TODO(static)
-    shortfallTo: placeholder.shortfallTo, // TODO(static)
+    afterTaxIncome: Math.round(expected * 0.96), // TODO(static): 세후 미제공 — 임시 96% 추정
+    coverageFrom: Math.round(response.currentCoverageRate), // BE
+    coverageTo: Math.min(100, Math.round(plan.totalCoverageRate)), // BE
+    shortfallFrom: toManwon(response.currentMonthlyShortfall), // BE
+    shortfallTo: toManwon(plan.residualMonthlyShortfall), // BE
     allocations: mapAllocations(plan), // BE
     monthlyIncome: placeholder.operationIncome, // TODO(static): 국민연금 분리 미제공
     principalValue: principal, // BE (운용자산 합)
