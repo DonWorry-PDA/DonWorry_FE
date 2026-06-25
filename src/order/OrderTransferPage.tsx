@@ -7,6 +7,8 @@ import useGetAccounts from './hooks/useGetAccounts'
 import usePostTransfer from './hooks/usePostTransfer'
 import { MydataAccount } from './types/account'
 
+const EMPTY_ITEMS: BuyItem[] = []
+
 function maskNumber(accountNumber: string) {
   if (accountNumber.length <= 4) return accountNumber
   return accountNumber.slice(0, -4).replace(/\d/g, '*') + accountNumber.slice(-4)
@@ -24,7 +26,7 @@ function accountLabel(account: MydataAccount) {
 function OrderTransferPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
-  const items: BuyItem[] = state?.items ?? []
+  const items: BuyItem[] = state?.items ?? EMPTY_ITEMS
   const totalAmountWon: number = state?.totalAmountWon ?? 0
 
   const { data: accounts, isLoading } = useGetAccounts()
@@ -98,6 +100,28 @@ function OrderTransferPage() {
         <div className="text-center">
           <p className="text-heading font-bold text-ink mb-1">이체 중이에요</p>
           <p className="text-body text-ink-sub">잠시만 기다려주세요</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (transfer.isError) {
+    return (
+      <div className="flex flex-col h-full bg-white">
+        <AppBar title="이체" onBack={() => navigate(-1)} />
+        <div className="flex-1 flex flex-col items-center justify-center px-8 gap-5">
+          <div className="size-16 rounded-full bg-danger-bg flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M8 8l16 16M24 8L8 24" stroke="#DF3550" strokeWidth="2.8" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div className="text-center">
+            <p className="text-heading font-bold text-ink mb-1">이체에 실패했어요</p>
+            <p className="text-body text-ink-sub">잠시 후 다시 시도해주세요</p>
+          </div>
+        </div>
+        <div className="px-5 pb-4 shrink-0">
+          <Button onClick={() => { transfer.reset(); handleProceed() }}>다시 시도</Button>
         </div>
       </div>
     )
@@ -195,6 +219,8 @@ function OrderTransferPage() {
                   return (
                     <button
                       key={account.accountId}
+                      role="checkbox"
+                      aria-checked={selected}
                       onClick={() => toggleAccount(account.accountId)}
                       className={`flex items-center gap-3 rounded-card border px-4 py-3 text-left transition-colors ${
                         selected ? 'border-primary bg-primary-tint' : 'border-line bg-white'

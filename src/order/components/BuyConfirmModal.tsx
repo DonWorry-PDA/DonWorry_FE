@@ -190,9 +190,12 @@ function BuyConfirmModal({ item, onConfirm: onConfirmProp }: Props) {
         <div className="flex w-full border-t border-divider">
           <button
             onClick={() => onConfirmProp(estimatedShares)}
-            className="flex-1 h-[52px] text-btn font-bold text-primary"
+            disabled={item.productType === 'ETF' && estimatedShares == null}
+            className="flex-1 h-[52px] text-btn font-bold text-primary disabled:text-disabled"
           >
-            {actionLabel(item.productType)}
+            {item.productType === 'ETF' && estimatedShares == null
+              ? '시세 조회 중...'
+              : actionLabel(item.productType)}
           </button>
         </div>
       </div>

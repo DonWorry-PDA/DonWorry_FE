@@ -113,9 +113,11 @@ function PaycheckExecutePage() {
                 <p className="text-sub text-ink-hint">{item.description}</p>
               </div>
               <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount.toLocaleString()}만</p>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-ink-hint shrink-0">
-                <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              {item.productId != null && (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-ink-hint shrink-0">
+                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
             </button>
           ))}
         </div>

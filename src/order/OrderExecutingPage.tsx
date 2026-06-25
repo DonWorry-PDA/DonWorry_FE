@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BuyConfirmModal, { type BuyItem } from './components/BuyConfirmModal'
 import usePostBuy from './hooks/usePostBuy'
@@ -71,9 +71,27 @@ function OrderExecutingPage() {
   const [failedIndices, setFailedIndices] = useState<Set<number>>(new Set())
 
   const buy = usePostBuy()
+  const depositTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const resultsRef = useRef<Array<{ id: string; name: string; detail: string; status: 'done' | 'failed' }>>([])
+
+  useEffect(() => {
+    return () => {
+      if (depositTimerRef.current != null) clearTimeout(depositTimerRef.current)
+    }
+  }, [])
 
   const advance = useCallback(
     (failed = false) => {
+      const item = items[currentIndex]
+      resultsRef.current = [
+        ...resultsRef.current,
+        {
+          id: String(currentIndex + 1),
+          name: item.name,
+          detail: failed ? '체결 실패' : `${item.amount} 완료`,
+          status: failed ? 'failed' : 'done',
+        },
+      ]
       if (failed) setFailedIndices((prev) => new Set(prev).add(currentIndex))
       const next = currentIndex + 1
       setDoneCount(next)
@@ -81,17 +99,21 @@ function OrderExecutingPage() {
         setCurrentIndex(next)
         setPhase('confirming')
       } else {
-        navigate('/order/complete')
+        navigate('/order/complete', { state: { results: resultsRef.current } })
       }
     },
-    [currentIndex, items.length, navigate],
+    [currentIndex, items, navigate],
   )
 
   function handleConfirm(quantity: number | undefined) {
     setPhase('executing')
     const item = items[currentIndex]
 
-    if (item.productType === 'ETF' && item.productId != null && quantity != null) {
+    if (item.productType === 'ETF') {
+      if (item.productId == null || quantity == null) {
+        advance(true)
+        return
+      }
       buy.mutate(
         { productId: item.productId, quantity },
         {
@@ -101,8 +123,7 @@ function OrderExecutingPage() {
       )
     } else {
       // DEPOSIT / PENSION_SAVING — API 미구현, 잠시 후 자동 진행
-      const timer = setTimeout(() => advance(false), 1500)
-      return () => clearTimeout(timer)
+      depositTimerRef.current = setTimeout(() => advance(false), 1500)
     }
   }
 

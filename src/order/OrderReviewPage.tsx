@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
-import BuyConfirmModal, { type BuyItem } from './components/BuyConfirmModal'
+import { type BuyItem } from './components/BuyConfirmModal'
 import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
 import CenterMessage from '../paycheckPlan/components/CenterMessage'
@@ -22,7 +22,6 @@ function OrderReviewPage() {
 
   const { data, isLoading } = useGetRecommendation()
   const [confirmed, setConfirmed] = useState(false)
-  const [modalIndex, setModalIndex] = useState<number | null>(null)
 
   if (isLoading) {
     return (
@@ -68,21 +67,11 @@ function OrderReviewPage() {
 
   function handleOrderStart() {
     if (!isMarketOpen()) {
-      navigate('/order/reserved')
+      navigate('/order/reserved', { state: { itemCount: buyModalItems.length } })
       return
     }
     const totalAmountWon = buyModalItems.reduce((sum, item) => sum + (item.amountWon ?? 0), 0)
     navigate('/order/transfer', { state: { items: buyModalItems, totalAmountWon } })
-  }
-
-  function handleConfirm() {
-    if (modalIndex === null) return
-    if (modalIndex < buyModalItems.length - 1) {
-      setModalIndex(modalIndex + 1)
-    } else {
-      setModalIndex(null)
-      navigate('/order/executing', { state: { items: buyModalItems } })
-    }
   }
 
   return (
@@ -157,12 +146,6 @@ function OrderReviewPage() {
         </Button>
       </div>
 
-      {modalIndex !== null && (
-        <BuyConfirmModal
-          item={buyModalItems[modalIndex]}
-          onConfirm={handleConfirm}
-        />
-      )}
     </div>
   )
 }

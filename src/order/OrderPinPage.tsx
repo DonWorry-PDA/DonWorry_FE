@@ -12,6 +12,19 @@ function OrderPinPage() {
   const { pin, isError, isServerError, isPending, appendDigit, deleteDigit, reset } =
     useOrderPinInput(planId)
 
+  if (!planId) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="" onBack={() => navigate(-1)} />
+        <div className="flex-1 flex items-center justify-center px-6">
+          <p className="text-body text-ink-hint text-center">
+            주문 정보를 찾을 수 없어요.<br />처음부터 다시 시도해주세요.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-dvh flex-col bg-white">
       <AppBar title="" onBack={() => navigate(-1)} />
@@ -23,7 +36,7 @@ function OrderPinPage() {
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <PinDots count={isPending ? 6 : pin.length} />
-        <div className="mt-3 h-5 text-center">
+        <div role="status" aria-live="polite" className="mt-3 h-5 text-center">
           {isError && <p className="text-sub text-danger">비밀번호가 일치하지 않아요</p>}
           {isServerError && <p className="text-sub text-danger">오류가 발생했어요. 다시 시도해주세요</p>}
           {isPending && <p className="text-sub text-ink-hint">확인 중...</p>}

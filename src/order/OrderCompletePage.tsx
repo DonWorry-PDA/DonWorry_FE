@@ -1,9 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../common/components/Button'
 import CheckBadge from '../common/components/CheckBadge'
 
 function OrderCompletePage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -48,7 +49,7 @@ function OrderCompletePage() {
       </div>
 
       <div className="px-5 pb-4 shrink-0">
-        <Button onClick={() => navigate('/order/result')}>다음</Button>
+        <Button onClick={() => navigate('/order/result', { state })}>다음</Button>
       </div>
     </div>
   )

@@ -1,8 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../common/components/Button'
 
 function OrderReservedPage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const itemCount: number = (state as { itemCount?: number } | null)?.itemCount ?? 0
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -19,7 +21,7 @@ function OrderReservedPage() {
           주문이 예약됐어요
         </h2>
         <p className="text-body text-ink-sub text-center mb-8">
-          지금은 장이 닫혀 있어요.{'\n'}
+          지금은 장이 닫혀 있어요.<br />
           내일 장이 열리면 자동으로 주문이 들어가요.
         </p>
 
@@ -27,7 +29,7 @@ function OrderReservedPage() {
         <div className="w-full rounded-card border border-line px-4 py-4 flex flex-col gap-3 mb-4">
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">예약 주문 수</p>
-            <p className="font-inter text-body font-semibold text-ink">2건</p>
+            <p className="font-inter text-body font-semibold text-ink">{itemCount}건</p>
           </div>
           <div className="h-px bg-divider" />
           <div className="flex justify-between items-center">
