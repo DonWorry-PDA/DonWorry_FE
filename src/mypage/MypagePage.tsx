@@ -10,9 +10,8 @@ import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
 import Modal from '../common/components/Modal'
-import { MOCK_LINKED_ACCOUNTS } from './mock/mypage'
-import { formatKrw } from '../common/utils/formatKrw'
-import type { LinkedAccount } from './types/mypage'
+import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
+import type { MydataInstitution } from './types/mypage'
 
 type LogoutStep = 'idle' | 'confirm' | 'done'
 
@@ -32,6 +31,8 @@ function MypagePage() {
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
   const { data: consultations } = useGetConsultations()
+  const { data: institutions = [] } = useGetMydataInstitutions()
+  const connectedInstitutions = institutions.filter((i) => i.connected)
 
   // 가장 가까운 예약(RESERVED)을 상담 내역 메뉴 부제로
   const nextReserved = (consultations ?? [])
@@ -101,8 +102,8 @@ function MypagePage() {
           <p className="text-sub font-semibold text-ink-hint">연결된 계좌</p>
         </div>
 
-        {MOCK_LINKED_ACCOUNTS.map((account) => (
-          <AccountRow key={account.id} account={account} />
+        {connectedInstitutions.map((inst) => (
+          <AccountRow key={inst.id} institution={inst} />
         ))}
 
         {/* 계좌 더 연결하기 */}
@@ -226,19 +227,16 @@ function MypagePage() {
   )
 }
 
-function AccountRow({ account }: { account: LinkedAccount }) {
+function AccountRow({ institution }: { institution: MydataInstitution }) {
   return (
     <div className="flex items-center gap-3 border-b border-divider py-[13px]">
       <div className="bg-surface-muted flex size-10 shrink-0 items-center justify-center rounded-icon">
         <NotificationItemIc className="text-ink" width={18} height={21} />
       </div>
       <div className="flex flex-1 min-w-0 flex-col gap-0.5">
-        <p className="text-md font-semibold text-ink">{account.name}</p>
-        <p className="text-sub text-ink-sub">{account.detail}</p>
+        <p className="text-md font-semibold text-ink">{institution.name}</p>
+        <p className="text-sub text-ink-sub">{institution.connectedProducts.join(' · ')}</p>
       </div>
-      <p className="font-inter text-md font-bold text-ink shrink-0">
-        {formatKrw(account.amountKrw)}
-      </p>
     </div>
   )
 }
