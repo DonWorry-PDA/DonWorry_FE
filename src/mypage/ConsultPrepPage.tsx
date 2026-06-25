@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import StickyFooter from '../common/components/StickyFooter'
+import { useGetConsultation } from './hooks/consultation'
+import { methodLabel, parseScheduledAt } from './utils/consultation'
 
 type CheckItem = {
   id: string
@@ -15,14 +17,6 @@ const PREP_ITEMS: CheckItem[] = [
   { id: 'account', label: '연결된 계좌 정보', subLabel: '앱에 연결한 자산이면 충분해요' },
   { id: 'pension', label: '국민연금 가입내역서', subLabel: '정부24·국민연금공단에서 발급' },
   { id: 'insurance', label: '보유 보험 증권', subLabel: '의료비 대비 점검 시 참고', optional: true },
-]
-
-const RESERVATION_ROWS = [
-  { label: '지점', value: '신한투자증권 PWM센터' },
-  { label: '상담원', value: '김신한 PB팀장' },
-  { label: '날짜', value: '2026년 6월 19일 (금)' },
-  { label: '시간', value: '오후 2:00' },
-  { label: '상담 방식', value: '영업점 대면 상담' },
 ]
 
 const TOPICS = [
@@ -53,14 +47,51 @@ function CheckIcon({ checked }: { checked: boolean }) {
 
 function ConsultPrepPage() {
   const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const { data: record, isLoading } = useGetConsultation(id)
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set(['id-card', 'account']))
 
-  const toggle = (id: string) =>
+  const toggle = (itemId: string) =>
     setCheckedItems((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) { next.delete(id) } else { next.add(id) }
+      if (next.has(itemId)) {
+        next.delete(itemId)
+      } else {
+        next.add(itemId)
+      }
       return next
     })
+
+  if (isLoading) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 준비사항" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-sub text-ink-hint">불러오는 중이에요…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!record) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 준비사항" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-body text-ink-sub">상담 내역을 찾을 수 없어요.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const parsed = parseScheduledAt(record.scheduledAt)
+  const reservationRows = [
+    { label: '지점', value: record.location ?? '—' },
+    { label: '상담원', value: record.counselorName ?? '—' },
+    { label: '날짜', value: parsed.fullDate },
+    { label: '시간', value: parsed.time },
+    { label: '상담 방식', value: methodLabel(record.method) },
+  ]
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -75,16 +106,14 @@ function ConsultPrepPage() {
             이것만 준비하면 돼요
           </h2>
           <p className="text-sub text-ink-hint mt-2 leading-[1.67]">
-            은퇴 자산 설계 상담이 예약돼 있어요. 시작 10분 전에 알림을
-            <br />
-            보내드릴게요.
+            {record.title}이 예약돼 있어요. 시작 10분 전에 알림을 보내드릴게요.
           </p>
         </div>
 
         {/* 예약 정보 카드 */}
         <div className="px-5 pt-5">
           <div className="border border-line rounded-card-xl px-[1.0625rem] py-[0.3125rem]">
-            {RESERVATION_ROWS.map(({ label, value }, i) => (
+            {reservationRows.map(({ label, value }, i) => (
               <div key={label}>
                 {i > 0 && <div className="h-px bg-divider" />}
                 <div className="flex items-center justify-between py-[0.875rem]">
@@ -136,13 +165,15 @@ function ConsultPrepPage() {
           </div>
         </div>
 
-        {/* 이번 상담 주제 하단 여백 */}
         <div className="h-4" />
       </main>
 
       <StickyFooter>
         <div className="flex flex-col gap-[0.875rem]">
-          <button className="border border-line rounded-card w-full h-[3.375rem] text-btn font-bold text-ink">
+          <button
+            className="border border-line rounded-card w-full h-[3.375rem] text-btn font-bold text-ink"
+            onClick={() => navigate(`/mypage/consult-history/${record.id}/modify`)}
+          >
             예약 변경·취소
           </button>
           <p className="text-sub text-ink-hint text-center">상담 시작 10분 전 알림을 보내드려요</p>

@@ -1,6 +1,10 @@
 import { formatTime24 } from '../../common/components/DateTimePickerSheet'
-import type { ConsultationResponse } from '../types/consultation'
+import type { ConsultApiMethod, ConsultationResponse } from '../types/consultation'
 import type { ConsultRecord } from '../types/mypage'
+
+/** 상담 방식 라벨. */
+export const methodLabel = (method: ConsultApiMethod): string =>
+  method === 'FACE_TO_FACE' ? '영업점 대면 상담' : '비대면 상담'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const DOW = ['일', '월', '화', '수', '목', '금', '토']

@@ -141,6 +141,18 @@ function ConsultModifyPage() {
     )
   }
 
+  // 예약(RESERVED) 상태만 변경/취소 가능 — 완료/취소 건 직접 진입 방어
+  if (record.status !== 'RESERVED') {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="예약 변경·취소" onBack={() => navigate(-1)} />
+        <div className="flex flex-1 items-center justify-center px-5 text-center">
+          <p className="text-body text-ink-sub">변경하거나 취소할 수 없는 상담이에요.</p>
+        </div>
+      </div>
+    )
+  }
+
   const parsed = parseScheduledAt(record.scheduledAt)
   const selectedDate = dateDraft ?? parsed.date
   const selectedTime24 = time24Draft ?? parsed.time24
