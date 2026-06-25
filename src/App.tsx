@@ -1,7 +1,21 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import SplashPage from './splash/SplashPage'
 import LoginPage from './login/LoginPage'
 import OnboardingPage from './onboarding/OnboardingPage'
+import {
+  TermsAgreePage,
+  Step1Page,
+  Step2Page,
+  Step3Page,
+  Step4Page,
+  Step5Page,
+  AssetIntroPage,
+  AssetAuthPage,
+  AssetConsentPage,
+  AssetLoadingPage,
+  AssetResultPage,
+} from './onboarding/OnboardingRoutes'
+import AssetConsentDetailPage from './assetConsent/AssetConsentDetailPage'
 import MypagePage from './mypage/MypagePage'
 import NotificationPage from './notification/NotificationPage'
 import NotificationSettingsPage from './notification/NotificationSettingsPage'
@@ -25,7 +39,7 @@ import ConsultSummaryPage from './mypage/ConsultSummaryPage'
 import AccountConnectPage from './mypage/AccountConnectPage'
 import ProfileEditPage from './mypage/ProfileEditPage'
 import ConsultModifyPage from './mypage/ConsultModifyPage'
-import TermsAgreePage from './accountOpen/TermsAgreePage'
+import TermsAgreePage2 from './accountOpen/TermsAgreePage'
 import TermsHistoryPage from './mypage/TermsHistoryPage'
 import TermsDetailPage from './terms/TermsDetailPage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
@@ -46,7 +60,28 @@ import RetirementSimulationPage from './retirement/RetirementSimulationPage'
 const router = createBrowserRouter([
   { path: '/', element: <SplashPage /> },
   { path: '/login', element: <LoginPage /> },
-  { path: '/onboarding', element: <OnboardingPage /> },
+
+  // 온보딩 — 공통 컨텍스트(OnboardingContextProvider)를 레이아웃으로 제공
+  {
+    path: '/onboarding',
+    element: <OnboardingPage />,
+    children: [
+      { index: true, element: <Navigate to="/onboarding/terms" replace /> },
+      { path: 'terms', element: <TermsAgreePage /> },
+      { path: 'step1', element: <Step1Page /> },
+      { path: 'step2', element: <Step2Page /> },
+      { path: 'step3', element: <Step3Page /> },
+      { path: 'step4', element: <Step4Page /> },
+      { path: 'step5', element: <Step5Page /> },
+      { path: 'asset-intro', element: <AssetIntroPage /> },
+      { path: 'asset-auth', element: <AssetAuthPage /> },
+      { path: 'asset-consent', element: <AssetConsentPage /> },
+      { path: 'asset-consent/:consentId', element: <AssetConsentDetailPage /> },
+      { path: 'asset-loading', element: <AssetLoadingPage /> },
+      { path: 'asset-result', element: <AssetResultPage /> },
+    ],
+  },
+
   { path: '/survey', element: <SurveyPage /> },
   { path: '/mypage', element: <MypagePage /> },
   { path: '/notification', element: <NotificationPage /> },
@@ -75,7 +110,7 @@ const router = createBrowserRouter([
   { path: '/terms/:termId', element: <TermsDetailPage /> },
   { path: '/account-open', element: <IdentityVerifyPage /> },
   { path: '/account-open/otp', element: <OtpVerifyPage /> },
-  { path: '/account-open/terms', element: <TermsAgreePage /> },
+  { path: '/account-open/terms', element: <TermsAgreePage2 /> },
   { path: '/account-open/complete', element: <AccountOpenCompletePage /> },
   { path: '/order/product', element: <OrderProductPage /> },
   { path: '/order/terms', element: <OrderTermsPage /> },
