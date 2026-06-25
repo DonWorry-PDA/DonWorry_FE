@@ -32,7 +32,14 @@ function PaycheckPlanDetailPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="설계안" onBack={() => navigate(-1)} />
-        <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
+        <div className="flex-1 overflow-y-auto px-5 pt-4">
+          <div className="mb-4 h-[56px] animate-pulse rounded-card bg-surface-muted" />
+          <div className="flex flex-col gap-3">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-[52px] animate-pulse rounded-card bg-surface-muted" />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }

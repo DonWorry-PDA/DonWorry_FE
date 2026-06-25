@@ -19,7 +19,14 @@ function PaycheckDiagnosisPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="현금흐름 진단" onBack={() => navigate(-1)} />
-        <p className="text-body text-ink-hint text-center pt-20">현금흐름을 분석하는 중이에요…</p>
+        <div className="flex-1 overflow-y-auto px-5 pt-4">
+          <div className="mb-2 h-5 w-28 animate-pulse rounded bg-surface-muted" />
+          <div className="mb-6 h-10 w-36 animate-pulse rounded bg-surface-muted" />
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-[52px] animate-pulse border-b border-divider bg-surface-muted" />
+          ))}
+          <div className="mt-6 h-[80px] animate-pulse rounded-btn bg-surface-muted" />
+        </div>
       </div>
     )
   }
