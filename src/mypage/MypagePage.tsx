@@ -117,7 +117,7 @@ function MypagePage() {
         </button>
 
         {/* 구분선 */}
-        <div className="relative -mx-5 h-7">
+        <div className="relative -mx-6 h-7">
           <div className="absolute inset-x-0 top-[10px] h-2 bg-surface" />
         </div>
 
