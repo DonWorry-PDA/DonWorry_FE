@@ -117,6 +117,7 @@ export type ExecutionItem = {
   name: string
   description: string
   amount: number
+  productId?: number
   ticker?: string
   productName?: string
 }
