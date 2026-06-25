@@ -24,7 +24,7 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       <div className="px-6 pt-12">
         <button type="button" onClick={onPrev} className="mb-4 text-ink">
           <BackArrowIc width={24} height={24} />
@@ -33,7 +33,7 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
 
       <OnboardingProgressBar current={3} total={6} />
 
-      <div className="flex flex-1 flex-col px-6 pt-8">
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">기본 정보를 알려주세요</h1>
         <p className="mt-2 text-body text-ink-sub">
           생활비를 감당할 수 있는지 계산하는 데 쓰여요.
@@ -72,7 +72,7 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         </div>
       </div>
 
-      <div className="px-6 pb-10">
+      <div className="shrink-0 px-6 pb-10">
         <button
           type="button"
           onClick={handleNext}

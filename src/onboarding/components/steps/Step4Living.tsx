@@ -27,7 +27,7 @@ function Step4Living({ onNext, onPrev }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-dvh flex-col bg-white">
       <div className="px-6 pt-12">
         <button type="button" onClick={onPrev} className="text-ink mb-4">
           <BackArrowIc width={24} height={24} />
@@ -36,7 +36,7 @@ function Step4Living({ onNext, onPrev }: Props) {
 
       <OnboardingProgressBar current={4} total={6} />
 
-      <div className="flex flex-1 flex-col px-6 pt-8">
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading text-ink font-bold">
           한 달에 얼마면
           <br />
@@ -94,7 +94,7 @@ function Step4Living({ onNext, onPrev }: Props) {
         </div> */}
       </div>
 
-      <div className="px-6 pb-10">
+      <div className="shrink-0 px-6 pb-10">
         <button
           type="button"
           onClick={handleNext}
