@@ -19,7 +19,7 @@ function ProfileEditPage() {
   const [retirementStatus, setRetirementStatus] = useState<RetirementStatus>('은퇴 전')
   const [pensionStatus, setPensionStatus] = useState<PensionStatus>('수령 전')
   const [monthlyTarget, setMonthlyTarget] = useState('')
-  const [showToast, setShowToast] = useState(false)
+  const [toastVariant, setToastVariant] = useState<'success' | 'error' | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -51,8 +51,12 @@ function ProfileEditPage() {
       },
       {
         onSuccess: () => {
-          setShowToast(true)
+          setToastVariant('success')
           timerRef.current = setTimeout(() => navigate(-1), 2000)
+        },
+        onError: () => {
+          setToastVariant('error')
+          timerRef.current = setTimeout(() => setToastVariant(null), 2500)
         },
       },
     )
@@ -186,24 +190,34 @@ function ProfileEditPage() {
         </Button>
       </StickyFooter>
 
-      {/* 저장 완료 토스트 */}
+      {/* 저장 결과 토스트 */}
       <div
+        role={toastVariant === 'error' ? 'alert' : 'status'}
+        aria-live={toastVariant === 'error' ? 'assertive' : 'polite'}
+        aria-atomic="true"
         className={`absolute bottom-[14px] left-5 right-5 z-50 flex items-center gap-[9px] rounded-[13px] bg-[#23282f] px-4 py-[15px] shadow-float transition-all duration-300 ${
-          showToast ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0'
+          toastVariant ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0'
         }`}
       >
-        <div className="flex size-5 shrink-0 items-center justify-center rounded-[10px] bg-primary">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path
-              d="M2 6L5 9L10 3"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-        <span className="text-sub font-semibold text-white">프로필이 수정됐어요</span>
+        {toastVariant === 'success' ? (
+          <>
+            <div className="flex size-5 shrink-0 items-center justify-center rounded-[10px] bg-primary">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 6L5 9L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="text-sub font-semibold text-white">프로필이 수정됐어요</span>
+          </>
+        ) : (
+          <>
+            <div className="flex size-5 shrink-0 items-center justify-center rounded-[10px] bg-danger">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M3 3L9 9M9 3L3 9" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </div>
+            <span className="text-sub font-semibold text-white">저장에 실패했어요. 다시 시도해주세요</span>
+          </>
+        )}
       </div>
     </div>
   )
