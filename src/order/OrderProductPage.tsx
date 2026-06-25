@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import InfoBox from '../common/components/InfoBox'
@@ -31,9 +31,10 @@ function DocIcon() {
 
 function OrderProductPage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
 
   const product = {
-    name: 'OO 월지급식 인컴 ETF',
+    name: (state?.productName as string | undefined) ?? 'OO 월지급식 인컴 ETF',
     type: '국내 상장 ETF · 채권혼합',
     riskLevel: '4등급 · 보통위험',
     fee: '연 0.39%',
