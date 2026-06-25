@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
+import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
+import usePostMydataInstitutionConnect from './hooks/usePostMydataInstitutionConnect'
 
 type Institution = {
   id: string
@@ -10,14 +12,6 @@ type Institution = {
   label: string
   bg: string
   color: string
-}
-
-const CONNECTED: Institution = {
-  id: 'shinhan',
-  name: '신한은행 · 신한투자증권',
-  label: '신한',
-  bg: '#0046ff',
-  color: '#ffffff',
 }
 
 const BANKS: Institution[] = [
@@ -74,6 +68,14 @@ function AccountConnectPage() {
   const [showToast, setShowToast] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const { data: institutions = [] } = useGetMydataInstitutions()
+  const { mutate: connectInstitutions, isPending } = usePostMydataInstitutionConnect()
+
+  const connectedList = institutions.filter((i) => i.connected)
+  const connectedIds = new Set(connectedList.map((i) => i.id))
+
+  const ALL_INSTITUTIONS = [...BANKS, ...SECURITIES]
+
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   const toggle = (id: string) =>
@@ -85,18 +87,21 @@ function AccountConnectPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return { banks: BANKS, securities: SECURITIES }
     return {
-      banks: BANKS.filter((b) => b.name.toLowerCase().includes(q)),
-      securities: SECURITIES.filter((s) => s.name.toLowerCase().includes(q)),
+      banks: BANKS.filter((b) => b.name.toLowerCase().includes(q) && !connectedIds.has(b.id)),
+      securities: SECURITIES.filter((s) => s.name.toLowerCase().includes(q) && !connectedIds.has(s.id)),
     }
-  }, [query])
+  }, [query, connectedIds])
 
   const hasSelection = selected.size > 0
 
   const handleConnect = () => {
-    setShowToast(true)
-    timerRef.current = setTimeout(() => navigate('/mypage', { replace: true }), 2000)
+    connectInstitutions([...selected], {
+      onSuccess: () => {
+        setShowToast(true)
+        timerRef.current = setTimeout(() => navigate('/mypage', { replace: true }), 2000)
+      },
+    })
   }
 
   return (
@@ -134,19 +139,32 @@ function AccountConnectPage() {
         </div>
 
         {/* 이미 연결된 기관 */}
-        <div className="px-6 pt-5 flex flex-col gap-0.5">
-          <p className="text-caption font-semibold text-ink-hint">이미 연결된 기관</p>
-          <div className="flex items-center gap-3 py-[14px]">
-            <InstitutionBadge label={CONNECTED.label} bg={CONNECTED.bg} color={CONNECTED.color} />
-            <div className="flex flex-1 min-w-0 flex-col gap-0.5">
-              <p className="text-body font-bold text-ink">{CONNECTED.name}</p>
-              <p className="text-caption font-medium text-ink-hint">예금 · ETF · IRP 연동 중</p>
-            </div>
-            <span className="bg-success-bg text-success text-caption font-bold px-[9px] py-[3px] rounded-badge shrink-0">
-              연결됨
-            </span>
+        {connectedList.length > 0 && (
+          <div className="px-6 pt-5 flex flex-col gap-0.5">
+            <p className="text-caption font-semibold text-ink-hint">이미 연결된 기관</p>
+            {connectedList.map((inst) => {
+              const meta = ALL_INSTITUTIONS.find((b) => b.id === inst.id)
+              return (
+                <div key={inst.id} className="flex items-center gap-3 py-[14px]">
+                  <InstitutionBadge
+                    label={meta?.label ?? inst.name[0]}
+                    bg={meta?.bg ?? '#0046ff'}
+                    color={meta?.color ?? '#ffffff'}
+                  />
+                  <div className="flex flex-1 min-w-0 flex-col gap-0.5">
+                    <p className="text-body font-bold text-ink">{inst.name}</p>
+                    <p className="text-caption font-medium text-ink-hint">
+                      {inst.connectedProducts.join(' · ')} 연동 중
+                    </p>
+                  </div>
+                  <span className="bg-success-bg text-success text-caption font-bold px-[9px] py-[3px] rounded-badge shrink-0">
+                    연결됨
+                  </span>
+                </div>
+              )
+            })}
           </div>
-        </div>
+        )}
 
         {/* 은행 섹션 */}
         {filtered.banks.length > 0 && (
@@ -207,7 +225,7 @@ function AccountConnectPage() {
       </main>
 
       <StickyFooter>
-        <Button disabled={!hasSelection} onClick={handleConnect}>
+        <Button disabled={!hasSelection || isPending} onClick={handleConnect}>
           {hasSelection ? `${selected.size}개 기관 연결하기` : '기관을 선택해주세요'}
         </Button>
       </StickyFooter>
