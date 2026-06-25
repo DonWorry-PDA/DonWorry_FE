@@ -19,7 +19,7 @@ function MypagePage() {
   const [largeFontEnabled, setLargeFontEnabled] = useState(true)
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
 
-  const { data: profile } = useGetProfile()
+  const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
 
   // 로그아웃: API 호출 후 성공·실패 모두 클라이언트 토큰·캐시를 정리한다
@@ -54,11 +54,22 @@ function MypagePage() {
             <NotificationItemIc className="text-primary" width={24} height={29} />
           </div>
           <div className="flex flex-1 min-w-0 flex-col gap-[3px]">
-            <p className="text-card font-bold text-ink">{profile?.name ?? ''}님</p>
-            <p className="text-sub text-ink-hint">
-              {profile?.age}세 · {profile?.status} · 목표 생활비 월{' '}
-              {((profile?.monthlyTargetKrw ?? 0) / 10_000).toLocaleString('ko-KR')}만원
-            </p>
+            {isProfilePending ? (
+              <>
+                <div className="h-5 w-28 animate-pulse rounded bg-surface-muted" />
+                <div className="mt-1 h-4 w-48 animate-pulse rounded bg-surface-muted" />
+              </>
+            ) : isProfileError ? (
+              <p className="text-sub text-ink-hint">프로필을 불러오지 못했어요</p>
+            ) : (
+              <>
+                <p className="text-card font-bold text-ink">{profile.name}님</p>
+                <p className="text-sub text-ink-hint">
+                  {profile.age}세 · {profile.status} · 목표 생활비 월{' '}
+                  {(profile.monthlyTargetKrw / 10_000).toLocaleString('ko-KR')}만원
+                </p>
+              </>
+            )}
           </div>
           <button className="shrink-0" onClick={() => navigate('/mypage/profile-edit')}>
             <span className="text-sub font-semibold text-primary">수정</span>
