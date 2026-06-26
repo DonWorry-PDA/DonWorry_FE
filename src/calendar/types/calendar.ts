@@ -3,6 +3,7 @@ export type EventCategory =
   | 'pension' // 연금 수령
   | 'payment' // 납입일
   | 'transaction' // 소비 (카드/교통/공과금/통신/의료)
+  | 'investment' // 투자 (주식 매수/매도)
   | 'maturity' // 만기일
   | 'interest' // 예금 이자
   | 'etc' // 기타
@@ -31,6 +32,7 @@ export type ScheduleItem = {
 export type TransactionItem = {
   id: string
   date: string // '06.25'
+  category: EventCategory
   title: string
   amountKrw: number // 부호 포함
 }
