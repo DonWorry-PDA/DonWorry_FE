@@ -16,6 +16,10 @@ export type LinkedAccount = {
 export type MydataInstitution = {
   id: string
   name: string
+  type: 'bank' | 'securities'
+  label: string
+  brandColor: string
+  labelColor: string
   connected: boolean
   connectedProducts: string[]
 }
