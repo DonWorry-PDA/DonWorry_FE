@@ -220,33 +220,34 @@ function OrderProductPage() {
         )}
 
         {/* 투자 설명서 */}
-        <div className="mt-4 flex flex-col gap-3">
-          <button className="flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left">
-            <span className="shrink-0 text-ink-sub">
-              <DocIcon />
-            </span>
-            <div className="flex-1">
-              <p className="text-body font-medium text-ink">투자설명서</p>
-              <p className="text-sub text-ink-hint">운용·위험·비용 상세</p>
-            </div>
-            <span className="text-ink-hint">
-              <ChevronRightIcon />
-            </span>
-          </button>
-
-          <button className="flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left">
-            <span className="shrink-0 text-ink-sub">
-              <DocIcon />
-            </span>
-            <div className="flex-1">
-              <p className="text-body font-medium text-ink">핵심상품설명서</p>
-              <p className="text-sub text-ink-hint">꼭 알아야 할 핵심만</p>
-            </div>
-            <span className="text-ink-hint">
-              <ChevronRightIcon />
-            </span>
-          </button>
-        </div>
+        {etf && (
+          <div className="mt-4 flex flex-col gap-3">
+            {([
+              { url: etf.prospectus_url, label: '투자설명서', desc: '운용·위험·비용 상세' },
+              { url: etf.simplified_url, label: '간이투자설명서', desc: '꼭 알아야 할 핵심만' },
+              { url: etf.fund_rules_url, label: '집합투자규약', desc: '펀드 운용 규정 전문' },
+            ] as const).filter((doc) => doc.url).map((doc) => (
+              <a
+                key={doc.label}
+                href={doc.url!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left"
+              >
+                <span className="shrink-0 text-ink-sub">
+                  <DocIcon />
+                </span>
+                <div className="flex-1">
+                  <p className="text-body font-medium text-ink">{doc.label}</p>
+                  <p className="text-sub text-ink-hint">{doc.desc}</p>
+                </div>
+                <span className="text-ink-hint">
+                  <ChevronRightIcon />
+                </span>
+              </a>
+            ))}
+          </div>
+        )}
 
         {etf && (
           <InfoBox className="mt-4">
