@@ -27,6 +27,13 @@ function buildSubLabel(accounts: AssetAccount[] | undefined): string {
   return `${names.slice(0, 2).join(' · ')} 외 ${names.length - 2}개`
 }
 
+// 'YYYY-MM-DD' 문자열을 로컬 자정 기준 Date로 파싱
+// new Date('YYYY-MM-DD')는 UTC 기준이라 타임존에 따라 하루가 밀릴 수 있음
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
 function AssetPage() {
   const navigate = useNavigate()
 
@@ -37,11 +44,20 @@ function AssetPage() {
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
 
+  const allocationBase =
+    composition && composition.totalAsset > 0
+      ? composition.totalAsset
+      : (composition?.groups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0) ?? 0)
+  const toAllocationPercent = (amount: number) =>
+    allocationBase > 0 ? Math.round((amount / allocationBase) * 100) : 0
+
   const today = new Date()
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
   const nextMonthPrefix = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}-`
   const nextMonthLabel = `${nextMonth.getMonth() + 1}월`
-  const nextMonthEvents = schedule?.events.filter((e) => e.date.startsWith(nextMonthPrefix)) ?? []
+  const nextMonthEvents = (schedule?.events ?? [])
+    .filter((e) => e.date.startsWith(nextMonthPrefix))
+    .sort((a, b) => a.date.localeCompare(b.date))
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -138,13 +154,13 @@ function AssetPage() {
                   <div
                     className="flex overflow-hidden rounded-badge pt-1.5"
                     role="img"
-                    aria-label={`자산 구성: ${composition.groups.map((seg) => `${seg.label} ${Math.round((seg.totalAmount / composition.totalAsset) * 100)}%`).join(', ')}`}
+                    aria-label={`자산 구성: ${composition.groups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
                   >
                     {composition.groups.map((seg, i) => (
                       <div
                         key={seg.category}
                         className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
-                        style={{ width: `${Math.round((seg.totalAmount / composition.totalAsset) * 100)}%` }}
+                        style={{ width: `${toAllocationPercent(seg.totalAmount)}%` }}
                         aria-hidden="true"
                       />
                     ))}
@@ -163,7 +179,7 @@ function AssetPage() {
                         </div>
                         <div className="flex flex-col items-end gap-0.5 shrink-0">
                           <p className="font-inter text-md font-bold text-ink">{formatKrwShort(seg.totalAmount)}</p>
-                          <p className="text-body text-ink-sub">{Math.round((seg.totalAmount / composition.totalAsset) * 100)}%</p>
+                          <p className="text-body text-ink-sub">{toAllocationPercent(seg.totalAmount)}%</p>
                         </div>
                       </div>
                     ))}
@@ -218,7 +234,12 @@ function AssetPage() {
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-4">
               <div className="flex items-baseline justify-between">
                 <p className="text-sub font-semibold text-ink-sub">월 평균 들어오는 돈</p>
-                <p className="font-inter text-md font-bold text-primary">{formatKrw(income.totalMonthlyIncome)}</p>
+                <div className="flex flex-col items-end gap-0.5">
+                  <p className="font-inter text-md font-bold text-primary">{formatKrw(income.accessibleIncome)}</p>
+                  {income.lockedIncome > 0 && (
+                    <p className="text-caption text-ink-hint">+{formatKrw(income.lockedIncome)} 비유동</p>
+                  )}
+                </div>
               </div>
 
               <div className="border-t border-divider pt-[15px] flex flex-col">
@@ -281,8 +302,8 @@ function AssetPage() {
                       </div>
                       <p className="text-sub text-ink-sub">
                         {INCOME_EVENT_TYPES.has(event.type)
-                          ? `${formatMD(new Date(event.date))} · ${calcDday(new Date(event.date))}`
-                          : `${formatYM(new Date(event.date))} · 만기`}
+                          ? `${formatMD(parseLocalDate(event.date))} · ${calcDday(parseLocalDate(event.date))}`
+                          : `${formatYM(parseLocalDate(event.date))} · 만기`}
                       </p>
                     </div>
                     {INCOME_EVENT_TYPES.has(event.type) ? (

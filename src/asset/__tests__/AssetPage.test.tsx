@@ -199,10 +199,16 @@ describe('AssetPage 월 수입 카드', () => {
   beforeEach(() => vi.clearAllMocks())
   afterEach(() => cleanup())
 
-  it('총 월 수입을 표시한다', () => {
+  it('유동 월 수입(accessibleIncome)을 헤드라인에 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('18만원')).toBeInTheDocument()
+    expect(screen.getByText('13만원')).toBeInTheDocument()
+  })
+
+  it('비유동 수입이 있으면 별도 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('+5만원 비유동')).toBeInTheDocument()
   })
 
   it('수입 출처 목록을 렌더링한다', () => {
