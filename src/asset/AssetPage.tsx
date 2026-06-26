@@ -56,7 +56,7 @@ function AssetPage() {
       </header>
 
       <main className="flex-1 overflow-y-auto">
-        <div className="flex flex-col gap-[14px] px-4 pt-1 pb-6">
+        <div className="flex flex-col gap-3.5 px-4 pt-1 pb-6">
 
           {/* ── 총자산 카드 ── */}
           {hubLoading ? (
@@ -68,7 +68,10 @@ function AssetPage() {
             </div>
           ) : hub ? (
             <div className="bg-white rounded-card-xl border border-line px-5 py-[22px] flex flex-col gap-1">
-              <span className="text-sub font-semibold text-ink-sub">총자산</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sub font-semibold text-ink-sub">총자산</span>
+                <span className="text-caption text-ink-hint">오늘 기준</span>
+              </div>
               <div className="pt-0.5">
                 <p className="font-inter text-jumbo font-bold text-ink leading-tight tracking-tight">
                   {formatKrw(hub.totalAsset)}
@@ -117,19 +120,24 @@ function AssetPage() {
               <button onClick={() => refetchComposition()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
           ) : composition ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-[6px]">
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-1.5">
               <p className="text-sub font-semibold text-ink-sub">내 자산 구성</p>
 
               {composition.groups.length === 0 ? (
                 <p className="text-body text-ink-hint py-6 text-center">자산 정보가 없습니다</p>
               ) : (
                 <>
-                  <div className="flex overflow-hidden rounded-badge pt-[6px]">
+                  <div
+                    className="flex overflow-hidden rounded-badge pt-1.5"
+                    role="img"
+                    aria-label={`자산 구성: ${composition.groups.map((seg) => `${seg.label} ${Math.round((seg.totalAmount / composition.totalAsset) * 100)}%`).join(', ')}`}
+                  >
                     {composition.groups.map((seg, i) => (
                       <div
                         key={seg.category}
                         className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
                         style={{ width: `${Math.round((seg.totalAmount / composition.totalAsset) * 100)}%` }}
+                        aria-hidden="true"
                       />
                     ))}
                   </div>
@@ -155,7 +163,7 @@ function AssetPage() {
 
                   {investmentCheck != null && (
                     <div className="bg-surface rounded-card p-4 flex flex-col gap-2">
-                      <p className="text-caption font-bold text-primary">✦ 한 줄 요약</p>
+                      <p className="text-caption font-bold text-primary">한 줄 요약</p>
                       <p className="text-body text-ink-sub leading-relaxed">
                         지금은 자산의{' '}
                         <span className="font-bold text-ink">{Math.round(investmentCheck.cashflowAssetRatio)}%만 매달 현금을 만들고</span>{' '}
@@ -167,7 +175,7 @@ function AssetPage() {
               )}
 
               <button
-                className="flex w-full items-center gap-3 pt-[13px] px-0.5 text-left"
+                className="flex w-full min-h-[44px] items-center gap-3 pt-3 px-0.5 text-left rounded-card hover:bg-surface active:bg-surface-muted transition-colors"
                 aria-label="투자 건강검진 보기 — 어떤 자산이 월급이 되는지 자세히 확인"
                 onClick={() => navigate('/investment-checkup')}
               >
@@ -186,7 +194,7 @@ function AssetPage() {
           ) : null}
 
           {/* ── 섹션 레이블 ── */}
-          <div className="px-1 pt-1.5">
+          <div className="px-1">
             <p className="text-sub font-semibold text-ink-sub">내 자산이 만드는 월 수입</p>
           </div>
 
@@ -298,7 +306,7 @@ function AssetPage() {
                 pension.pensions.map((item, i) => (
                   <div
                     key={`${item.type}-${item.institutionName}`}
-                    className={`flex items-baseline justify-between py-[15px] ${
+                    className={`flex items-start justify-between py-[15px] ${
                       i < pension.pensions.length - 1 ? 'border-b border-divider' : 'pb-5'
                     }`}
                   >
