@@ -60,12 +60,18 @@ export type AssetScheduleResponse = {
 }
 
 // ── 연금 재원 ─────────────────────────────────────────────────
-// Task 7에서 BE PensionResourceResponse 확인 후 필드 추가 가능
 export type PensionItem = {
+  type: string
   label: string
-  amountKrw: number
+  institutionName: string
+  startAge: number
+  currentBalance: number
+  expectedMonthly: number
+  taxBenefitLimit: number
+  estimated: boolean
 }
 
 export type AssetPensionResponse = {
-  items: PensionItem[]
+  totalMonthlyPension: number
+  pensions: PensionItem[]
 }

@@ -89,9 +89,10 @@ const defaultSchedule: AssetScheduleResponse = {
 }
 
 const defaultPension: AssetPensionResponse = {
-  items: [
-    { label: 'IRP', amountKrw: 100_000_000 },
-    { label: '연금저축', amountKrw: 50_000_000 },
+  totalMonthlyPension: 1_200_000,
+  pensions: [
+    { type: 'IRP', label: 'IRP', institutionName: 'KB', startAge: 55, currentBalance: 100_000_000, expectedMonthly: 700_000, taxBenefitLimit: 9_000_000, estimated: false },
+    { type: 'PENSION_SAVINGS', label: '연금저축', institutionName: '신한', startAge: 55, currentBalance: 50_000_000, expectedMonthly: 500_000, taxBenefitLimit: 6_000_000, estimated: true },
   ],
 }
 
@@ -234,5 +235,30 @@ describe('AssetPage 현금 일정 카드', () => {
     mockAll({ schedule: { data: { events: [] } } })
     render(<AssetPage />)
     expect(screen.getByText('다가오는 현금 일정이 없어요')).toBeInTheDocument()
+  })
+})
+
+describe('AssetPage 연금 재원 카드', () => {
+  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => cleanup())
+
+  it('연금 항목 레이블을 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('IRP')).toBeInTheDocument()
+    expect(screen.getByText('연금저축')).toBeInTheDocument()
+  })
+
+  it('현재 잔액을 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('1억원')).toBeInTheDocument()
+    expect(screen.getByText('5,000만원')).toBeInTheDocument()
+  })
+
+  it('pensions 빈 배열이면 안내 메시지를 표시한다', () => {
+    mockAll({ pension: { data: { totalMonthlyPension: 0, pensions: [] } } })
+    render(<AssetPage />)
+    expect(screen.getByText('연금 재원 정보가 없습니다')).toBeInTheDocument()
   })
 })

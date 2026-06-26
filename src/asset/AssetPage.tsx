@@ -31,7 +31,7 @@ function AssetPage() {
   const { data: composition, isLoading: compositionLoading, isError: compositionError, refetch: refetchComposition } = useGetAssetComposition()
   const { data: income, isLoading: incomeLoading, isError: incomeError, refetch: refetchIncome } = useGetAssetIncome()
   const { data: schedule, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useGetAssetSchedule()
-  const { data: _pension, isLoading: _pensionLoading, isError: _pensionError, refetch: _refetchPension } = useGetAssetPension()
+  const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
 
   return (
@@ -279,7 +279,46 @@ function AssetPage() {
             </div>
           ) : null}
 
-          {/* ── 연금 재원 카드 — Task 7에서 구현 ── */}
+          {/* ── 연금으로 받을 재원 카드 ── */}
+          {pensionLoading ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" />
+          ) : pensionError ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+              <p className="text-body text-ink-sub">연금 재원을 불러오지 못했어요</p>
+              <button onClick={() => refetchPension()} className="text-sub text-primary font-semibold">다시 시도</button>
+            </div>
+          ) : pension ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
+              <p className="text-sub font-semibold text-ink-sub">연금으로 받을 재원</p>
+
+              {pension.pensions.length === 0 ? (
+                <p className="text-body text-ink-hint text-center py-8">연금 재원 정보가 없습니다</p>
+              ) : (
+                pension.pensions.map((item, i) => (
+                  <div
+                    key={`${item.type}-${item.institutionName}`}
+                    className={`flex items-baseline justify-between py-[15px] ${
+                      i < pension.pensions.length - 1 ? 'border-b border-divider' : 'pb-5'
+                    }`}
+                  >
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-md text-ink-sub">{item.label}</p>
+                      <p className="text-sub text-ink-hint">{item.institutionName}</p>
+                    </div>
+                    <p className="font-inter text-md font-semibold text-ink">{formatKrw(item.currentBalance)}</p>
+                  </div>
+                ))
+              )}
+
+              <div className="bg-surface rounded-card px-4 py-[14px]">
+                <p className="text-sub text-ink-sub leading-relaxed">
+                  <span className="font-bold text-ink">55세 이후</span> 연금으로 수령 가능 · 연금 수령 시 세율
+                  <br />
+                  3.3~5.5%로 낮아져요.
+                </p>
+              </div>
+            </div>
+          ) : null}
 
         </div>
       </main>
