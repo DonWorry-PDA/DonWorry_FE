@@ -146,3 +146,39 @@ describe('AssetPage 총자산 카드', () => {
     expect(screen.getByText('+107만원')).toBeInTheDocument()
   })
 })
+
+describe('AssetPage 자산 구성 카드', () => {
+  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => cleanup())
+
+  it('allocation 항목 레이블을 렌더링한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('연금 재원')).toBeInTheDocument()
+    expect(screen.getByText('월급 만드는 자산')).toBeInTheDocument()
+  })
+
+  it('서브 레이블에 기관명을 최대 2개 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('KB · 신한')).toBeInTheDocument()
+  })
+
+  it('한 줄 요약에 cashflowAssetRatio를 보여준다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText(/32%/)).toBeInTheDocument()
+  })
+
+  it('allocation 빈 배열이면 안내 메시지를 표시한다', () => {
+    mockAll({ composition: { data: { ...defaultComposition, allocation: [] } } })
+    render(<AssetPage />)
+    expect(screen.getByText('자산 정보가 없습니다')).toBeInTheDocument()
+  })
+
+  it('composition 에러 시 다시 시도 버튼을 표시한다', () => {
+    mockAll({ composition: { isError: true, data: undefined } })
+    render(<AssetPage />)
+    expect(screen.getByText('자산 구성을 불러오지 못했어요')).toBeInTheDocument()
+  })
+})

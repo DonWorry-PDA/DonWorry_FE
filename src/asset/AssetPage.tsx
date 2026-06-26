@@ -7,6 +7,7 @@ import useGetAssetIncome from './hooks/useGetAssetIncome'
 import useGetAssetSchedule from './hooks/useGetAssetSchedule'
 import useGetAssetPension from './hooks/useGetAssetPension'
 import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
+import type { AssetAccount } from './types/assetAnalysis'
 
 const ALLOCATION_COLORS = [
   'bg-primary',
@@ -16,19 +17,25 @@ const ALLOCATION_COLORS = [
   'bg-track',
 ] as const
 
+function buildSubLabel(accounts: AssetAccount[]): string {
+  const names = accounts.map((a) => a.institutionName)
+  if (names.length <= 2) return names.join(' · ')
+  return `${names.slice(0, 2).join(' · ')} 외 ${names.length - 2}개`
+}
+
 function AssetPage() {
   const navigate = useNavigate()
 
   const { data: hub, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useGetAssetHub()
-  const { data: _composition, isLoading: _compositionLoading, isError: _compositionError, refetch: _refetchComposition } = useGetAssetComposition()
+  const { data: composition, isLoading: compositionLoading, isError: compositionError, refetch: refetchComposition } = useGetAssetComposition()
   const { data: income, isLoading: incomeLoading, isError: _incomeError, refetch: _refetchIncome } = useGetAssetIncome()
   const { data: _schedule, isLoading: _scheduleLoading, isError: _scheduleError, refetch: _refetchSchedule } = useGetAssetSchedule()
   const { data: _pension, isLoading: _pensionLoading, isError: _pensionError, refetch: _refetchPension } = useGetAssetPension()
-  const { data: _investmentCheck } = useGetInvestmentCheck()
+  const { data: investmentCheck } = useGetInvestmentCheck()
 
-  // suppress unused warning — referenced by Tasks 4-7
-  void ALLOCATION_COLORS
-  void formatKrwShort
+  // suppress unused warning — referenced by Tasks 5-7
+  void _incomeError
+  void _refetchIncome
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -103,7 +110,82 @@ function AssetPage() {
             </div>
           ) : null}
 
-          {/* ── 내 자산 구성 카드 — Task 4에서 구현 ── */}
+          {/* ── 내 자산 구성 카드 ── */}
+          {compositionLoading ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 h-48 animate-pulse" />
+          ) : compositionError ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+              <p className="text-body text-ink-sub">자산 구성을 불러오지 못했어요</p>
+              <button onClick={() => refetchComposition()} className="text-sub text-primary font-semibold">다시 시도</button>
+            </div>
+          ) : composition ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-[6px]">
+              <p className="text-sub font-semibold text-ink-sub">내 자산 구성</p>
+
+              {composition.allocation.length === 0 ? (
+                <p className="text-body text-ink-hint py-6 text-center">자산 정보가 없습니다</p>
+              ) : (
+                <>
+                  <div className="flex overflow-hidden rounded-badge pt-[6px]">
+                    {composition.allocation.map((seg, i) => (
+                      <div
+                        key={seg.category}
+                        className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
+                        style={{ width: `${Math.round((seg.totalAmount / composition.totalAsset) * 100)}%` }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col gap-0.5 pt-2">
+                    {composition.allocation.map((seg, i) => (
+                      <div
+                        key={seg.category}
+                        className={`flex items-center gap-3 py-[11px] ${i < composition.allocation.length - 1 ? 'border-b border-divider' : ''}`}
+                      >
+                        <span className={`size-[9px] shrink-0 rounded-[4.5px] ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`} />
+                        <div className="flex-1 min-w-0 flex flex-col gap-0.5 pl-0.5">
+                          <p className="text-body font-semibold text-ink">{seg.label}</p>
+                          <p className="text-sub text-ink-sub">{buildSubLabel(seg.accounts)}</p>
+                        </div>
+                        <div className="flex flex-col items-end gap-0.5 shrink-0">
+                          <p className="font-inter text-md font-bold text-ink">{formatKrwShort(seg.totalAmount)}</p>
+                          <p className="text-body text-ink-sub">{Math.round((seg.totalAmount / composition.totalAsset) * 100)}%</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {investmentCheck != null && (
+                    <div className="bg-surface rounded-card p-4 flex flex-col gap-2">
+                      <p className="text-caption font-bold text-primary">✦ 한 줄 요약</p>
+                      <p className="text-body text-ink-sub leading-relaxed">
+                        지금은 자산의{' '}
+                        <span className="font-bold text-ink">{Math.round(investmentCheck.cashflowAssetRatio)}%만 매달 현금을 만들고</span>{' '}
+                        있어요.
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <button
+                className="flex w-full items-center gap-3 pt-[13px] px-0.5 text-left"
+                aria-label="투자 건강검진 보기 — 어떤 자산이 월급이 되는지 자세히 확인"
+                onClick={() => navigate('/investment-checkup')}
+              >
+                <div className="bg-primary-tint rounded-icon size-10 shrink-0 flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-primary">
+                    <path d="M9 14V4M9 4L4 9M9 4L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                  <p className="text-body font-semibold text-ink">투자 건강검진 보기</p>
+                  <p className="text-sub text-ink-sub">어떤 자산이 월급이 되는지 자세히</p>
+                </div>
+                <span className="text-card text-disabled shrink-0" aria-hidden="true">›</span>
+              </button>
+            </div>
+          ) : null}
 
           {/* ── 섹션 레이블 ── */}
           <div className="px-1 pt-1.5">
