@@ -65,6 +65,8 @@ function AccountConnectPage() {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [showToast, setShowToast] = useState(false)
+  const [connectedCount, setConnectedCount] = useState(0)
+  const [isRedirecting, setIsRedirecting] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const { data: institutions, isPending: isLoadingInstitutions, isError: isInstitutionsError } = useGetMydataInstitutions()
@@ -93,8 +95,11 @@ function AccountConnectPage() {
   const hasSelection = selected.size > 0
 
   const handleConnect = () => {
-    connectInstitutions([...selected], {
+    const ids = [...selected]
+    connectInstitutions(ids, {
       onSuccess: () => {
+        setConnectedCount(ids.length)
+        setIsRedirecting(true)
         setShowToast(true)
         timerRef.current = setTimeout(() => navigate('/mypage', { replace: true }), 2000)
       },
@@ -244,7 +249,7 @@ function AccountConnectPage() {
       </main>
 
       <StickyFooter>
-        <Button disabled={!hasSelection || isPending} onClick={handleConnect}>
+        <Button disabled={!hasSelection || isPending || isRedirecting} onClick={handleConnect}>
           {hasSelection ? `${selected.size}개 기관 연결하기` : '기관을 선택해주세요'}
         </Button>
       </StickyFooter>
@@ -261,7 +266,7 @@ function AccountConnectPage() {
           </svg>
         </div>
         <span className="text-sub font-semibold text-white">
-          {selected.size}개 기관이 연결됐어요
+          {connectedCount}개 기관이 연결됐어요
         </span>
       </div>
     </div>
