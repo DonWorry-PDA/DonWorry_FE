@@ -10,6 +10,8 @@ import useGetAssetPension from './hooks/useGetAssetPension'
 import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
 import type { AssetAccount } from './types/assetAnalysis'
 
+const INCOME_EVENT_TYPES = new Set(['ETF_DIVIDEND', 'DEPOSIT_INTEREST'])
+
 const ALLOCATION_COLORS = [
   'bg-primary',
   'bg-primary-muted',
@@ -253,8 +255,8 @@ function AssetPage() {
                     key={`${event.date}-${event.label}`}
                     className={`flex items-center gap-3 py-4 ${i < schedule.events.length - 1 ? 'border-b border-divider' : ''}`}
                   >
-                    <div className={`rounded-icon size-10 shrink-0 flex items-center justify-center ${event.type === 'income' ? 'bg-primary-tint' : 'bg-surface-muted'}`}>
-                      {event.type === 'income' ? (
+                    <div className={`rounded-icon size-10 shrink-0 flex items-center justify-center ${INCOME_EVENT_TYPES.has(event.type) ? 'bg-primary-tint' : 'bg-surface-muted'}`}>
+                      {INCOME_EVENT_TYPES.has(event.type) ? (
                         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-primary">
                           <path d="M9 14V4M9 4L4 9M9 4L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -272,16 +274,16 @@ function AssetPage() {
                         )}
                       </div>
                       <p className="text-sub text-ink-sub">
-                        {event.type === 'income'
+                        {INCOME_EVENT_TYPES.has(event.type)
                           ? `${formatMD(new Date(event.date))} · ${calcDday(new Date(event.date))}`
                           : `${formatYM(new Date(event.date))} · 만기`}
                       </p>
                     </div>
-                    {event.type === 'income' ? (
-                      <p className="font-inter text-md font-bold text-primary shrink-0">+{formatKrw(event.amount)}</p>
-                    ) : (
+                    {INCOME_EVENT_TYPES.has(event.type) ? (
+                      <p className="font-inter text-md font-bold text-primary shrink-0">+{formatKrw(event.amount ?? 0)}</p>
+                    ) : event.amount != null ? (
                       <span className="bg-warning-bg text-warning-text text-sub font-bold rounded-badge px-[9px] py-1 shrink-0">{formatKrw(event.amount)} 인출 가능</span>
-                    )}
+                    ) : null}
                   </div>
                 ))
               )}

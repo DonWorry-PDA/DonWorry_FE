@@ -46,13 +46,14 @@ const defaultHub: AssetHubResponse = {
 }
 
 const defaultIncome: AssetIncomeResponse = {
-  totalMonthlyIncome: 130_000,
-  accessibleIncome: 100_000,
-  lockedIncome: 30_000,
+  totalMonthlyIncome: 180_000,
+  accessibleIncome: 130_000,
+  lockedIncome: 50_000,
   totalUnrealizedGainLoss: 1_070_000,
   sources: [
-    { type: '배당', label: '배당 ETF 분배금', amount: 100_000, locked: false },
-    { type: '이자', label: '예금 이자', amount: 30_000, locked: true },
+    { type: 'ETF_DIVIDEND', label: 'ETF 배당', amount: 100_000, locked: false },
+    { type: 'DEPOSIT_INTEREST', label: '예금 이자', amount: 30_000, locked: false },
+    { type: 'PENSION_DIVIDEND', label: '연금 계좌 ETF 배당', amount: 50_000, locked: true },
   ],
 }
 
@@ -87,8 +88,9 @@ const defaultComposition: AssetCompositionResponse = {
 
 const defaultSchedule: AssetScheduleResponse = {
   events: [
-    { date: '2026-06-25', type: 'income', label: '배당금 입금', amount: 100_000, estimated: false },
-    { date: '2026-11-01', type: 'maturity', label: '예금 만기', amount: 50_000_000, estimated: true },
+    { date: '2026-07-25', type: 'ETF_DIVIDEND', label: 'KODEX 배당 예상 분배금', amount: 100_000, estimated: true },
+    { date: '2026-07-15', type: 'DEPOSIT_INTEREST', label: 'KB 예금 이자', amount: 30_000, estimated: false },
+    { date: '2026-11-01', type: 'DEPOSIT_MATURITY', label: '신한 정기예금 만기', amount: 50_000_000, estimated: false },
   ],
 }
 
@@ -195,14 +197,15 @@ describe('AssetPage 월 수입 카드', () => {
   it('총 월 수입을 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('13만원')).toBeInTheDocument()
+    expect(screen.getByText('18만원')).toBeInTheDocument()
   })
 
   it('수입 출처 목록을 렌더링한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('배당 ETF 분배금')).toBeInTheDocument()
+    expect(screen.getByText('ETF 배당')).toBeInTheDocument()
     expect(screen.getByText('예금 이자')).toBeInTheDocument()
+    expect(screen.getByText('연금 계좌 ETF 배당')).toBeInTheDocument()
   })
 
   it('locked 출처에 "비유동" 뱃지를 표시한다', () => {
@@ -225,8 +228,9 @@ describe('AssetPage 현금 일정 카드', () => {
   it('이벤트 레이블을 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('배당금 입금')).toBeInTheDocument()
-    expect(screen.getByText('예금 만기')).toBeInTheDocument()
+    expect(screen.getByText('KODEX 배당 예상 분배금')).toBeInTheDocument()
+    expect(screen.getByText('KB 예금 이자')).toBeInTheDocument()
+    expect(screen.getByText('신한 정기예금 만기')).toBeInTheDocument()
   })
 
   it('estimated 이벤트에 "예정" 뱃지를 표시한다', () => {

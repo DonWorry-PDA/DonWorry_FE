@@ -55,9 +55,9 @@ export type AssetIncomeResponse = {
 // ── 현금 일정 ─────────────────────────────────────────────────
 export type ScheduleEvent = {
   date: string
-  type: 'income' | 'maturity' | (string & {})
+  type: 'ETF_DIVIDEND' | 'DEPOSIT_INTEREST' | 'DEPOSIT_MATURITY' | 'DEBT_MATURITY' | (string & {})
   label: string
-  amount: number
+  amount: number | null
   estimated: boolean
 }
 
