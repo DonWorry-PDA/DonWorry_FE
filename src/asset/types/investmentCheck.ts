@@ -14,12 +14,19 @@ export type RoleContribution = {
 }
 
 // 개별주 "성장에 베팅한 자산" 블록. 개별주 보유가 없으면 null.
+// 배당은 보유분 실배당(종목별 dividend_yield) 기반 사실값이다.
 export type GrowthAsset = {
   amount: number // 개별주 평가액 합
   topStockName: string // 최대 비중 종목명
   concentrationRatio: number // 최대종목 / 개별주합 %
   concentrationLevel: string // 낮음 / 보통 / 높음
-  suggestion: string // 정성적 재배치 유도 멘트(숫자·현재배당 단정 없음)
+  topSector: string | null // 최대 비중 섹터명(섹터 산출 불가 시 null)
+  sectorConcentrationRatio: number // 최대섹터 / 개별주합 % (단일종목 쏠림이 낮아도 섹터는 높을 수 있음)
+  sectorConcentrationLevel: string // 낮음 / 보통 / 높음
+  currentMonthlyDividend: number // 현재 개별주에서 나오는 월 배당(원)
+  convertedMonthlyDividend: number // 전액 배당ETF로 옮겼을 때 월 배당(원)
+  deltaMonthlyDividend: number // converted − current. 음수면 옮기면 손해
+  suggestion: string // 델타 부호에 따라 BE가 분기한 멘트(이동 유도 / 보유 유지)
 }
 
 export type InvestmentCheckResponse = {
