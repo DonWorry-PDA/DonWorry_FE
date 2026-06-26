@@ -69,11 +69,11 @@ export type AssetScheduleResponse = {
 export type PensionItem = {
   type: string
   label: string
-  institutionName: string
+  institutionName: string | null
   startAge: number
-  currentBalance: number
+  currentBalance: number | null  // 국민연금은 null (잔액 개념 없음)
   expectedMonthly: number
-  taxBenefitLimit: number
+  taxBenefitLimit: number | null
   estimated: boolean
 }
 

@@ -86,19 +86,24 @@ const defaultComposition: AssetCompositionResponse = {
   ],
 }
 
+const today = new Date()
+const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+const nm = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`
+
 const defaultSchedule: AssetScheduleResponse = {
   events: [
-    { date: '2026-07-25', type: 'ETF_DIVIDEND', label: 'KODEX 배당 예상 분배금', amount: 100_000, estimated: true },
-    { date: '2026-07-15', type: 'DEPOSIT_INTEREST', label: 'KB 예금 이자', amount: 30_000, estimated: false },
-    { date: '2026-11-01', type: 'DEPOSIT_MATURITY', label: '신한 정기예금 만기', amount: 50_000_000, estimated: false },
+    { date: `${nm}-25`, type: 'ETF_DIVIDEND', label: 'KODEX 배당 예상 분배금', amount: 100_000, estimated: true },
+    { date: `${nm}-15`, type: 'DEPOSIT_INTEREST', label: 'KB 예금 이자', amount: 30_000, estimated: false },
+    { date: `${nm}-10`, type: 'DEPOSIT_MATURITY', label: '신한 정기예금 만기', amount: 50_000_000, estimated: false },
   ],
 }
 
 const defaultPension: AssetPensionResponse = {
   totalMonthlyPension: 1_200_000,
   pensions: [
+    { type: 'NATIONAL', label: '국민연금', institutionName: null, startAge: 65, currentBalance: null, expectedMonthly: 500_000, taxBenefitLimit: null, estimated: false },
     { type: 'IRP', label: 'IRP', institutionName: 'KB', startAge: 55, currentBalance: 100_000_000, expectedMonthly: 700_000, taxBenefitLimit: 9_000_000, estimated: false },
-    { type: 'PENSION_SAVINGS', label: '연금저축', institutionName: '신한', startAge: 55, currentBalance: 50_000_000, expectedMonthly: 500_000, taxBenefitLimit: 6_000_000, estimated: true },
+    { type: 'PENSION_SAVING', label: '연금저축', institutionName: '신한', startAge: 55, currentBalance: 50_000_000, expectedMonthly: 500_000, taxBenefitLimit: 6_000_000, estimated: true },
   ],
 }
 
@@ -242,7 +247,8 @@ describe('AssetPage 현금 일정 카드', () => {
   it('events 빈 배열이면 안내 메시지를 표시한다', () => {
     mockAll({ schedule: { data: { events: [] } } })
     render(<AssetPage />)
-    expect(screen.getByText('다가오는 현금 일정이 없어요')).toBeInTheDocument()
+    const nextMonthNum = new Date(today.getFullYear(), today.getMonth() + 1, 1).getMonth() + 1
+    expect(screen.getByText(`${nextMonthNum}월에 예정된 현금 일정이 없어요`)).toBeInTheDocument()
   })
 })
 

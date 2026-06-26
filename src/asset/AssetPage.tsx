@@ -37,6 +37,12 @@ function AssetPage() {
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
 
+  const today = new Date()
+  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+  const nextMonthPrefix = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}-`
+  const nextMonthLabel = `${nextMonth.getMonth() + 1}월`
+  const nextMonthEvents = schedule?.events.filter((e) => e.date.startsWith(nextMonthPrefix)) ?? []
+
   return (
     <div className="flex h-dvh flex-col bg-white">
       <header className="flex h-[52px] shrink-0 items-center gap-2 px-6 w-full">
@@ -245,15 +251,15 @@ function AssetPage() {
             </div>
           ) : schedule ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
-              <p className="text-sub font-semibold text-ink-sub">다가오는 현금 일정</p>
+              <p className="text-sub font-semibold text-ink-sub">{nextMonthLabel} 현금 일정</p>
 
-              {schedule.events.length === 0 ? (
-                <p className="text-body text-ink-hint text-center py-8">다가오는 현금 일정이 없어요</p>
+              {nextMonthEvents.length === 0 ? (
+                <p className="text-body text-ink-hint text-center py-8">{nextMonthLabel}에 예정된 현금 일정이 없어요</p>
               ) : (
-                schedule.events.map((event, i) => (
+                nextMonthEvents.map((event, i) => (
                   <div
                     key={`${event.date}-${event.label}`}
-                    className={`flex items-center gap-3 py-4 ${i < schedule.events.length - 1 ? 'border-b border-divider' : ''}`}
+                    className={`flex items-center gap-3 py-4 ${i < nextMonthEvents.length - 1 ? 'border-b border-divider' : ''}`}
                   >
                     <div className={`rounded-icon size-10 shrink-0 flex items-center justify-center ${INCOME_EVENT_TYPES.has(event.type) ? 'bg-primary-tint' : 'bg-surface-muted'}`}>
                       {INCOME_EVENT_TYPES.has(event.type) ? (
@@ -316,7 +322,13 @@ function AssetPage() {
                       <p className="text-md text-ink-sub">{item.label}</p>
                       <p className="text-sub text-ink-hint">{item.institutionName}</p>
                     </div>
-                    <p className="font-inter text-md font-semibold text-ink">{formatKrw(item.currentBalance)}</p>
+                    {item.currentBalance != null ? (
+                      <p className="font-inter text-md font-semibold text-ink">{formatKrw(item.currentBalance)}</p>
+                    ) : (
+                      <p className="font-inter text-md font-semibold text-ink">
+                        {formatKrw(item.expectedMonthly)}<span className="text-sub text-ink-hint font-normal">/월</span>
+                      </p>
+                    )}
                   </div>
                 ))
               )}
