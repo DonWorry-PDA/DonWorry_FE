@@ -39,7 +39,7 @@ function AssetPage() {
     <div className="flex h-dvh flex-col bg-white">
       <header className="flex h-[52px] shrink-0 items-center gap-2 px-6 w-full">
         <button
-          className="flex size-7 shrink-0 items-center justify-center"
+          className="flex size-11 shrink-0 -ml-2 items-center justify-center"
           aria-label="뒤로 가기"
           onClick={() => navigate(-1)}
         >
@@ -47,7 +47,7 @@ function AssetPage() {
         </button>
         <h1 className="text-card font-bold text-ink flex-1">자산분석</h1>
         <button
-          className="flex size-7 shrink-0 items-center justify-center"
+          className="flex size-11 shrink-0 -mr-2 items-center justify-center"
           aria-label="알림"
           onClick={() => navigate('/notification')}
         >
@@ -60,11 +60,11 @@ function AssetPage() {
 
           {/* ── 총자산 카드 ── */}
           {hubLoading ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" />
+            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" aria-busy="true" aria-label="총자산 로딩 중" />
           ) : hubError ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10" role="alert">
               <p className="text-body text-ink-sub">총자산 정보를 불러오지 못했어요</p>
-              <button onClick={() => refetchHub()} className="text-sub text-primary font-semibold">다시 시도</button>
+              <button onClick={() => refetchHub()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
           ) : hub ? (
             <div className="bg-white rounded-card-xl border border-line px-5 py-[22px] flex flex-col gap-1">
@@ -110,11 +110,11 @@ function AssetPage() {
 
           {/* ── 내 자산 구성 카드 ── */}
           {compositionLoading ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 h-48 animate-pulse" />
+            <div className="bg-white rounded-card-xl border border-line p-5 h-48 animate-pulse" aria-busy="true" aria-label="자산 구성 로딩 중" />
           ) : compositionError ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10" role="alert">
               <p className="text-body text-ink-sub">자산 구성을 불러오지 못했어요</p>
-              <button onClick={() => refetchComposition()} className="text-sub text-primary font-semibold">다시 시도</button>
+              <button onClick={() => refetchComposition()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
           ) : composition ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-[6px]">
@@ -192,11 +192,11 @@ function AssetPage() {
 
           {/* ── 월 수입 카드 ── */}
           {incomeLoading ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 h-40 animate-pulse" />
+            <div className="bg-white rounded-card-xl border border-line p-5 h-40 animate-pulse" aria-busy="true" aria-label="월 수입 로딩 중" />
           ) : incomeError ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10" role="alert">
               <p className="text-body text-ink-sub">수입 정보를 불러오지 못했어요</p>
-              <button onClick={() => refetchIncome()} className="text-sub text-primary font-semibold">다시 시도</button>
+              <button onClick={() => refetchIncome()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
           ) : income ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-4">
@@ -214,7 +214,7 @@ function AssetPage() {
                       <div className="flex items-center gap-2">
                         <p className="text-body text-ink-sub">{source.label}</p>
                         {source.locked && (
-                          <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">잠김</span>
+                          <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5" title="연금·장기 상품으로 현재 인출이 제한된 자산이에요">비유동</span>
                         )}
                       </div>
                       <p className="font-inter text-md font-semibold text-ink">월 {formatKrw(source.amount)}</p>
@@ -227,11 +227,11 @@ function AssetPage() {
 
           {/* ── 다가오는 현금 일정 카드 ── */}
           {scheduleLoading ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" />
+            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" aria-busy="true" aria-label="현금 일정 로딩 중" />
           ) : scheduleError ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10" role="alert">
               <p className="text-body text-ink-sub">현금 일정을 불러오지 못했어요</p>
-              <button onClick={() => refetchSchedule()} className="text-sub text-primary font-semibold">다시 시도</button>
+              <button onClick={() => refetchSchedule()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
           ) : schedule ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
@@ -266,13 +266,13 @@ function AssetPage() {
                       <p className="text-sub text-ink-sub">
                         {event.type === 'income'
                           ? `${formatMD(new Date(event.date))} · ${calcDday(new Date(event.date))}`
-                          : `${formatYM(new Date(event.date))} · ${formatKrw(event.amount)} 풀림`}
+                          : `${formatYM(new Date(event.date))} · 만기`}
                       </p>
                     </div>
                     {event.type === 'income' ? (
                       <p className="font-inter text-md font-bold text-primary shrink-0">+{formatKrw(event.amount)}</p>
                     ) : (
-                      <span className="bg-warning-bg text-warning-text text-sub font-bold rounded-badge px-[9px] py-1 shrink-0">묶임 해제</span>
+                      <span className="bg-warning-bg text-warning-text text-sub font-bold rounded-badge px-[9px] py-1 shrink-0">{formatKrw(event.amount)} 인출 가능</span>
                     )}
                   </div>
                 ))
@@ -282,11 +282,11 @@ function AssetPage() {
 
           {/* ── 연금으로 받을 재원 카드 ── */}
           {pensionLoading ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" />
+            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" aria-busy="true" aria-label="연금 재원 로딩 중" />
           ) : pensionError ? (
-            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10" role="alert">
               <p className="text-body text-ink-sub">연금 재원을 불러오지 못했어요</p>
-              <button onClick={() => refetchPension()} className="text-sub text-primary font-semibold">다시 시도</button>
+              <button onClick={() => refetchPension()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
           ) : pension ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
@@ -311,13 +311,13 @@ function AssetPage() {
                 ))
               )}
 
-              <div className="bg-surface rounded-card px-4 py-[14px]">
-                <p className="text-sub text-ink-sub leading-relaxed">
-                  <span className="font-bold text-ink">55세 이후</span> 연금으로 수령 가능 · 연금 수령 시 세율
-                  <br />
-                  3.3~5.5%로 낮아져요.
-                </p>
-              </div>
+              {pension.pensions.length > 0 && (
+                <div className="bg-surface rounded-card px-4 py-[14px] mt-2">
+                  <p className="text-sub text-ink-sub leading-relaxed">
+                    <span className="font-bold text-ink">55세 이후</span> 연금으로 수령 가능 · 수령 시 세율 3.3–5.5% 우대
+                  </p>
+                </div>
+              )}
             </div>
           ) : null}
 

@@ -205,10 +205,10 @@ describe('AssetPage 월 수입 카드', () => {
     expect(screen.getByText('예금 이자')).toBeInTheDocument()
   })
 
-  it('locked 출처에 "잠김" 뱃지를 표시한다', () => {
+  it('locked 출처에 "비유동" 뱃지를 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('잠김')).toBeInTheDocument()
+    expect(screen.getByText('비유동')).toBeInTheDocument()
   })
 
   it('sources 빈 배열이면 안내 메시지를 표시한다', () => {
