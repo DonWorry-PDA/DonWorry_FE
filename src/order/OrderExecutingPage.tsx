@@ -64,6 +64,7 @@ function OrderExecutingPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const items: BuyItem[] = location.state?.items ?? []
+  const planId: string | undefined = location.state?.planId
 
   const [phase, setPhase] = useState<Phase>('confirming')
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -99,7 +100,7 @@ function OrderExecutingPage() {
         setCurrentIndex(next)
         setPhase('confirming')
       } else {
-        navigate('/order/complete', { state: { results: resultsRef.current } })
+        navigate('/order/complete', { state: { results: resultsRef.current, planId } })
       }
     },
     [currentIndex, items, navigate],

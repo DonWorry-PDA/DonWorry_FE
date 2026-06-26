@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -28,10 +28,15 @@ function OrderTransferPage() {
   const { state } = useLocation()
   const items: BuyItem[] = state?.items ?? EMPTY_ITEMS
   const totalAmountWon: number = state?.totalAmountWon ?? 0
+  const planId: string | undefined = state?.planId
 
   const { data: accounts, isLoading } = useGetAccounts()
   const transfer = usePostTransfer()
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [isTransferring, setIsTransferring] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timerDoneRef = useRef(false)
+  const apiDoneRef = useRef(false)
 
   const brokerage = accounts?.find((a) => a.accountType === 'BROKERAGE')
   const brokerageBalance = brokerage?.depositBalance ?? 0
@@ -68,17 +73,14 @@ function OrderTransferPage() {
   }
 
   useEffect(() => {
-    if (transfer.isSuccess) {
-      const timer = setTimeout(() => {
-        navigate('/order/executing', { state: { items } })
-      }, 4000)
-      return () => clearTimeout(timer)
+    return () => {
+      if (timerRef.current != null) clearTimeout(timerRef.current)
     }
-  }, [transfer.isSuccess, navigate, items])
+  }, [])
 
   function handleProceed() {
     if (isEnough) {
-      navigate('/order/executing', { state: { items } })
+      navigate('/order/executing', { state: { items, planId } })
       return
     }
     const body = {
@@ -87,10 +89,23 @@ function OrderTransferPage() {
         amount,
       })),
     }
-    transfer.mutate(body)
+    timerDoneRef.current = false
+    apiDoneRef.current = false
+    setIsTransferring(true)
+    timerRef.current = setTimeout(() => {
+      timerDoneRef.current = true
+      if (apiDoneRef.current) navigate('/order/executing', { state: { items, planId } })
+    }, 4000)
+    transfer.mutate(body, {
+      onSuccess: () => {
+        apiDoneRef.current = true
+        if (timerDoneRef.current) navigate('/order/executing', { state: { items, planId } })
+      },
+      onError: () => setIsTransferring(false),
+    })
   }
 
-  if (transfer.isPending) {
+  if (isTransferring) {
     return (
       <div className="flex flex-col h-full bg-white items-center justify-center px-8 gap-5">
         <svg className="animate-spin text-primary" width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -122,27 +137,6 @@ function OrderTransferPage() {
         </div>
         <div className="px-5 pb-4 shrink-0">
           <Button onClick={() => { transfer.reset(); handleProceed() }}>다시 시도</Button>
-        </div>
-      </div>
-    )
-  }
-
-  if (transfer.isSuccess) {
-    return (
-      <div className="flex flex-col h-full bg-white items-center justify-center px-8 gap-5">
-        <div className="size-16 rounded-full bg-success flex items-center justify-center">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M6 16.5L13 23.5L26 10" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <div className="text-center">
-          <p className="text-heading font-bold text-ink mb-1">이체가 완료됐어요</p>
-          <p className="text-body text-ink-sub">잠시 후 매수 화면으로 이동해요</p>
-        </div>
-        <div className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <span key={i} className="size-1.5 rounded-full bg-ink-hint animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
-          ))}
         </div>
       </div>
     )
