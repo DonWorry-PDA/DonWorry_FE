@@ -121,7 +121,7 @@ function MypagePage() {
             className="flex items-center gap-0.5 py-1 pl-2 text-sub font-semibold text-primary"
             onClick={() => navigate('/mypage/connect-account')}
           >
-            + 연결하기
+            + 계좌 더 연결하기
           </button>
         </div>
 
