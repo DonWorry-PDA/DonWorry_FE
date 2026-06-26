@@ -15,3 +15,11 @@ export function formatKrw(amount: number): string {
 export function formatKrwShort(amount: number): string {
   return formatKrw(amount).replace(/원$/, '')
 }
+
+/**
+ * 원 단위 그대로 표기. formatKrw는 만원 단위로 내림해 월 배당 같은 소액이 "0만원"으로
+ * 사라지므로, 월 현금흐름·배당처럼 만원 미만이 의미 있는 값에 쓴다. 예: 8_500 → "8,500원".
+ */
+export function formatWon(amount: number): string {
+  return `${Math.round(amount).toLocaleString('ko-KR')}원`
+}
