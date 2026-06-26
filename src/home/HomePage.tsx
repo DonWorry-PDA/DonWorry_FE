@@ -8,6 +8,122 @@ import useGetProfile from '@/mypage/hooks/useGetProfile'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData, ReportItem } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
+import ManageMenuCard from '@/asset/components/ManageMenuCard'
+import type { ManageMenu } from '@/asset/types/asset'
+
+const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
+  if (grade === 'STABLE') return 'stable'
+  if (grade === 'NEED_COMPLEMENT') return 'warning'
+  return 'danger'
+}
+
+const MENU_BASE: ManageMenu[] = [
+  {
+    key: 'salaryMaking',
+    title: '월급 만들기',
+    caption: '목표 대비 현재 현금흐름',
+    path: '/paycheck-plan/assets',
+    iconTone: 'primary',
+    highlighted: true,
+  },
+  {
+    key: 'lifeStability',
+    title: '생활 안정도',
+    caption: '생활비 충당률',
+    path: '/stability',
+    iconTone: 'muted',
+  },
+  {
+    key: 'investmentCheck',
+    title: '투자 건강검진',
+    caption: '월급 만드는 자산\n32%뿐이에요',
+    path: '/asset/investment-checkup',
+    iconTone: 'muted',
+  },
+  {
+    key: 'pensionDefer',
+    title: '국민연금 연기',
+    caption: '5년 미루면\n평생 +43만원',
+    path: '/pension/defer',
+    iconTone: 'muted',
+  },
+  {
+    key: 'retirementSim',
+    title: '은퇴 시뮬레이션',
+    caption: '조건 바꿔\n미리 보기',
+    path: '/retirement-simulation',
+    iconTone: 'muted',
+  },
+  {
+    key: 'monthlyReport',
+    title: '월간 리포트',
+    caption: '6월 리포트가\n도착했어요',
+    path: '/asset/monthly-report',
+    iconTone: 'muted',
+    isNew: true,
+  },
+]
+
+const STATUS_TEXT: Record<StabilityStatus, string> = {
+  stable: '안정',
+  warning: '주의',
+  danger: '위험',
+}
+
+const STATUS_ICON_TONE: Record<StabilityStatus, ManageMenu['iconTone']> = {
+  stable: 'muted',
+  warning: 'warning',
+  danger: 'warning',
+}
+
+const toMan = (krw: number) => Math.round(krw / 10_000).toLocaleString('ko-KR')
+
+const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
+  MENU_BASE.map((menu) => {
+    if (menu.key === 'salaryMaking') {
+      const salaryMaking = hub.menus.salaryMaking
+      if (!salaryMaking) return menu
+      const caption =
+        salaryMaking.targetAmount != null && salaryMaking.currentAmount != null
+          ? `목표 ${toMan(salaryMaking.targetAmount)}만 중 ${toMan(salaryMaking.currentAmount)}만`
+          : menu.caption
+      return { ...menu, caption, progressPct: salaryMaking.achievementRate ?? undefined }
+    }
+
+    if (menu.key === 'lifeStability') {
+      const lifeStability = hub.menus.lifeStability
+      if (!lifeStability || lifeStability.grade == null) {
+        return { ...menu, caption: '아직 결과가 없어요' }
+      }
+      const status = gradeToStatus(lifeStability.grade)
+      return {
+        ...menu,
+        caption:
+          lifeStability.coverageRate != null
+            ? `충당률 ${Math.round(lifeStability.coverageRate)}%`
+            : menu.caption,
+        iconTone: STATUS_ICON_TONE[status],
+        statusDot: status,
+        statusText: STATUS_TEXT[status],
+      }
+    }
+
+    if (menu.key === 'investmentCheck') {
+      const ratio = hub.menus.investmentCheck?.cashflowAssetRatio
+      if (ratio == null) return menu
+      return { ...menu, caption: `월급 만드는 자산\n${ratio}%뿐이에요` }
+    }
+
+    if (menu.key === 'retirementSim') {
+      const retirementSim = hub.menus.retirementSim
+      if (retirementSim && retirementSim.available === false) {
+        return { ...menu, caption: '준비 중', iconTone: 'muted' }
+      }
+      return menu
+    }
+
+    return menu
+  })
 
 // 월간 리포트(#6)는 아직 미구현이라 mock 유지
 const MOCK_REPORT_MONTH = '6월'
@@ -16,12 +132,6 @@ const MOCK_REPORT: ReportItem[] = [
   { label: '다음 달 수입', value: '130만원' },
   { label: '소비 수준', value: '적정' },
 ]
-
-const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
-  if (grade === 'STABLE') return 'stable'
-  if (grade === 'NEED_COMPLEMENT') return 'warning'
-  return 'danger'
-}
 
 const toAssetData = (hub: AssetHubResponse): AssetData => ({
   totalAmountKrw: hub.totalAsset,
@@ -64,7 +174,9 @@ function HomePage() {
     <div className="flex h-dvh flex-col bg-white">
       {/* User header */}
       <header className="flex h-[52px] items-center pl-6 pr-[14px]">
-        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
+        <button onClick={() => navigate('/home')} className="mr-3 shrink-0" aria-label="홈으로 이동">
+          <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} />
+        </button>
         <div className="flex-1 min-w-0">
           {profile ? (
             <p className="text-heading font-bold text-ink">{profile.name}님</p>
@@ -90,6 +202,11 @@ function HomePage() {
             <div className="flex gap-2">
               {[0, 1, 2].map((i) => (
                 <div key={i} className="h-[72px] flex-1 animate-pulse rounded-card border border-line bg-surface-muted" />
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-[120px] animate-pulse rounded-card-lg border border-line bg-surface-muted" />
               ))}
             </div>
           </div>
@@ -131,6 +248,16 @@ function HomePage() {
                 </p>
               </button>
             )}
+
+            {/* 관리 메뉴 */}
+            <section>
+              <h2 className="text-body text-ink mb-3 font-bold">관리 메뉴</h2>
+              <div className="grid grid-cols-2 gap-3 [grid-auto-rows:1fr]">
+                {buildMenus(hub).map((menu) => (
+                  <ManageMenuCard key={menu.key} menu={menu} onClick={() => navigate(menu.path)} />
+                ))}
+              </div>
+            </section>
 
             {/* 리포트 */}
             <section className="pb-2">

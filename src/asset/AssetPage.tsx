@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BackArrowIc, NotificationIc } from '../common/assets/icons'
+import { NotificationIc } from '../common/assets/icons'
+import BottomNav from '../common/components/BottomNav'
 import { formatKrw, formatKrwShort } from '../common/utils/formatKrw'
 import { formatMD, formatYM, formatRefDate, calcDday } from '../common/utils/formatDate'
 
@@ -125,20 +126,15 @@ function AssetPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      {/* 헤더 */}
-      <header className="flex h-[52px] shrink-0 items-center gap-2 px-6 w-full">
-        <button
-          className="flex size-7 shrink-0 items-center justify-center"
-          aria-label="뒤로 가기"
-          onClick={() => navigate(-1)}
-        >
-          <BackArrowIc className="text-ink" width={22} height={22} />
+      <header className="flex h-[52px] items-center pl-6 pr-[14px]">
+        <button onClick={() => navigate('/home')} className="mr-3 shrink-0" aria-label="홈으로 이동">
+          <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} />
         </button>
-        <h1 className="text-card font-bold text-ink flex-1">자산분석</h1>
+        <h1 className="flex-1 text-heading font-bold text-ink">자산분석</h1>
         <button
-          className="flex size-7 shrink-0 items-center justify-center"
           aria-label="알림"
           onClick={() => navigate('/notification')}
+          className="flex size-11 items-center justify-center"
         >
           <NotificationIc className="text-ink" width={22} height={22} />
         </button>
@@ -376,6 +372,8 @@ function AssetPage() {
 
         </div>
       </main>
+
+      <BottomNav />
     </div>
   )
 }
