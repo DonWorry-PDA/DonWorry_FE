@@ -20,7 +20,7 @@ function buildSummaryLines(roles: RoleContribution[]): string[] {
 
   const cashflow = roles.find((r) => r.role === 'CASHFLOW')
   if (cashflow && cashflow.monthlyCashflow > 0) {
-    lines.push(`현금흐름 자산에서 매달 약 ${formatKrw(cashflow.monthlyCashflow)}이 들어와요.`)
+    lines.push(`현금흐름 자산에서 매달 ${formatWon(cashflow.monthlyCashflow)}이 들어와요.`)
   }
 
   const rest = roles
@@ -31,7 +31,12 @@ function buildSummaryLines(roles: RoleContribution[]): string[] {
     if (role.role === 'IDLE') {
       lines.push(`잠자는 돈 ${formatKrw(role.amount)}은 아직 일하지 않고 쉬고 있어요.`)
     } else if (role.role === 'GROWTH') {
-      lines.push(`개별주 ${formatKrw(role.amount)}은 ${role.note}.`)
+      // 개별주에서도 실배당이 나오면 함께 보여준다(0이면 자본차익 직무만).
+      lines.push(
+        role.monthlyCashflow > 0
+          ? `개별주 ${formatKrw(role.amount)}에서도 매달 ${formatWon(role.monthlyCashflow)} 배당이 나와요.`
+          : `개별주 ${formatKrw(role.amount)}은 자본차익을 노리는 돈이에요.`,
+      )
     } else if (role.role === 'PENSION') {
       lines.push(`연금 ${formatKrw(role.amount)}은 55세까지 묶여 있어요.`)
     }
