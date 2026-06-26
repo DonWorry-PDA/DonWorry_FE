@@ -77,6 +77,8 @@
   --text-heading--line-height: 1.47;
   --text-display: 1.5rem;
   --text-display--line-height: 1.2;
+  --text-jumbo: 2rem;
+  --text-jumbo--line-height: 1.15;
 
   /* ─── Border Radius ─── */
   --radius-dot: 7px;
@@ -104,6 +106,7 @@ html.large {
   --text-card: 1.25rem;
   --text-heading: 1.5625rem;
   --text-display: 1.6875rem;
+  --text-jumbo: 2.25rem;
 }
 
 @layer base {
@@ -166,6 +169,18 @@ html.large {
   .children-container {
     height: calc(100% - 67px);
     overflow: scroll;
+  }
+}
+
+/* ─── Donut Chart Transition ─── */
+.donut-transition {
+  /* impeccable-disable layout-transition -- stroke-width is SVG paint, not CSS layout */
+  transition: stroke-width 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donut-transition {
+    transition: none;
   }
 }
 
