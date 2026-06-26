@@ -223,9 +223,9 @@ function OrderProductPage() {
         {etf && (
           <div className="mt-4 flex flex-col gap-3">
             {([
-              { url: etf.prospectus_url, label: '투자설명서', desc: '운용·위험·비용 상세' },
-              { url: etf.simplified_url, label: '간이투자설명서', desc: '꼭 알아야 할 핵심만' },
-              { url: etf.fund_rules_url, label: '집합투자규약', desc: '펀드 운용 규정 전문' },
+              { url: etf.prospectusUrl, label: '투자설명서', desc: '운용·위험·비용 상세' },
+              { url: etf.simplifiedUrl, label: '간이투자설명서', desc: '꼭 알아야 할 핵심만' },
+              { url: etf.fundRulesUrl, label: '집합투자규약', desc: '펀드 운용 규정 전문' },
             ] as const).map((doc) => (
               <a
                 key={doc.label}

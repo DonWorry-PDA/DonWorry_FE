@@ -18,9 +18,9 @@ export type EtfDetailDto = {
   changeRate: number
   nav: number
   netAssetTotal: number
-  prospectus_url: string | null
-  simplified_url: string | null
-  fund_rules_url: string | null
+  prospectusUrl: string | null
+  simplifiedUrl: string | null
+  fundRulesUrl: string | null
 }
 
 export type DepositDetailDto = {
