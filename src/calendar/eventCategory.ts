@@ -71,6 +71,12 @@ export const CATEGORY_STYLE: Record<EventCategory, CategoryStyle> = {
   },
 }
 
+/**
+ * 그리드에는 표시하지 않고 바텀시트(거래 내역)에서만 보여줄 카테고리.
+ * 소비·투자는 건수가 많아 그리드를 복잡하게 만들어, 월급(현금흐름) 계산 항목만 그리드에 남긴다.
+ */
+export const SHEET_ONLY_CATEGORIES: EventCategory[] = ['transaction', 'investment']
+
 /** 범례에 노출할 카테고리 순서 */
 export const LEGEND_ORDER: EventCategory[] = [
   'dividend',

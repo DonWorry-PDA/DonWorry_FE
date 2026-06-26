@@ -1,6 +1,6 @@
-import { CATEGORY_STYLE } from '../eventCategory'
+import { CATEGORY_STYLE, SHEET_ONLY_CATEGORIES } from '../eventCategory'
 import type { DayEventsMap } from '../types/calendar'
-import { buildMonthGrid, formatMan, WEEKDAY_LABELS } from '../utils/monthGrid'
+import { buildMonthGrid, WEEKDAY_LABELS } from '../utils/monthGrid'
 
 type Props = {
   year: number
@@ -18,8 +18,8 @@ function weekdayColor(weekday: number, inMonth: boolean): string {
   return 'text-ink'
 }
 
-// 셀당 최대 표시 뱃지 수 — 초과분은 +N으로 묶어 행 높이를 균일하게 유지
-const MAX_BADGES = 2
+// 셀에는 항목 라벨만(최대 2줄) — 금액 등 상세는 날짜 탭 시 바텀시트에서 확인한다.
+const MAX_LINES = 2
 
 function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Props) {
   const cells = buildMonthGrid(year, month0)
@@ -43,9 +43,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       {/* 날짜 그리드 */}
       <div className="grid grid-cols-7 gap-y-[6px]">
         {cells.map((cell) => {
-          const dayEvents = events[cell.iso] ?? []
-          const shownEvents = dayEvents.slice(0, MAX_BADGES)
-          const overflow = dayEvents.length - shownEvents.length
+          // 그리드엔 월급(현금흐름) 계산 항목만 — 소비·투자는 시트에서만 본다
+          const gridEvents = (events[cell.iso] ?? []).filter(
+            (e) => !SHEET_ONLY_CATEGORIES.includes(e.category),
+          )
           const isToday = cell.iso === todayIso
           const isSelected = cell.iso === selectedIso
 
@@ -53,10 +54,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
             <button
               key={cell.iso}
               onClick={() => onSelect(cell.iso)}
-              className="flex min-h-[58px] flex-col items-center gap-0.5 py-1.5"
+              className="flex flex-col items-center gap-[3px] py-1.5"
             >
               <span
-                className={`flex h-7 min-w-[34px] items-center justify-center rounded-full text-body font-medium leading-none ${
+                className={`flex size-8 items-center justify-center rounded-full text-md font-medium leading-none ${
                   isToday
                     ? 'bg-primary font-bold text-white'
                     : isSelected
@@ -67,25 +68,20 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                 {cell.day}
               </span>
 
-              {shownEvents.map((e, i) => {
-                const style = CATEGORY_STYLE[e.category]
-                return (
-                  <span
-                    key={i}
-                    className={`flex w-full flex-col items-center rounded-[5px] px-[3px] py-px leading-[1.15] ${style.badgeBg}`}
-                  >
-                    <span className={`text-[0.625rem] ${style.text}`}>{e.short}</span>
-                    {e.amountKrw !== null && (
-                      <span className={`text-[0.625rem] ${style.text}`}>
-                        {formatMan(Math.abs(e.amountKrw))}
-                      </span>
-                    )}
-                  </span>
-                )
-              })}
-              {overflow > 0 && (
-                <span className="text-[0.625rem] leading-[1.15] text-ink-hint">+{overflow}</span>
-              )}
+              {/* 항목 라벨 칩(카테고리 색). 빈 날도 높이 유지해 행 정렬 */}
+              <span className="flex min-h-[28px] w-full flex-col items-stretch gap-px px-0.5">
+                {gridEvents.slice(0, MAX_LINES).map((e, i) => {
+                  const style = CATEGORY_STYLE[e.category]
+                  return (
+                    <span
+                      key={i}
+                      className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${style.badgeBg} ${style.text}`}
+                    >
+                      {e.short}
+                    </span>
+                  )
+                })}
+              </span>
             </button>
           )
         })}
