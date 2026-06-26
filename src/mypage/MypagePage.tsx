@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import queryClient from '../common/api/queryClient'
 import { clearTokens } from '../common/api/token'
@@ -12,6 +12,7 @@ import BottomNav from '../common/components/BottomNav'
 import Modal from '../common/components/Modal'
 import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
 import type { MydataInstitution } from './types/mypage'
+import LOGO_MAP from './utils/institutionLogos'
 
 type LogoutStep = 'idle' | 'confirm' | 'done'
 
@@ -228,11 +229,26 @@ function MypagePage() {
 }
 
 function AccountRow({ institution }: { institution: MydataInstitution }) {
+  const [imgFailed, setImgFailed] = useState(false)
+  const handleError = useCallback(() => setImgFailed(true), [])
+  const logo = LOGO_MAP[institution.id]
+
   return (
     <div className="flex items-center gap-3 border-b border-divider py-[13px]">
-      <div className="bg-surface-muted flex size-10 shrink-0 items-center justify-center rounded-icon">
-        <NotificationItemIc className="text-ink" width={18} height={21} />
-      </div>
+      {logo && !imgFailed ? (
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-icon bg-white overflow-hidden">
+          <img src={logo} alt={institution.name} className="size-8 object-contain" onError={handleError} />
+        </div>
+      ) : (
+        <div
+          className="flex size-10 shrink-0 items-center justify-center rounded-icon"
+          style={{ background: institution.brandColor }}
+        >
+          <span className="text-caption font-extrabold" style={{ color: institution.labelColor }}>
+            {institution.label}
+          </span>
+        </div>
+      )}
       <div className="flex flex-1 min-w-0 flex-col gap-0.5">
         <p className="text-md font-semibold text-ink">{institution.name}</p>
         <p className="text-sub text-ink-sub">{institution.connectedProducts.join(' · ')}</p>
