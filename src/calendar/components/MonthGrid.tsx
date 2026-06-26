@@ -38,7 +38,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       </div>
 
       {/* 날짜 그리드 */}
-      <div className="grid grid-cols-7 gap-y-1">
+      <div className="grid grid-cols-7 gap-y-[6px]">
         {cells.map((cell) => {
           const dayEvents = events[cell.iso] ?? []
           const isToday = cell.iso === todayIso
@@ -48,10 +48,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
             <button
               key={cell.iso}
               onClick={() => onSelect(cell.iso)}
-              className="flex min-h-[46px] flex-col items-center gap-px py-[5px]"
+              className="flex min-h-[58px] flex-col items-center gap-0.5 py-1.5"
             >
               <span
-                className={`flex h-6 min-w-[30px] items-center justify-center rounded-full text-sub font-medium leading-none ${
+                className={`flex h-7 min-w-[34px] items-center justify-center rounded-full text-body font-medium leading-none ${
                   isToday
                     ? 'bg-primary font-bold text-white'
                     : isSelected

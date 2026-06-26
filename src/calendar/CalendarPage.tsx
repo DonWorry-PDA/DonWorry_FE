@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
+import BottomSheet from '../common/components/BottomSheet'
 import MonthGrid from './components/MonthGrid'
 import EventLegend from './components/EventLegend'
 import DaySchedule from './components/DaySchedule'
@@ -19,6 +20,7 @@ function CalendarPage() {
     month0: today.getMonth(),
   })
   const [selectedIso, setSelectedIso] = useState(todayIso)
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   // API는 1-based month → 0-based month0에 +1
   const { data, isLoading, isError } = useGetCalendar(view.year, view.month0 + 1)
@@ -27,13 +29,14 @@ function CalendarPage() {
   const schedules = data?.schedules[selectedIso] ?? []
   const transactions = data?.transactions[selectedIso] ?? []
 
+  // 날짜 탭 → 선택 + 바텀시트 open. 다른 달 날짜를 누르면 해당 달로 이동.
   const handleSelect = (iso: string) => {
     setSelectedIso(iso)
-    // 이전/다음 달 날짜를 누르면 해당 달로 이동
     const d = parseIso(iso)
     if (d.getFullYear() !== view.year || d.getMonth() !== view.month0) {
       setView({ year: d.getFullYear(), month0: d.getMonth() })
     }
+    setSheetOpen(true)
   }
 
   const goToday = () => {
@@ -41,15 +44,10 @@ function CalendarPage() {
     setSelectedIso(todayIso)
   }
 
-  // 연도 경계(1월↔12월)는 Date 연산으로 자동 처리
+  // 월 이동(시트 닫힌 상태에서만 보이는 버튼). 연도 경계(1월↔12월)는 Date 연산으로 자동 처리.
   const shiftMonth = (delta: number) => {
     const d = new Date(view.year, view.month0 + delta, 1)
     setView({ year: d.getFullYear(), month0: d.getMonth() })
-    // 헤더와 하단 일정/거래내역 기준일이 어긋나지 않게 선택일도 새 달로 동기화
-    // (새 달이 이번 달이면 오늘, 아니면 그 달 1일)
-    const landsOnTodayMonth =
-      d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth()
-    setSelectedIso(landsOnTodayMonth ? todayIso : toIso(d))
   }
 
   return (
@@ -68,7 +66,7 @@ function CalendarPage() {
 
       <main className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         {/* 월 헤더 */}
-        <div className="relative flex items-center justify-center pt-1 pb-[14px]">
+        <div className="relative flex items-center justify-center pt-1 pb-[18px]">
           <div className="flex items-center gap-3">
             <button
               onClick={() => shiftMonth(-1)}
@@ -116,25 +114,28 @@ function CalendarPage() {
             캘린더를 불러오지 못했어요
           </p>
         ) : isLoading ? (
-          <div role="status" aria-live="polite" className="flex flex-col gap-3 pt-4">
-            <span className="sr-only">캘린더 일정을 불러오는 중입니다.</span>
-            <div className="h-5 w-32 animate-pulse rounded bg-surface-muted" />
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-[60px] animate-pulse rounded-card bg-surface-muted" />
-            ))}
-          </div>
+          <p role="status" aria-live="polite" className="py-10 text-center text-sub text-ink-hint">
+            캘린더를 불러오는 중이에요…
+          </p>
         ) : (
-          <>
-            <DaySchedule
-              title={`${formatDayTitle(selectedIso)} 일정`}
-              items={schedules}
-            />
-            <TransactionList items={transactions} />
-          </>
+          <p className="pt-6 text-center text-sub text-ink-hint">
+            날짜를 누르면 그날의 일정·거래 내역을 볼 수 있어요
+          </p>
         )}
       </main>
 
       <BottomNav />
+
+      {/* 날짜 선택 시 올라오는 일정·거래 내역 시트 */}
+      <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
+        <div className="px-6 pb-8 pt-1">
+          <h2 className="pb-1 text-card font-bold text-ink">{formatDayTitle(selectedIso)}</h2>
+          <div className="max-h-[62dvh] overflow-y-auto">
+            <DaySchedule title="일정" items={schedules} />
+            <TransactionList items={transactions} />
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   )
 }
