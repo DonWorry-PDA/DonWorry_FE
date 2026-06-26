@@ -55,7 +55,9 @@ function CalendarPage() {
   return (
     <div className="flex h-dvh flex-col bg-white">
       <header className="flex h-[52px] items-center pl-6 pr-[14px]">
-        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
+        <button onClick={() => navigate('/home')} className="mr-3 shrink-0" aria-label="홈으로 이동">
+          <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} />
+        </button>
         <h1 className="flex-1 text-heading font-bold text-ink">캘린더</h1>
         <button
           className="flex size-11 items-center justify-center"
