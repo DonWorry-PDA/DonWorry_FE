@@ -226,13 +226,14 @@ function OrderProductPage() {
               { url: etf.prospectus_url, label: '투자설명서', desc: '운용·위험·비용 상세' },
               { url: etf.simplified_url, label: '간이투자설명서', desc: '꼭 알아야 할 핵심만' },
               { url: etf.fund_rules_url, label: '집합투자규약', desc: '펀드 운용 규정 전문' },
-            ] as const).filter((doc) => doc.url).map((doc) => (
+            ] as const).map((doc) => (
               <a
                 key={doc.label}
-                href={doc.url!}
-                target="_blank"
+                href={doc.url ?? undefined}
+                target={doc.url ? '_blank' : undefined}
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left"
+                onClick={!doc.url ? (e) => e.preventDefault() : undefined}
+                className={`flex items-center gap-3 rounded-card bg-surface px-4 py-3.5 w-full text-left ${!doc.url ? 'opacity-40 cursor-not-allowed' : ''}`}
               >
                 <span className="shrink-0 text-ink-sub">
                   <DocIcon />
