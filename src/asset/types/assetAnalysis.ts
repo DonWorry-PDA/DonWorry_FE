@@ -42,14 +42,14 @@ export type AssetIncomeResponse = {
   totalMonthlyIncome: number
   accessibleIncome: number
   lockedIncome: number
-  totalUnrealizedGainLoss: number
+  totalUnrealizedGainLoss: number // 평가손익 — BE income endpoint includes portfolio valuation
   sources: IncomeSource[]
 }
 
 // ── 현금 일정 ─────────────────────────────────────────────────
 export type ScheduleEvent = {
   date: string
-  type: 'income' | 'maturity' | string
+  type: 'income' | 'maturity' | (string & {})
   label: string
   amount: number
   estimated: boolean
