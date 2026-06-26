@@ -9,18 +9,16 @@ type Props = {
 function TransactionList({ items }: Props) {
   return (
     <section className="border-t border-track pt-[15px]">
-      <div className="flex items-center justify-between">
-        <h2 className="text-body font-bold text-ink">입출금/거래 내역</h2>
-        <button className="text-sub text-ink-hint">더보기 ›</button>
-      </div>
+      <h2 className="text-body font-bold text-ink">입출금/거래 내역</h2>
 
       {items.length === 0 ? (
-        <p className="py-6 text-center text-sub text-ink-hint">거래 내역이 없어요</p>
+        <p className="py-8 text-center text-sub text-ink-hint">거래 내역이 없어요</p>
       ) : (
-        <ul>
+        <ul className="pt-1">
           {items.map((item) => {
             const style = CATEGORY_STYLE[item.category] ?? CATEGORY_STYLE['transaction']
-            const amountColor = item.amountKrw < 0 ? 'text-ink' : style.text
+            // 수입(+) 파랑 · 지출(−) 빨강으로 입출 방향을 명확히
+            const amountColor = item.amountKrw < 0 ? 'text-danger' : 'text-primary'
             return (
               <li
                 key={item.id}
