@@ -6,8 +6,6 @@ type Props = {
   items: TransactionItem[]
 }
 
-const style = CATEGORY_STYLE['transaction']
-
 function TransactionList({ items }: Props) {
   return (
     <section className="border-t border-track pt-[15px]">
@@ -21,6 +19,7 @@ function TransactionList({ items }: Props) {
       ) : (
         <ul>
           {items.map((item) => {
+            const style = CATEGORY_STYLE[item.category] ?? CATEGORY_STYLE['transaction']
             const amountColor = item.amountKrw < 0 ? 'text-ink' : style.text
             return (
               <li
