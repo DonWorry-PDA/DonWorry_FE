@@ -43,6 +43,14 @@ function MypagePage() {
   const { data: consultations } = useGetConsultations()
   const { data: institutions = [] } = useGetMydataInstitutions()
   const connectedInstitutions = institutions.filter((i) => i.connected)
+  const accountRows = connectedInstitutions.flatMap((inst) =>
+    inst.accountNumbers?.length
+      ? inst.accountNumbers.map((num) => ({ institution: inst, accountNumber: num }))
+      : [{ institution: inst, accountNumber: null }]
+  )
+  const [accountsExpanded, setAccountsExpanded] = useState(false)
+  const ACCOUNTS_PREVIEW = 3
+  const visibleAccountRows = accountsExpanded ? accountRows : accountRows.slice(0, ACCOUNTS_PREVIEW)
 
   // 가장 가까운 예약(RESERVED)을 상담 내역 메뉴 부제로
   const nextReserved = (consultations ?? [])
@@ -112,9 +120,29 @@ function MypagePage() {
           <p className="text-sub font-semibold text-ink-hint">연결된 계좌</p>
         </div>
 
-        {connectedInstitutions.map((inst) => (
-          <AccountRow key={inst.id} institution={inst} onCopy={showCopyToast} />
+        {visibleAccountRows.map(({ institution, accountNumber }) => (
+          <AccountRow
+            key={`${institution.id}-${accountNumber}`}
+            institution={institution}
+            accountNumber={accountNumber}
+            onCopy={showCopyToast}
+          />
         ))}
+
+        {accountRows.length > ACCOUNTS_PREVIEW && (
+          <button
+            className="flex w-full items-center justify-center gap-1 py-3 text-sub font-semibold text-ink-hint"
+            onClick={() => setAccountsExpanded((v) => !v)}
+          >
+            {accountsExpanded ? '접기' : `${accountRows.length - ACCOUNTS_PREVIEW}개 더 보기`}
+            <svg
+              width="14" height="14" viewBox="0 0 14 14" fill="none"
+              className={`transition-transform duration-200 ${accountsExpanded ? 'rotate-180' : ''}`}
+            >
+              <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
 
         {/* 계좌 더 연결하기 */}
         <button className="flex w-full items-center gap-3 py-[13px]" onClick={() => navigate('/mypage/connect-account')}>
@@ -280,7 +308,15 @@ function CopyButton({ text, onCopy }: { text: string; onCopy: () => void }) {
   )
 }
 
-function AccountRow({ institution, onCopy }: { institution: MydataInstitution; onCopy: () => void }) {
+function AccountRow({
+  institution,
+  accountNumber,
+  onCopy,
+}: {
+  institution: MydataInstitution
+  accountNumber: string | null
+  onCopy: () => void
+}) {
   const [imgFailed, setImgFailed] = useState(false)
   const handleError = useCallback(() => setImgFailed(true), [])
   const logo = LOGO_MAP[institution.id]
@@ -303,18 +339,13 @@ function AccountRow({ institution, onCopy }: { institution: MydataInstitution; o
       )}
       <div className="flex flex-1 min-w-0 flex-col gap-0.5">
         <p className="text-md font-semibold text-ink">{institution.name}</p>
-        {institution.accountNumbers?.map((num) => (
-          <div key={num} className="flex items-center">
-            <p className="text-sub text-ink-sub">{num}</p>
-            <CopyButton text={num} onCopy={onCopy} />
+        {accountNumber && (
+          <div className="flex items-center">
+            <p className="text-sub text-ink-sub">{accountNumber}</p>
+            <CopyButton text={accountNumber} onCopy={onCopy} />
           </div>
-        ))}
+        )}
       </div>
-      {institution.totalAmountKrw != null && (
-        <p className="font-inter text-md font-bold text-ink shrink-0">
-          {formatKrw(institution.totalAmountKrw)}
-        </p>
-      )}
     </div>
   )
 }
