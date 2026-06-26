@@ -42,10 +42,11 @@ function MypagePage() {
   const { data: consultations } = useGetConsultations()
   const { data: institutions = [] } = useGetMydataInstitutions()
   const connectedInstitutions = institutions.filter((i) => i.connected)
-  const accountRows = connectedInstitutions.flatMap((inst) =>
-    inst.accountNumbers?.length
-      ? inst.accountNumbers.map((num) => ({ institution: inst, accountNumber: num }))
-      : [{ institution: inst, accountNumber: null }]
+  const accountRows = connectedInstitutions.flatMap(
+    (inst): { institution: MydataInstitution; accountNumber: string | null }[] =>
+      inst.accountNumbers?.length
+        ? inst.accountNumbers.map((num) => ({ institution: inst, accountNumber: num }))
+        : [{ institution: inst, accountNumber: null }]
   )
   const [accountsExpanded, setAccountsExpanded] = useState(false)
   const ACCOUNTS_PREVIEW = 3
