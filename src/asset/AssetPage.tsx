@@ -18,7 +18,8 @@ const ALLOCATION_COLORS = [
   'bg-track',
 ] as const
 
-function buildSubLabel(accounts: AssetAccount[]): string {
+function buildSubLabel(accounts: AssetAccount[] | undefined): string {
+  if (!accounts || accounts.length === 0) return ''
   const names = accounts.map((a) => a.institutionName)
   if (names.length <= 2) return names.join(' · ')
   return `${names.slice(0, 2).join(' · ')} 외 ${names.length - 2}개`
@@ -119,12 +120,12 @@ function AssetPage() {
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-[6px]">
               <p className="text-sub font-semibold text-ink-sub">내 자산 구성</p>
 
-              {composition.allocation.length === 0 ? (
+              {composition.groups.length === 0 ? (
                 <p className="text-body text-ink-hint py-6 text-center">자산 정보가 없습니다</p>
               ) : (
                 <>
                   <div className="flex overflow-hidden rounded-badge pt-[6px]">
-                    {composition.allocation.map((seg, i) => (
+                    {composition.groups.map((seg, i) => (
                       <div
                         key={seg.category}
                         className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
@@ -134,10 +135,10 @@ function AssetPage() {
                   </div>
 
                   <div className="flex flex-col gap-0.5 pt-2">
-                    {composition.allocation.map((seg, i) => (
+                    {composition.groups.map((seg, i) => (
                       <div
                         key={seg.category}
-                        className={`flex items-center gap-3 py-[11px] ${i < composition.allocation.length - 1 ? 'border-b border-divider' : ''}`}
+                        className={`flex items-center gap-3 py-[11px] ${i < composition.groups.length - 1 ? 'border-b border-divider' : ''}`}
                       >
                         <span className={`size-[9px] shrink-0 rounded-[4.5px] ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`} />
                         <div className="flex-1 min-w-0 flex flex-col gap-0.5 pl-0.5">

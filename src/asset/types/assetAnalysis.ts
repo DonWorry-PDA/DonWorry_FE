@@ -16,7 +16,12 @@ export type AssetAccount = {
   holdings: AssetHolding[]
 }
 
-export type AssetAllocation = {
+export type AssetAllocationItem = {
+  category: string
+  ratio: number
+}
+
+export type AssetGroupItem = {
   category: string
   label: string
   totalAmount: number
@@ -27,7 +32,8 @@ export type AssetCompositionResponse = {
   totalAsset: number
   totalDebt: number
   netWorth: number
-  allocation: AssetAllocation[]
+  allocation: AssetAllocationItem[]
+  groups: AssetGroupItem[]
 }
 
 // ── 월 수입 ──────────────────────────────────────────────────

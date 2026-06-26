@@ -61,6 +61,10 @@ const defaultComposition: AssetCompositionResponse = {
   totalDebt: 0,
   netWorth: 250_000_000,
   allocation: [
+    { category: 'PENSION', ratio: 60 },
+    { category: 'CASHFLOW', ratio: 20 },
+  ],
+  groups: [
     {
       category: 'PENSION',
       label: '연금 재원',
@@ -171,8 +175,8 @@ describe('AssetPage 자산 구성 카드', () => {
     expect(screen.getByText(/32%/)).toBeInTheDocument()
   })
 
-  it('allocation 빈 배열이면 안내 메시지를 표시한다', () => {
-    mockAll({ composition: { data: { ...defaultComposition, allocation: [] } } })
+  it('groups 빈 배열이면 안내 메시지를 표시한다', () => {
+    mockAll({ composition: { data: { ...defaultComposition, groups: [] } } })
     render(<AssetPage />)
     expect(screen.getByText('자산 정보가 없습니다')).toBeInTheDocument()
   })
