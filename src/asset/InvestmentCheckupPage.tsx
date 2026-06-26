@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
-import { formatKrw } from '../common/utils/formatKrw'
+import { formatKrw, formatWon } from '../common/utils/formatKrw'
 import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
 import type { AssetRole, RoleContribution } from './types/investmentCheck'
 
@@ -111,8 +111,8 @@ function InvestmentCheckupPage() {
                       <span className="text-caption text-ink-hint ml-1.5 font-normal">{role.ratio}%</span>
                     </p>
                     <p className="text-caption text-ink-hint mt-0.5">
-                      {role.role === 'CASHFLOW' && role.monthlyCashflow > 0
-                        ? `월 ${formatKrw(role.monthlyCashflow)} 유입`
+                      {role.monthlyCashflow > 0
+                        ? `월 ${formatWon(role.monthlyCashflow)} 유입`
                         : role.note}
                     </p>
                   </div>
