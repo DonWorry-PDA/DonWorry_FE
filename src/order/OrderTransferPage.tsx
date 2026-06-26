@@ -90,6 +90,7 @@ function OrderTransferPage() {
         amount,
       })),
     }
+    if (timerRef.current != null) clearTimeout(timerRef.current)
     timerDoneRef.current = false
     apiDoneRef.current = false
     setIsTransferring(true)
@@ -111,7 +112,10 @@ function OrderTransferPage() {
         apiDoneRef.current = true
         if (timerDoneRef.current) showSuccess()
       },
-      onError: () => setIsTransferring(false),
+      onError: () => {
+        if (timerRef.current != null) clearTimeout(timerRef.current)
+        setIsTransferring(false)
+      },
     })
   }
 

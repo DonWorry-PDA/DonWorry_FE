@@ -103,7 +103,7 @@ function OrderExecutingPage() {
         navigate('/order/complete', { state: { results: resultsRef.current, planId } })
       }
     },
-    [currentIndex, items, navigate],
+    [currentIndex, items, navigate, planId],
   )
 
   function handleConfirm(quantity: number | undefined) {
@@ -130,8 +130,8 @@ function OrderExecutingPage() {
 
   // items가 없으면 바로 완료로
   useEffect(() => {
-    if (items.length === 0) navigate('/order/complete')
-  }, [items.length, navigate])
+    if (items.length === 0) navigate('/order/complete', { state: { planId } })
+  }, [items.length, navigate, planId])
 
   function itemStatus(idx: number): ItemStatus {
     if (idx < doneCount) return failedIndices.has(idx) ? 'error' : 'done'

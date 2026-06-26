@@ -9,9 +9,11 @@ function OrderCompletePage() {
   const { state } = useLocation()
   const planId = (state as { planId?: string } | null)?.planId
 
-  const { data } = useGetRecommendation()
+  const { data, isLoading, isError } = useGetRecommendation()
   const plan = data && planId ? findPlan(data, planId) : undefined
   const summary = data && plan ? mapExecutionSummary(data, plan) : undefined
+
+  const summaryUnavailable = isLoading || isError || !planId || (data && !plan)
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -24,17 +26,23 @@ function OrderCompletePage() {
         {/* 월수입 변화 카드 */}
         <div className="w-full rounded-card-lg bg-primary px-5 py-5 mb-4">
           <p className="text-sub text-white/70 mb-1">이제 매달 받는 돈</p>
-          <div className="flex items-center gap-2">
-            <span className="font-inter text-display font-bold text-white">
-              {summary ? `${summary.cashflowFrom.toLocaleString('ko-KR')}만원` : '--'}
-            </span>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white/60">
-              <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="font-inter text-display font-bold text-white">
-              {summary ? `${summary.cashflowTo.toLocaleString('ko-KR')}만원` : '--'}
-            </span>
-          </div>
+          {summaryUnavailable ? (
+            <p className="text-body text-white/70">
+              {isLoading ? '불러오는 중...' : '설계안 정보를 확인할 수 없어요'}
+            </p>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="font-inter text-display font-bold text-white">
+                {summary!.cashflowFrom.toLocaleString('ko-KR')}만원
+              </span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white/60">
+                <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="font-inter text-display font-bold text-white">
+                {summary!.cashflowTo.toLocaleString('ko-KR')}만원
+              </span>
+            </div>
+          )}
         </div>
 
         {/* 충당률 반영 */}
