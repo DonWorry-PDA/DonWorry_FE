@@ -40,8 +40,8 @@ function MypagePage() {
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
   const { data: consultations } = useGetConsultations()
-  const { data: institutions = [] } = useGetMydataInstitutions()
-  const connectedInstitutions = institutions.filter((i) => i.connected)
+  const { data: institutions, isPending: isInstitutionsPending, isError: isInstitutionsError } = useGetMydataInstitutions()
+  const connectedInstitutions = (institutions ?? []).filter((i) => i.connected)
   const accountRows = connectedInstitutions.flatMap(
     (inst): { institution: MydataInstitution; accountNumber: string | null }[] =>
       inst.accountNumbers?.length
@@ -126,28 +126,46 @@ function MypagePage() {
           </button>
         </div>
 
-        {visibleAccountRows.map(({ institution, accountNumber }) => (
-          <AccountRow
-            key={`${institution.id}-${accountNumber}`}
-            institution={institution}
-            accountNumber={accountNumber}
-            onCopy={showCopyToast}
-          />
-        ))}
+        {isInstitutionsPending ? (
+          <>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-center gap-3 border-b border-divider py-[13px]">
+                <div className="size-10 shrink-0 animate-pulse rounded-icon bg-surface-muted" />
+                <div className="flex flex-1 flex-col gap-1.5">
+                  <div className="h-4 w-24 animate-pulse rounded bg-surface-muted" />
+                  <div className="h-3 w-36 animate-pulse rounded bg-surface-muted" />
+                </div>
+              </div>
+            ))}
+          </>
+        ) : isInstitutionsError ? (
+          <p className="py-4 text-sub text-ink-hint">계좌 정보를 불러오지 못했어요</p>
+        ) : (
+          <>
+            {visibleAccountRows.map(({ institution, accountNumber }) => (
+              <AccountRow
+                key={`${institution.id}-${accountNumber}`}
+                institution={institution}
+                accountNumber={accountNumber}
+                onCopy={showCopyToast}
+              />
+            ))}
 
-        {accountRows.length > ACCOUNTS_PREVIEW && (
-          <button
-            className="flex w-full items-center justify-center gap-1 py-3 text-sub font-semibold text-ink-hint"
-            onClick={() => setAccountsExpanded((v) => !v)}
-          >
-            {accountsExpanded ? '접기' : `${accountRows.length - ACCOUNTS_PREVIEW}개 더 보기`}
-            <svg
-              width="14" height="14" viewBox="0 0 14 14" fill="none"
-              className={`transition-transform duration-200 ${accountsExpanded ? 'rotate-180' : ''}`}
-            >
-              <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+            {accountRows.length > ACCOUNTS_PREVIEW && (
+              <button
+                className="flex w-full items-center justify-center gap-1 py-3 text-sub font-semibold text-ink-hint"
+                onClick={() => setAccountsExpanded((v) => !v)}
+              >
+                {accountsExpanded ? '접기' : `${accountRows.length - ACCOUNTS_PREVIEW}개 더 보기`}
+                <svg
+                  width="14" height="14" viewBox="0 0 14 14" fill="none"
+                  className={`transition-transform duration-200 ${accountsExpanded ? 'rotate-180' : ''}`}
+                >
+                  <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
+          </>
         )}
 
         {/* 구분선 */}
@@ -259,14 +277,20 @@ function MypagePage() {
 
       {/* 계좌번호 복사 토스트 */}
       <div
+        role="status"
+        aria-live="polite"
         className={`fixed bottom-[80px] left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-btn bg-[#23282f] px-4 py-3 shadow-float transition-all duration-300 whitespace-nowrap ${
           copyToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0 pointer-events-none'
         }`}
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8L6.5 11.5L13 5" stroke="#4ADE80" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="text-sub font-semibold text-white">계좌번호가 복사됐어요</span>
+        {copyToast && (
+          <>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8L6.5 11.5L13 5" stroke="#4ADE80" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-sub font-semibold text-white">계좌번호가 복사됐어요</span>
+          </>
+        )}
       </div>
     </div>
   )
