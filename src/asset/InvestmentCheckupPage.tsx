@@ -122,23 +122,67 @@ function InvestmentCheckupPage() {
             </div>
 
             {/* 성장 자산 블록 (개별주 보유 시에만) */}
-            {data.growthAsset && (
-              <div className="rounded-card-lg border-line mt-6 border bg-white p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-body text-ink font-bold">성장에 베팅한 자산</span>
-                  <span className="text-md text-ink font-bold">{formatKrw(data.growthAsset.amount)}</span>
-                </div>
-                <div className="border-line mt-3 flex items-center justify-between border-t pt-3">
-                  <span className="text-body text-ink-hint">한 종목 쏠림</span>
-                  <span className="text-body text-ink font-bold">
-                    {data.growthAsset.topStockName} · {data.growthAsset.concentrationLevel}
-                  </span>
-                </div>
-                <p className="text-caption text-ink-sub mt-3 leading-[1.6]">
-                  💡 {data.growthAsset.suggestion}
-                </p>
-              </div>
-            )}
+            {data.growthAsset &&
+              (() => {
+                const g = data.growthAsset
+                // 델타 ≤ 0 = 이미 고배당 종목 → 옮기면 손해. 권유 톤이 아니라 유지 톤으로 분기.
+                const isLoss = g.deltaMonthlyDividend <= 0
+                return (
+                  <div className="rounded-card-lg border-line mt-6 border bg-white p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-body text-ink font-bold">성장에 베팅한 자산</span>
+                      <span className="text-md text-ink font-bold">{formatKrw(g.amount)}</span>
+                    </div>
+
+                    {/* 한 종목 쏠림 */}
+                    <div className="border-line mt-3 flex items-center justify-between border-t pt-3">
+                      <span className="text-body text-ink-hint">한 종목 쏠림</span>
+                      <span className="text-body text-ink font-bold">
+                        {g.topStockName} · {g.concentrationLevel}
+                      </span>
+                    </div>
+
+                    {/* 섹터 쏠림 — 단일종목이 낮아도 같은 섹터면 위험은 집중(별개 항목) */}
+                    {g.topSector && (
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="text-body text-ink-hint">섹터 쏠림</span>
+                        <span className="text-body text-ink font-bold">
+                          {g.topSector} · {g.sectorConcentrationLevel}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* 현재 배당 → 배당ETF 전환 시 배당 (before/after, 실배당 기반) */}
+                    <div className="bg-surface-muted rounded-card mt-3 px-3 py-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-caption text-ink-hint">지금 월 배당</span>
+                        <span className="text-md text-ink font-bold">
+                          {formatWon(g.currentMonthlyDividend)}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex items-center justify-between">
+                        <span className="text-caption text-ink-hint">배당ETF로 옮기면</span>
+                        <span className="text-md text-ink font-bold">
+                          {formatWon(g.convertedMonthlyDividend)}
+                          <span
+                            className={`text-caption ml-1.5 font-bold ${isLoss ? 'text-ink-sub' : 'text-success'}`}
+                          >
+                            ({g.deltaMonthlyDividend > 0 ? '+' : ''}
+                            {formatWon(g.deltaMonthlyDividend)})
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* suggestion 문구는 BE가 델타 부호로 분기해 내려줌. 아이콘·색만 자체 분기. */}
+                    <p
+                      className={`text-caption mt-3 leading-[1.6] ${isLoss ? 'text-ink-sub' : 'text-primary'}`}
+                    >
+                      {isLoss ? '⚠️' : '💡'} {g.suggestion}
+                    </p>
+                  </div>
+                )
+              })()}
           </main>
 
           <StickyFooter>
