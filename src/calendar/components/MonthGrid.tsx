@@ -18,6 +18,9 @@ function weekdayColor(weekday: number, inMonth: boolean): string {
   return 'text-ink'
 }
 
+// 셀당 최대 표시 뱃지 수 — 초과분은 +N으로 묶어 행 높이를 균일하게 유지
+const MAX_BADGES = 2
+
 function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Props) {
   const cells = buildMonthGrid(year, month0)
 
@@ -41,6 +44,8 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       <div className="grid grid-cols-7 gap-y-[6px]">
         {cells.map((cell) => {
           const dayEvents = events[cell.iso] ?? []
+          const shownEvents = dayEvents.slice(0, MAX_BADGES)
+          const overflow = dayEvents.length - shownEvents.length
           const isToday = cell.iso === todayIso
           const isSelected = cell.iso === selectedIso
 
@@ -62,7 +67,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                 {cell.day}
               </span>
 
-              {dayEvents.map((e, i) => {
+              {shownEvents.map((e, i) => {
                 const style = CATEGORY_STYLE[e.category]
                 return (
                   <span
@@ -78,6 +83,9 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                   </span>
                 )
               })}
+              {overflow > 0 && (
+                <span className="text-[0.625rem] leading-[1.15] text-ink-hint">+{overflow}</span>
+              )}
             </button>
           )
         })}
