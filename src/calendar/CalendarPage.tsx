@@ -122,11 +122,7 @@ function CalendarPage() {
           <p role="status" aria-live="polite" className="py-10 text-center text-sub text-ink-hint">
             캘린더를 불러오는 중이에요…
           </p>
-        ) : (
-          <p className="pt-6 text-center text-sub text-ink-hint">
-            날짜를 누르면 그날의 일정·거래 내역을 볼 수 있어요
-          </p>
-        )}
+        ) : null}
       </main>
 
       <BottomNav />
