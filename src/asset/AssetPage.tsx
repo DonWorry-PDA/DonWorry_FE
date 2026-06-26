@@ -28,14 +28,10 @@ function AssetPage() {
 
   const { data: hub, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useGetAssetHub()
   const { data: composition, isLoading: compositionLoading, isError: compositionError, refetch: refetchComposition } = useGetAssetComposition()
-  const { data: income, isLoading: incomeLoading, isError: _incomeError, refetch: _refetchIncome } = useGetAssetIncome()
+  const { data: income, isLoading: incomeLoading, isError: incomeError, refetch: refetchIncome } = useGetAssetIncome()
   const { data: _schedule, isLoading: _scheduleLoading, isError: _scheduleError, refetch: _refetchSchedule } = useGetAssetSchedule()
   const { data: _pension, isLoading: _pensionLoading, isError: _pensionError, refetch: _refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
-
-  // suppress unused warning — referenced by Tasks 5-7
-  void _incomeError
-  void _refetchIncome
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -192,7 +188,40 @@ function AssetPage() {
             <p className="text-sub font-semibold text-ink-sub">내 자산이 만드는 월 수입</p>
           </div>
 
-          {/* ── 월 수입 카드 — Task 5에서 구현 ── */}
+          {/* ── 월 수입 카드 ── */}
+          {incomeLoading ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 h-40 animate-pulse" />
+          ) : incomeError ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+              <p className="text-body text-ink-sub">수입 정보를 불러오지 못했어요</p>
+              <button onClick={() => refetchIncome()} className="text-sub text-primary font-semibold">다시 시도</button>
+            </div>
+          ) : income ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-4">
+              <div className="flex items-baseline justify-between">
+                <p className="text-sub font-semibold text-ink-sub">월 평균 들어오는 돈</p>
+                <p className="font-inter text-md font-bold text-primary">{formatKrw(income.totalMonthlyIncome)}</p>
+              </div>
+
+              <div className="border-t border-divider pt-[15px] flex flex-col">
+                {income.sources.length === 0 ? (
+                  <p className="text-body text-ink-hint text-center py-4">수입 출처가 없습니다</p>
+                ) : (
+                  income.sources.map((source) => (
+                    <div key={source.label} className="flex items-center justify-between py-[7px]">
+                      <div className="flex items-center gap-2">
+                        <p className="text-body text-ink-sub">{source.label}</p>
+                        {source.locked && (
+                          <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">잠김</span>
+                        )}
+                      </div>
+                      <p className="font-inter text-md font-semibold text-ink">월 {formatKrw(source.amount)}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : null}
 
           {/* ── 현금 일정 카드 — Task 6에서 구현 ── */}
 

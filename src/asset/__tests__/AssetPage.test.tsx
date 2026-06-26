@@ -182,3 +182,33 @@ describe('AssetPage 자산 구성 카드', () => {
     expect(screen.getByText('자산 구성을 불러오지 못했어요')).toBeInTheDocument()
   })
 })
+
+describe('AssetPage 월 수입 카드', () => {
+  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => cleanup())
+
+  it('총 월 수입을 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('13만원')).toBeInTheDocument()
+  })
+
+  it('수입 출처 목록을 렌더링한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('배당 ETF 분배금')).toBeInTheDocument()
+    expect(screen.getByText('예금 이자')).toBeInTheDocument()
+  })
+
+  it('locked 출처에 "잠김" 뱃지를 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('잠김')).toBeInTheDocument()
+  })
+
+  it('sources 빈 배열이면 안내 메시지를 표시한다', () => {
+    mockAll({ income: { data: { ...defaultIncome, sources: [] } } })
+    render(<AssetPage />)
+    expect(screen.getByText('수입 출처가 없습니다')).toBeInTheDocument()
+  })
+})
