@@ -13,6 +13,18 @@ export type LinkedAccount = {
   amountKrw: number
 }
 
+export type MydataInstitution = {
+  id: string
+  name: string
+  type: 'bank' | 'securities'
+  label: string
+  brandColor: string
+  labelColor: string
+  connected: boolean
+  accountNumbers?: string[]
+  totalAmountKrw?: number
+}
+
 export type TermAgreement = {
   id: string
   label: string

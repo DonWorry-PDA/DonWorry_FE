@@ -71,7 +71,7 @@ function OrderReviewPage() {
       return
     }
     const totalAmountWon = buyModalItems.reduce((sum, item) => sum + (item.amountWon ?? 0), 0)
-    navigate('/order/transfer', { state: { items: buyModalItems, totalAmountWon } })
+    navigate('/order/transfer', { state: { items: buyModalItems, totalAmountWon, planId } })
   }
 
   return (
