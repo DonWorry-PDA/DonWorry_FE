@@ -13,7 +13,6 @@ import Modal from '../common/components/Modal'
 import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
 import type { MydataInstitution } from './types/mypage'
 import LOGO_MAP from './utils/institutionLogos'
-import { formatKrw } from '../common/utils/formatKrw'
 
 type LogoutStep = 'idle' | 'confirm' | 'done'
 
@@ -116,8 +115,14 @@ function MypagePage() {
         </div>
 
         {/* 연결된 계좌 */}
-        <div className="pb-[10px] pt-[18px]">
+        <div className="flex items-center justify-between pb-[10px] pt-[18px]">
           <p className="text-sub font-semibold text-ink-hint">연결된 계좌</p>
+          <button
+            className="flex items-center gap-0.5 py-1 pl-2 text-sub font-semibold text-primary"
+            onClick={() => navigate('/mypage/connect-account')}
+          >
+            + 연결하기
+          </button>
         </div>
 
         {visibleAccountRows.map(({ institution, accountNumber }) => (
@@ -143,17 +148,6 @@ function MypagePage() {
             </svg>
           </button>
         )}
-
-        {/* 계좌 더 연결하기 */}
-        <button className="flex w-full items-center gap-3 py-[13px]" onClick={() => navigate('/mypage/connect-account')}>
-          <div className="bg-primary-tint flex size-10 shrink-0 items-center justify-center rounded-icon">
-            <span className="text-card font-bold text-primary">＋</span>
-          </div>
-          <div className="flex flex-1 min-w-0 flex-col gap-0.5">
-            <p className="text-md font-semibold text-primary text-left">계좌 더 연결하기</p>
-            <p className="text-sub text-ink-sub text-left">빠진 자산이 있다면</p>
-          </div>
-        </button>
 
         {/* 구분선 */}
         <div className="relative -mx-6 h-7">
