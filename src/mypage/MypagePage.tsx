@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import queryClient from '../common/api/queryClient'
 import { clearTokens } from '../common/api/token'
@@ -29,6 +29,14 @@ function MypagePage() {
     document.documentElement.classList.toggle('large', enabled)
   }
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
+  const [copyToast, setCopyToast] = useState(false)
+  const copyToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const showCopyToast = useCallback(() => {
+    if (copyToastTimer.current) clearTimeout(copyToastTimer.current)
+    setCopyToast(true)
+    copyToastTimer.current = setTimeout(() => setCopyToast(false), 2000)
+  }, [])
 
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
@@ -105,7 +113,7 @@ function MypagePage() {
         </div>
 
         {connectedInstitutions.map((inst) => (
-          <AccountRow key={inst.id} institution={inst} />
+          <AccountRow key={inst.id} institution={inst} onCopy={showCopyToast} />
         ))}
 
         {/* 계좌 더 연결하기 */}
@@ -225,11 +233,54 @@ function MypagePage() {
           </div>
         </Modal>
       )}
+
+      {/* 계좌번호 복사 토스트 */}
+      <div
+        className={`fixed bottom-[80px] left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-btn bg-[#23282f] px-4 py-3 shadow-float transition-all duration-300 whitespace-nowrap ${
+          copyToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0 pointer-events-none'
+        }`}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8L6.5 11.5L13 5" stroke="#4ADE80" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="text-sub font-semibold text-white">계좌번호가 복사됐어요</span>
+      </div>
     </div>
   )
 }
 
-function AccountRow({ institution }: { institution: MydataInstitution }) {
+function CopyButton({ text, onCopy }: { text: string; onCopy: () => void }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      onCopy()
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }, [text, onCopy])
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="ml-1.5 shrink-0 text-ink-hint transition-colors active:text-primary"
+      aria-label="계좌번호 복사"
+    >
+      {copied ? (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="5" y="1" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+          <path d="M1 5v7a1 1 0 001 1h7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
+function AccountRow({ institution, onCopy }: { institution: MydataInstitution; onCopy: () => void }) {
   const [imgFailed, setImgFailed] = useState(false)
   const handleError = useCallback(() => setImgFailed(true), [])
   const logo = LOGO_MAP[institution.id]
@@ -253,7 +304,10 @@ function AccountRow({ institution }: { institution: MydataInstitution }) {
       <div className="flex flex-1 min-w-0 flex-col gap-0.5">
         <p className="text-md font-semibold text-ink">{institution.name}</p>
         {institution.accountNumbers?.map((num) => (
-          <p key={num} className="text-sub text-ink-sub">{num}</p>
+          <div key={num} className="flex items-center">
+            <p className="text-sub text-ink-sub">{num}</p>
+            <CopyButton text={num} onCopy={onCopy} />
+          </div>
         ))}
       </div>
       {institution.totalAmountKrw != null && (
