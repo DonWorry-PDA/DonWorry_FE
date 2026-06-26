@@ -298,24 +298,34 @@ function MypagePage() {
 
 function CopyButton({ text, onCopy }: { text: string; onCopy: () => void }) {
   const [copied, setCopied] = useState(false)
+  const [failed, setFailed] = useState(false)
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(text).then(() => {
+  const handleCopy = useCallback(async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable')
+      await navigator.clipboard.writeText(text)
       setCopied(true)
       onCopy()
       setTimeout(() => setCopied(false), 1500)
-    })
+    } catch {
+      setFailed(true)
+      setTimeout(() => setFailed(false), 1500)
+    }
   }, [text, onCopy])
 
   return (
     <button
       onClick={handleCopy}
-      className="ml-1.5 shrink-0 text-ink-hint transition-colors active:text-primary"
+      className={`ml-1.5 shrink-0 transition-colors active:text-primary ${failed ? 'text-danger' : 'text-ink-hint'}`}
       aria-label="계좌번호 복사"
     >
       {copied ? (
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : failed ? (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
       ) : (
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
