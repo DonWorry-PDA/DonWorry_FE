@@ -40,8 +40,8 @@ function isBlockCategory(category: EventCategory): boolean {
  */
 export function flowTypeOf(category: EventCategory, amountKrw: number | null): FlowType | null {
   if (isBlockCategory(category)) return null
-  if (category === 'investment') return (amountKrw ?? 0) < 0 ? 'buy' : 'sell'
-  if (amountKrw === null) return null
+  if (amountKrw === null) return null // 금액 미확정(만기 등)은 점 없음
+  if (category === 'investment') return amountKrw < 0 ? 'buy' : 'sell'
   return amountKrw > 0 ? 'deposit' : 'withdraw'
 }
 

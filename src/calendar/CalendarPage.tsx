@@ -145,12 +145,22 @@ function CalendarPage() {
         <div className="px-6 pb-8 pt-1">
           <h2 className="pb-1 text-card font-bold text-ink">{formatDayTitle(selectedIso)}</h2>
           <div className="max-h-[62dvh] overflow-y-auto">
-            <DaySchedule
-              title="일정"
-              items={schedules}
-              emptyText={selectedIso < todayIso ? '일정이 없어요' : '예정된 일정이 없어요'}
-            />
-            <TransactionList items={transactions} />
+            {isError ? (
+              <p className="py-10 text-center text-sub text-ink-hint">캘린더를 불러오지 못했어요</p>
+            ) : isLoading ? (
+              <p role="status" aria-live="polite" className="py-10 text-center text-sub text-ink-hint">
+                불러오는 중이에요…
+              </p>
+            ) : (
+              <>
+                <DaySchedule
+                  title="일정"
+                  items={schedules}
+                  emptyText={selectedIso < todayIso ? '일정이 없어요' : '예정된 일정이 없어요'}
+                />
+                <TransactionList items={transactions} />
+              </>
+            )}
           </div>
         </div>
       </BottomSheet>

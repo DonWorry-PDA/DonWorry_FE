@@ -41,7 +41,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       <div className="grid grid-cols-7 gap-y-[6px]">
         {cells.map((cell) => {
           const dayEvents = events[cell.iso] ?? []
-          // 이름 있는 카테고리(연금·배당·이자·납입·소비·만기)는 라벨 블록, 매수/매도/입출금은 점.
+          // 연금·배당·이자·납입·만기는 라벨 블록, 매수/매도/입금/출금(소비 포함)은 점.
           const blocks = blockCategoriesOf(dayEvents).slice(0, 2)
           const flows = flowTypesOf(dayEvents)
           const isToday = cell.iso === todayIso
