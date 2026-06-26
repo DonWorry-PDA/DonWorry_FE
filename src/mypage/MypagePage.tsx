@@ -13,6 +13,7 @@ import Modal from '../common/components/Modal'
 import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
 import type { MydataInstitution } from './types/mypage'
 import LOGO_MAP from './utils/institutionLogos'
+import { formatKrw } from '../common/utils/formatKrw'
 
 type LogoutStep = 'idle' | 'confirm' | 'done'
 
@@ -251,8 +252,15 @@ function AccountRow({ institution }: { institution: MydataInstitution }) {
       )}
       <div className="flex flex-1 min-w-0 flex-col gap-0.5">
         <p className="text-md font-semibold text-ink">{institution.name}</p>
-        <p className="text-sub text-ink-sub">{institution.connectedProducts.join(' · ')}</p>
+        {institution.accountNumbers?.map((num) => (
+          <p key={num} className="text-sub text-ink-sub">{num}</p>
+        ))}
       </div>
+      {institution.totalAmountKrw != null && (
+        <p className="font-inter text-md font-bold text-ink shrink-0">
+          {formatKrw(institution.totalAmountKrw)}
+        </p>
+      )}
     </div>
   )
 }
