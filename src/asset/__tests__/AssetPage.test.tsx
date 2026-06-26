@@ -212,3 +212,27 @@ describe('AssetPage 월 수입 카드', () => {
     expect(screen.getByText('수입 출처가 없습니다')).toBeInTheDocument()
   })
 })
+
+describe('AssetPage 현금 일정 카드', () => {
+  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => cleanup())
+
+  it('이벤트 레이블을 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('배당금 입금')).toBeInTheDocument()
+    expect(screen.getByText('예금 만기')).toBeInTheDocument()
+  })
+
+  it('estimated 이벤트에 "예정" 뱃지를 표시한다', () => {
+    mockAll()
+    render(<AssetPage />)
+    expect(screen.getByText('예정')).toBeInTheDocument()
+  })
+
+  it('events 빈 배열이면 안내 메시지를 표시한다', () => {
+    mockAll({ schedule: { data: { events: [] } } })
+    render(<AssetPage />)
+    expect(screen.getByText('다가오는 현금 일정이 없어요')).toBeInTheDocument()
+  })
+})

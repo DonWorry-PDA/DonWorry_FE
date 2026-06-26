@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { BackArrowIc, NotificationIc } from '../common/assets/icons'
 import { formatKrw, formatKrwShort } from '../common/utils/formatKrw'
+import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import useGetAssetHub from './hooks/useGetAssetHub'
 import useGetAssetComposition from './hooks/useGetAssetComposition'
 import useGetAssetIncome from './hooks/useGetAssetIncome'
@@ -29,7 +30,7 @@ function AssetPage() {
   const { data: hub, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useGetAssetHub()
   const { data: composition, isLoading: compositionLoading, isError: compositionError, refetch: refetchComposition } = useGetAssetComposition()
   const { data: income, isLoading: incomeLoading, isError: incomeError, refetch: refetchIncome } = useGetAssetIncome()
-  const { data: _schedule, isLoading: _scheduleLoading, isError: _scheduleError, refetch: _refetchSchedule } = useGetAssetSchedule()
+  const { data: schedule, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useGetAssetSchedule()
   const { data: _pension, isLoading: _pensionLoading, isError: _pensionError, refetch: _refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
 
@@ -223,7 +224,60 @@ function AssetPage() {
             </div>
           ) : null}
 
-          {/* ── 현금 일정 카드 — Task 6에서 구현 ── */}
+          {/* ── 다가오는 현금 일정 카드 ── */}
+          {scheduleLoading ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" />
+          ) : scheduleError ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col items-center gap-3 py-10">
+              <p className="text-body text-ink-sub">현금 일정을 불러오지 못했어요</p>
+              <button onClick={() => refetchSchedule()} className="text-sub text-primary font-semibold">다시 시도</button>
+            </div>
+          ) : schedule ? (
+            <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
+              <p className="text-sub font-semibold text-ink-sub">다가오는 현금 일정</p>
+
+              {schedule.events.length === 0 ? (
+                <p className="text-body text-ink-hint text-center py-8">다가오는 현금 일정이 없어요</p>
+              ) : (
+                schedule.events.map((event, i) => (
+                  <div
+                    key={`${event.date}-${event.label}`}
+                    className={`flex items-center gap-3 py-4 ${i < schedule.events.length - 1 ? 'border-b border-divider' : ''}`}
+                  >
+                    <div className={`rounded-icon size-10 shrink-0 flex items-center justify-center ${event.type === 'income' ? 'bg-primary-tint' : 'bg-surface-muted'}`}>
+                      {event.type === 'income' ? (
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-primary">
+                          <path d="M9 14V4M9 4L4 9M9 4L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-ink-sub">
+                          <path d="M9 4V14M9 14L4 9M9 14L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <p className="text-md font-semibold text-ink">{event.label}</p>
+                        {event.estimated && (
+                          <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">예정</span>
+                        )}
+                      </div>
+                      <p className="text-sub text-ink-sub">
+                        {event.type === 'income'
+                          ? `${formatMD(new Date(event.date))} · ${calcDday(new Date(event.date))}`
+                          : `${formatYM(new Date(event.date))} · ${formatKrw(event.amount)} 풀림`}
+                      </p>
+                    </div>
+                    {event.type === 'income' ? (
+                      <p className="font-inter text-md font-bold text-primary shrink-0">+{formatKrw(event.amount)}</p>
+                    ) : (
+                      <span className="bg-warning-bg text-warning-text text-sub font-bold rounded-badge px-[9px] py-1 shrink-0">묶임 해제</span>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          ) : null}
 
           {/* ── 연금 재원 카드 — Task 7에서 구현 ── */}
 
