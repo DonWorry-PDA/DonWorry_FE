@@ -67,10 +67,10 @@ function AccountConnectPage() {
   const [showToast, setShowToast] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const { data: institutions = [] } = useGetMydataInstitutions()
+  const { data: institutions, isPending: isLoadingInstitutions, isError: isInstitutionsError } = useGetMydataInstitutions()
   const { mutate: connectInstitutions, isPending } = usePostMydataInstitutionConnect()
 
-  const connectedList = institutions.filter((i) => i.connected)
+  const connectedList = (institutions ?? []).filter((i) => i.connected)
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
@@ -83,7 +83,7 @@ function AccountConnectPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    const available = institutions.filter((i) => !i.connected && i.name.toLowerCase().includes(q))
+    const available = (institutions ?? []).filter((i) => !i.connected && i.name.toLowerCase().includes(q))
     return {
       banks: available.filter((i) => i.type === 'bank'),
       securities: available.filter((i) => i.type === 'securities'),
@@ -211,8 +211,22 @@ function AccountConnectPage() {
           </div>
         )}
 
-        {/* 검색 결과 없음 */}
-        {filtered.banks.length === 0 && filtered.securities.length === 0 && (
+        {/* 로딩 / 에러 / 빈 결과 */}
+        {isLoadingInstitutions ? (
+          <div className="flex flex-col gap-3 px-6 pt-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center gap-3 py-[14px]">
+                <div className="size-[42px] shrink-0 animate-pulse rounded-[12px] bg-surface-muted" />
+                <div className="h-4 flex-1 animate-pulse rounded bg-surface-muted" />
+              </div>
+            ))}
+          </div>
+        ) : isInstitutionsError ? (
+          <div className="flex flex-col items-center gap-2 py-10">
+            <p className="text-md font-medium text-ink">기관 목록을 불러오지 못했어요</p>
+            <p className="text-sub text-ink-hint">잠시 후 다시 시도해주세요</p>
+          </div>
+        ) : filtered.banks.length === 0 && filtered.securities.length === 0 && (
           <div className="flex flex-col items-center gap-2 py-10">
             <p className="text-md font-medium text-ink">검색 결과가 없어요</p>
             <p className="text-sub text-ink-hint">다른 기관 이름으로 검색해보세요</p>
