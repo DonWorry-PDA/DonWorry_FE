@@ -1,38 +1,37 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
 import usePostMydataInstitutionConnect from './hooks/usePostMydataInstitutionConnect'
+import type { MydataInstitution } from './types/mypage'
+import LOGO_MAP from './utils/institutionLogos'
 
-type Institution = {
-  id: string
-  name: string
-  label: string
-  bg: string
-  color: string
-}
+function InstitutionBadge({
+  id,
+  label,
+  brandColor,
+  labelColor,
+}: Pick<MydataInstitution, 'id' | 'label' | 'brandColor' | 'labelColor'>) {
+  const [imgFailed, setImgFailed] = useState(false)
+  const logo = LOGO_MAP[id]
 
-const BANKS: Institution[] = [
-  { id: 'kb', name: 'KB국민은행', label: 'KB', bg: '#ffbc00', color: '#3a2e00' },
-  { id: 'woori', name: '우리은행', label: '우리', bg: '#0067ac', color: '#ffffff' },
-  { id: 'hana', name: '하나은행', label: '하나', bg: '#008375', color: '#ffffff' },
-  { id: 'kakao', name: '카카오뱅크', label: 'kakao', bg: '#ffe300', color: '#3b1e1e' },
-]
+  const handleError = useCallback(() => setImgFailed(true), [])
 
-const SECURITIES: Institution[] = [
-  { id: 'mirae', name: '미래에셋증권', label: '미래', bg: '#1f3a93', color: '#ffffff' },
-  { id: 'samsung', name: '삼성증권', label: '삼성', bg: '#1428a0', color: '#ffffff' },
-]
-
-function InstitutionBadge({ label, bg, color }: { label: string; bg: string; color: string }) {
+  if (logo && !imgFailed) {
+    return (
+      <div className="flex size-[42px] shrink-0 items-center justify-center rounded-[12px] bg-white overflow-hidden">
+        <img src={logo} alt={label} className="size-9 object-contain" onError={handleError} />
+      </div>
+    )
+  }
   return (
     <div
       className="flex size-[42px] shrink-0 items-center justify-center rounded-[12px]"
-      style={{ background: bg }}
+      style={{ background: brandColor }}
     >
-      <span className="text-sub font-extrabold" style={{ color }}>
+      <span className="text-sub font-extrabold" style={{ color: labelColor }}>
         {label}
       </span>
     </div>
@@ -72,9 +71,6 @@ function AccountConnectPage() {
   const { mutate: connectInstitutions, isPending } = usePostMydataInstitutionConnect()
 
   const connectedList = institutions.filter((i) => i.connected)
-  const connectedIds = new Set(connectedList.map((i) => i.id))
-
-  const ALL_INSTITUTIONS = [...BANKS, ...SECURITIES]
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
@@ -87,11 +83,12 @@ function AccountConnectPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
+    const available = institutions.filter((i) => !i.connected && i.name.toLowerCase().includes(q))
     return {
-      banks: BANKS.filter((b) => b.name.toLowerCase().includes(q) && !connectedIds.has(b.id)),
-      securities: SECURITIES.filter((s) => s.name.toLowerCase().includes(q) && !connectedIds.has(s.id)),
+      banks: available.filter((i) => i.type === 'bank'),
+      securities: available.filter((i) => i.type === 'securities'),
     }
-  }, [query, connectedIds])
+  }, [query, institutions])
 
   const hasSelection = selected.size > 0
 
@@ -142,27 +139,25 @@ function AccountConnectPage() {
         {connectedList.length > 0 && (
           <div className="px-6 pt-5 flex flex-col gap-0.5">
             <p className="text-caption font-semibold text-ink-hint">이미 연결된 기관</p>
-            {connectedList.map((inst) => {
-              const meta = ALL_INSTITUTIONS.find((b) => b.id === inst.id)
-              return (
-                <div key={inst.id} className="flex items-center gap-3 py-[14px]">
-                  <InstitutionBadge
-                    label={meta?.label ?? inst.name[0]}
-                    bg={meta?.bg ?? '#0046ff'}
-                    color={meta?.color ?? '#ffffff'}
-                  />
-                  <div className="flex flex-1 min-w-0 flex-col gap-0.5">
-                    <p className="text-body font-bold text-ink">{inst.name}</p>
-                    <p className="text-caption font-medium text-ink-hint">
-                      {inst.connectedProducts.join(' · ')} 연동 중
-                    </p>
-                  </div>
-                  <span className="bg-success-bg text-success text-caption font-bold px-[9px] py-[3px] rounded-badge shrink-0">
-                    연결됨
-                  </span>
+            {connectedList.map((inst) => (
+              <div key={inst.id} className="flex items-center gap-3 py-[14px]">
+                <InstitutionBadge
+                  id={inst.id}
+                  label={inst.label}
+                  brandColor={inst.brandColor}
+                  labelColor={inst.labelColor}
+                />
+                <div className="flex flex-1 min-w-0 flex-col gap-0.5">
+                  <p className="text-body font-bold text-ink">{inst.name}</p>
+                  <p className="text-caption font-medium text-ink-hint">
+                    {inst.connectedProducts.join(' · ')} 연동 중
+                  </p>
                 </div>
-              )
-            })}
+                <span className="bg-success-bg text-success text-caption font-bold px-[9px] py-[3px] rounded-badge shrink-0">
+                  연결됨
+                </span>
+              </div>
+            ))}
           </div>
         )}
 
@@ -177,7 +172,12 @@ function AccountConnectPage() {
                   className="flex w-full items-center gap-3 py-[14px] text-left"
                   onClick={() => toggle(bank.id)}
                 >
-                  <InstitutionBadge label={bank.label} bg={bank.bg} color={bank.color} />
+                  <InstitutionBadge
+                    id={bank.id}
+                    label={bank.label}
+                    brandColor={bank.brandColor}
+                    labelColor={bank.labelColor}
+                  />
                   <p className="flex-1 min-w-0 text-body font-bold text-ink">{bank.name}</p>
                   <SelectCircle selected={selected.has(bank.id)} />
                 </button>
@@ -197,7 +197,12 @@ function AccountConnectPage() {
                   className="flex w-full items-center gap-3 py-[14px] text-left"
                   onClick={() => toggle(sec.id)}
                 >
-                  <InstitutionBadge label={sec.label} bg={sec.bg} color={sec.color} />
+                  <InstitutionBadge
+                    id={sec.id}
+                    label={sec.label}
+                    brandColor={sec.brandColor}
+                    labelColor={sec.labelColor}
+                  />
                   <p className="flex-1 min-w-0 text-body font-bold text-ink">{sec.name}</p>
                   <SelectCircle selected={selected.has(sec.id)} />
                 </button>
