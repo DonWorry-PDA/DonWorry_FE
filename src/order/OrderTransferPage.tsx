@@ -34,6 +34,7 @@ function OrderTransferPage() {
   const transfer = usePostTransfer()
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [isTransferring, setIsTransferring] = useState(false)
+  const [isComplete, setIsComplete] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const timerDoneRef = useRef(false)
   const apiDoneRef = useRef(false)
@@ -92,14 +93,23 @@ function OrderTransferPage() {
     timerDoneRef.current = false
     apiDoneRef.current = false
     setIsTransferring(true)
+
+    function showSuccess() {
+      setIsTransferring(false)
+      setIsComplete(true)
+      timerRef.current = setTimeout(() => {
+        navigate('/order/executing', { state: { items, planId } })
+      }, 2000)
+    }
+
     timerRef.current = setTimeout(() => {
       timerDoneRef.current = true
-      if (apiDoneRef.current) navigate('/order/executing', { state: { items, planId } })
-    }, 4000)
+      if (apiDoneRef.current) showSuccess()
+    }, 3000)
     transfer.mutate(body, {
       onSuccess: () => {
         apiDoneRef.current = true
-        if (timerDoneRef.current) navigate('/order/executing', { state: { items, planId } })
+        if (timerDoneRef.current) showSuccess()
       },
       onError: () => setIsTransferring(false),
     })
@@ -115,6 +125,22 @@ function OrderTransferPage() {
         <div className="text-center">
           <p className="text-heading font-bold text-ink mb-1">이체 중이에요</p>
           <p className="text-body text-ink-sub">잠시만 기다려주세요</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isComplete) {
+    return (
+      <div className="flex flex-col h-full bg-white items-center justify-center px-8 gap-5">
+        <div className="size-16 rounded-full bg-success flex items-center justify-center">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M6 16.5L13 23.5L26 10" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <div className="text-center">
+          <p className="text-heading font-bold text-ink mb-1">이체가 완료됐어요</p>
+          <p className="text-body text-ink-sub">잠시 후 매수 화면으로 이동해요</p>
         </div>
       </div>
     )
