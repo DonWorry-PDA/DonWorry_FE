@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import BottomSheet from '../common/components/BottomSheet'
@@ -11,15 +11,27 @@ import { formatDayTitle, formatMonthTitle, parseIso, toIso } from './utils/month
 
 function CalendarPage() {
   const navigate = useNavigate()
-  const today = new Date()
-  const todayIso = toIso(today)
 
-  const [view, setView] = useState({
-    year: today.getFullYear(),
-    month0: today.getMonth(),
+  // 오늘 날짜는 상태로 관리해 자정을 넘겨 앱을 다시 봐도(visibility/focus) 갱신되게 한다.
+  const [todayIso, setTodayIso] = useState(() => toIso(new Date()))
+  const [view, setView] = useState(() => {
+    const d = new Date()
+    return { year: d.getFullYear(), month0: d.getMonth() }
   })
-  const [selectedIso, setSelectedIso] = useState(todayIso)
+  const [selectedIso, setSelectedIso] = useState(() => toIso(new Date()))
   const [sheetOpen, setSheetOpen] = useState(false)
+
+  useEffect(() => {
+    const refreshToday = () => {
+      if (document.visibilityState === 'visible') setTodayIso(toIso(new Date()))
+    }
+    document.addEventListener('visibilitychange', refreshToday)
+    window.addEventListener('focus', refreshToday)
+    return () => {
+      document.removeEventListener('visibilitychange', refreshToday)
+      window.removeEventListener('focus', refreshToday)
+    }
+  }, [])
 
   // API는 1-based month → 0-based month0에 +1
   const { data, isLoading, isError } = useGetCalendar(view.year, view.month0 + 1)
@@ -39,8 +51,10 @@ function CalendarPage() {
   }
 
   const goToday = () => {
-    setView({ year: today.getFullYear(), month0: today.getMonth() })
-    setSelectedIso(todayIso)
+    const d = new Date()
+    setTodayIso(toIso(d))
+    setView({ year: d.getFullYear(), month0: d.getMonth() })
+    setSelectedIso(toIso(d))
   }
 
   // 월 이동(시트 닫힌 상태에서만 보이는 버튼). 연도 경계(1월↔12월)는 Date 연산으로 자동 처리.
@@ -124,7 +138,11 @@ function CalendarPage() {
         <div className="px-6 pb-8 pt-1">
           <h2 className="pb-1 text-card font-bold text-ink">{formatDayTitle(selectedIso)}</h2>
           <div className="max-h-[62dvh] overflow-y-auto">
-            <DaySchedule title="일정" items={schedules} />
+            <DaySchedule
+              title="일정"
+              items={schedules}
+              emptyText={selectedIso < todayIso ? '일정이 없어요' : '예정된 일정이 없어요'}
+            />
             <TransactionList items={transactions} />
           </div>
         </div>

@@ -5,15 +5,16 @@ import { formatSignedWon } from '../utils/monthGrid'
 type Props = {
   title: string // '6월 25일 (수) 일정'
   items: ScheduleItem[]
+  emptyText?: string // 과거/미래에 따라 문구가 달라질 수 있어 외부 주입
 }
 
-function DaySchedule({ title, items }: Props) {
+function DaySchedule({ title, items, emptyText = '예정된 일정이 없어요' }: Props) {
   return (
     <section className="pt-[14px]">
       <h2 className="text-body font-bold text-ink">{title}</h2>
 
       {items.length === 0 ? (
-        <p className="py-8 text-center text-sub text-ink-hint">예정된 일정이 없어요</p>
+        <p className="py-8 text-center text-sub text-ink-hint">{emptyText}</p>
       ) : (
         <ul className="pt-1">
           {items.map((item) => {
