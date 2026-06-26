@@ -21,7 +21,8 @@ export type MydataInstitution = {
   brandColor: string
   labelColor: string
   connected: boolean
-  connectedProducts: string[]
+  accountNumbers?: string[]
+  totalAmountKrw?: number
 }
 
 export type TermAgreement = {
