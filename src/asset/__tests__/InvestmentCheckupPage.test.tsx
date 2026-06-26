@@ -157,4 +157,58 @@ describe('InvestmentCheckupPage 성장 블록', () => {
     // GROWTH 역할의 monthlyCashflow(41,600) 유입 표기
     expect(screen.getByText('월 41,600원 유입')).toBeInTheDocument()
   })
+
+  it('1만원 미만 월 배당도 원 단위로 노출한다(0만원으로 사라지지 않음)', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: {
+        amount: 20_000_000,
+        topStockName: '삼성전자',
+        concentrationRatio: 40,
+        concentrationLevel: '보통',
+        topSector: '전기·전자',
+        sectorConcentrationRatio: 100,
+        sectorConcentrationLevel: '높음',
+        currentMonthlyDividend: 9_900,
+        convertedMonthlyDividend: 12_400,
+        deltaMonthlyDividend: 2_500,
+        suggestion: '일부를 배당 중심 자산으로 옮기면 현금흐름을 더 만들 수 있어요.',
+      },
+    })
+    render(<InvestmentCheckupPage />)
+
+    // formatKrw였다면 9,900원은 만원 내림으로 "0만원"이 된다. formatWon이라 원 단위로 노출.
+    expect(screen.getByText('9,900원')).toBeInTheDocument()
+    expect(screen.getByText('(+2,500원)')).toBeInTheDocument()
+    expect(screen.queryByText('0만원')).not.toBeInTheDocument()
+  })
+
+  it('델타 정확히 0: 유지 톤(⚠️)으로 분기한다(경계가 < 0이 아니라 <= 0)', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: {
+        amount: 20_000_000,
+        topStockName: '현대차',
+        concentrationRatio: 70,
+        concentrationLevel: '높음',
+        topSector: '운수장비',
+        sectorConcentrationRatio: 80,
+        sectorConcentrationLevel: '높음',
+        currentMonthlyDividend: 58_300,
+        convertedMonthlyDividend: 58_300,
+        deltaMonthlyDividend: 0,
+        suggestion: '이미 배당이 꾸준히 나오는 자산이에요. 옮기면 현금흐름이 오히려 줄 수 있어요.',
+      },
+    })
+    render(<InvestmentCheckupPage />)
+
+    // 델타 0 → 부호 없는 "(0원)", isLoss = (delta <= 0) → 유지 톤 ⚠️
+    expect(screen.getByText('(0원)')).toBeInTheDocument()
+    expect(screen.getByText(/⚠️/)).toBeInTheDocument()
+    expect(screen.queryByText(/💡/)).not.toBeInTheDocument()
+  })
 })
