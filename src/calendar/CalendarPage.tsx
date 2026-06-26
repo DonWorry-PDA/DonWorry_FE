@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import BottomSheet from '../common/components/BottomSheet'
 import MonthGrid from './components/MonthGrid'
+import FlowLegend from './components/FlowLegend'
 import DaySchedule from './components/DaySchedule'
 import TransactionList from './components/TransactionList'
 import useGetCalendar from './hooks/useGetCalendar'
 import { BackArrowIc, NotificationIc } from '../common/assets/icons'
 import { formatDayTitle, formatMonthTitle, parseIso, toIso } from './utils/monthGrid'
+import { flowTypesOf } from './flowType'
 
 function CalendarPage() {
   const navigate = useNavigate()
@@ -39,6 +41,9 @@ function CalendarPage() {
   const events = data?.events ?? {}
   const schedules = data?.schedules[selectedIso] ?? []
   const transactions = data?.transactions[selectedIso] ?? []
+
+  // 범례는 그 달에 실제 등장하는 흐름 유형만 노출
+  const presentFlows = flowTypesOf(Object.values(events).flat())
 
   // 날짜 탭 → 선택 + 바텀시트 open. 다른 달 날짜를 누르면 해당 달로 이동.
   const handleSelect = (iso: string) => {
@@ -119,6 +124,8 @@ function CalendarPage() {
           events={events}
           onSelect={handleSelect}
         />
+
+        <FlowLegend flows={presentFlows} />
 
         {isError ? (
           <p className="py-10 text-center text-sub text-ink-hint">

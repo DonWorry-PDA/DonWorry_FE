@@ -1,5 +1,5 @@
-import { CATEGORY_STYLE, SHEET_ONLY_CATEGORIES } from '../eventCategory'
 import type { DayEventsMap } from '../types/calendar'
+import { BLOCK_STYLE, FLOW_STYLE, blockCategoriesOf, flowTypesOf } from '../flowType'
 import { buildMonthGrid, WEEKDAY_LABELS } from '../utils/monthGrid'
 
 type Props = {
@@ -17,9 +17,6 @@ function weekdayColor(weekday: number, inMonth: boolean): string {
   if (weekday === 6) return 'text-primary' // 토요일
   return 'text-ink'
 }
-
-// 셀에는 항목 라벨만(최대 2줄) — 금액 등 상세는 날짜 탭 시 바텀시트에서 확인한다.
-const MAX_LINES = 2
 
 function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Props) {
   const cells = buildMonthGrid(year, month0)
@@ -43,10 +40,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       {/* 날짜 그리드 */}
       <div className="grid grid-cols-7 gap-y-[6px]">
         {cells.map((cell) => {
-          // 그리드엔 월급(현금흐름) 계산 항목만 — 소비·투자는 시트에서만 본다
-          const gridEvents = (events[cell.iso] ?? []).filter(
-            (e) => !SHEET_ONLY_CATEGORIES.includes(e.category),
-          )
+          const dayEvents = events[cell.iso] ?? []
+          // 이름 있는 카테고리(연금·배당·이자·납입·소비·만기)는 라벨 블록, 매수/매도/입출금은 점.
+          const blocks = blockCategoriesOf(dayEvents).slice(0, 2)
+          const flows = flowTypesOf(dayEvents)
           const isToday = cell.iso === todayIso
           const isSelected = cell.iso === selectedIso
 
@@ -54,7 +51,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
             <button
               key={cell.iso}
               onClick={() => onSelect(cell.iso)}
-              className="flex flex-col items-center gap-[3px] py-1.5"
+              className="flex min-h-[58px] flex-col items-center gap-[3px] py-1.5"
             >
               <span
                 className={`flex size-8 items-center justify-center rounded-full text-md font-medium leading-none ${
@@ -68,19 +65,28 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                 {cell.day}
               </span>
 
-              {/* 항목 라벨 칩(카테고리 색). 빈 날도 높이 유지해 행 정렬 */}
-              <span className="flex min-h-[28px] w-full flex-col items-stretch gap-px px-0.5">
-                {gridEvents.slice(0, MAX_LINES).map((e, i) => {
-                  const style = CATEGORY_STYLE[e.category]
-                  return (
-                    <span
-                      key={i}
-                      className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${style.badgeBg} ${style.text}`}
-                    >
-                      {e.short}
-                    </span>
-                  )
-                })}
+              {/* 카테고리 라벨 블록 */}
+              {blocks.length > 0 && (
+                <span className="flex w-full flex-col items-stretch gap-px px-0.5">
+                  {blocks.map((cat) => {
+                    const b = BLOCK_STYLE[cat]
+                    return (
+                      <span
+                        key={cat}
+                        className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${b.chip}`}
+                      >
+                        {b.label}
+                      </span>
+                    )
+                  })}
+                </span>
+              )}
+
+              {/* 흐름 점(입금/출금/매수/매도). 빈 날도 높이 유지해 행 정렬 */}
+              <span className="flex h-[6px] items-center gap-[3px]">
+                {flows.map((f) => (
+                  <span key={f} className={`size-[5px] rounded-full ${FLOW_STYLE[f].dot}`} />
+                ))}
               </span>
             </button>
           )
