@@ -403,7 +403,9 @@ function AssetPage() {
                   >
                     <div className="flex flex-col gap-0.5">
                       <p className="text-md text-ink-sub">{item.label}</p>
-                      <p className="text-sub text-ink-hint">{item.institutionName}</p>
+                      <p className="text-sub text-ink-hint">
+                        {item.institutionName ?? `${item.startAge}세부터 수령`}
+                      </p>
                     </div>
                     {item.currentBalance != null ? (
                       <p className="font-inter text-md font-semibold text-ink">{formatKrw(item.currentBalance)}</p>
