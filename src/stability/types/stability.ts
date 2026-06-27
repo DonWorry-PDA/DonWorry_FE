@@ -23,8 +23,6 @@ export type StabilityData = {
   status: StabilityStatus
   summaryMessage: string
   items: StabilityItem[]
-  /** @deprecated 개선 메시지 단건 TIP. improvementMessages 전체 리스트로 대체 예정 */
-  tip: string | null
   /** 개선 메시지 전체 (없으면 빈 배열) */
   improvementMessages: string[]
   guardrail: StabilityGuardrail | null

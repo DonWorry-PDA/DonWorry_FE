@@ -79,7 +79,6 @@ const toStabilityData = (res: LifeStabilityResponse): StabilityData => ({
   status: gradeToStatus(res.grade),
   summaryMessage: res.summaryMessage,
   items: toItems(res),
-  tip: res.improvementMessages?.[0] ?? null,
   improvementMessages: res.improvementMessages ?? [],
   guardrail: res.planGuardrail
     ? {
