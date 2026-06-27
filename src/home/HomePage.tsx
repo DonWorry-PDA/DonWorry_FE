@@ -146,7 +146,7 @@ function HomePage() {
           <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} />
         </button>
         <div className="flex-1 min-w-0">
-          <p className="font-brand font-bold text-ink" style={{ fontSize: pxr(28) }}>
+          <p className="font-brand font-bold text-ink" style={{ fontSize: pxr(22) }}>
             연금<span className="text-primary">SOL</span>사
           </p>
         </div>
@@ -155,7 +155,7 @@ function HomePage() {
           className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >
-          <NotificationIc className="text-ink" width={33} height={33} />
+          <NotificationIc className="text-ink" width={24} height={24} />
         </button>
       </header>
 
