@@ -74,6 +74,7 @@ function MypagePage() {
         <h1 className="flex-1 text-heading font-bold text-ink">마이페이지</h1>
         <button
           className="flex size-11 items-center justify-center"
+          aria-label="알림"
           onClick={() => navigate('/notification')}
         >
           <NotificationIc className="text-ink" width={24} height={24} />
@@ -137,13 +138,17 @@ function MypagePage() {
           <p className="py-4 text-sub text-ink-hint">계좌 정보를 불러오지 못했어요</p>
         ) : (
           <>
-            {visibleInstitutions.map((institution) => (
-              <AccountRow
-                key={institution.id}
-                institution={institution}
-                onCopy={showCopyToast}
-              />
-            ))}
+            {connectedInstitutions.length === 0 ? (
+              <p className="py-4 text-sub text-ink-hint">연결된 계좌가 없어요</p>
+            ) : (
+              visibleInstitutions.map((institution) => (
+                <AccountRow
+                  key={institution.id}
+                  institution={institution}
+                  onCopy={showCopyToast}
+                />
+              ))
+            )}
 
             {connectedInstitutions.length > ACCOUNTS_PREVIEW && (
               <button
