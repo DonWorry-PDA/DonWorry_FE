@@ -268,8 +268,9 @@ function AssetPage() {
                 onClick={() => navigate('/asset-management/investment-checkup')}
               >
                 <div className="bg-primary-tint rounded-icon size-10 shrink-0 flex items-center justify-center">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-primary">
-                    <path d="M9 14V4M9 4L4 9M9 4L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="text-primary" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="6" />
+                    <path d="M20 20l-4.5-4.5" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col gap-0.5">
