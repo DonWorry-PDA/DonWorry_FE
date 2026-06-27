@@ -149,3 +149,33 @@ export type TimeSlot = {
   time: string
   period: '오전' | '오후'
 }
+
+// 월급 만들기 기이용자(매수 완료) 분기 — 현재 운용 현황.
+// GET /api/user/monthly-salary/plan. rate류는 모두 0~100 퍼센트값(0~1 아님).
+export type SalaryPlanBucketRole = 'RISK' | 'SAFE' | 'SHORT_TERM'
+
+export type SalaryPlanHolding = {
+  productId: number
+  productName: string // 확정 시 스냅샷된 표시명(카탈로그 장애 무관)
+  bucketRole: SalaryPlanBucketRole
+  targetAmount: number // gross 목표 배분액
+  currentEval: number // 현재 평가액(BROKERAGE만)
+  achievedRate: number // 종목 진행률 %, 100 캡
+  remainingToBuy: number // 추가 매수 필요액 = max(목표-보유, 0)
+  productContribution: number // 종목별 월 기여액
+}
+
+// hasPlan=false면 본문 전부 null → 최초 진입(자산 선택)으로 라우팅.
+export type SalaryPlanStatusResponse = {
+  hasPlan: boolean
+  planType: string | null // STABLE | BALANCED | LIQUIDITY
+  displayName: string | null // 안정/균형 월급형 등
+  expectedMonthlySalary: number | null // 예상 월수령액(헤드라인)
+  targetMonthlyLivingCost: number | null
+  livingCostCoverageRate: number | null // 충당률 %, 캡 없음(100 초과 가능)
+  totalTargetAmount: number | null
+  totalCurrentEval: number | null
+  totalAchievedRate: number | null // 전체 진행률 %, 100 캡
+  createdAt: string | null // 확정 시각(ISO)
+  holdings: SalaryPlanHolding[] | null
+}
