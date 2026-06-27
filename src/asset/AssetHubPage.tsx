@@ -32,7 +32,7 @@ const MENU_BASE: ManageMenu[] = [
     key: 'investmentCheck',
     title: '투자 건강검진',
     caption: '월급 만드는 자산\n32%뿐이에요',
-    path: '/asset-management/investment-checkup',
+    path: '/asset/investment-checkup',
     iconTone: 'muted',
   },
   {
@@ -53,7 +53,7 @@ const MENU_BASE: ManageMenu[] = [
     key: 'monthlyReport',
     title: '월간 리포트',
     caption: '6월 리포트가\n도착했어요',
-    path: '/asset-management/monthly-report',
+    path: '/asset/monthly-report',
     iconTone: 'muted',
     isNew: true,
   },
