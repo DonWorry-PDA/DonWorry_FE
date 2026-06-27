@@ -272,8 +272,8 @@ function HomePage() {
                     onClick={() => navigate('/paycheck-plan/assets')}
                     className="w-full bg-surface text-ink rounded-btn py-[14px] px-5 flex items-center justify-between"
                   >
-                    <span className="text-btn font-bold">월급 설계하기</span>
-                    <span className="text-body flex items-center gap-[3px]">
+                    <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
+                    <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
                       <span className="text-ink-sub">부족한 금액</span>
                       <span className="text-ink tabular-nums">{stability.shortfallKrw.toLocaleString('ko-KR')}원</span>
                       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-ink-sub">
@@ -308,7 +308,7 @@ function HomePage() {
                       className="bg-surface rounded-card-lg aspect-square flex flex-col justify-between p-[14px] text-left"
                     >
                       <div className="flex flex-col gap-1">
-                        <p className="text-md font-bold text-ink leading-snug">
+                        <p className="text-md font-bold text-ink leading-snug break-keep">
                           {card.title}
                         </p>
                         {caption && (
