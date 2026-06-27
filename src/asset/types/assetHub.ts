@@ -30,6 +30,7 @@ export type AssetHubSalaryMaking = {
   achievementRate: number | null
   targetAmount: number | null
   currentAmount: number | null
+  hasActivePlan: boolean
 }
 
 export type AssetHubLifeStability = {
