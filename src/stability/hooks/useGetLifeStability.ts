@@ -55,7 +55,7 @@ const toItems = (res: LifeStabilityResponse): StabilityItem[] => {
       status: labelToStatus(i.liquidityStatus),
       value: formatMonths(m.liquidityMonths),
       meaning:
-        '필수지출을 기준으로, 바로 꺼내 쓸 수 있는 자산이 몇 개월분인지 보여줘요. 비상시 생활을 버틸 수 있는 여력을 뜻해요.',
+        '필수지출을 기준으로, 바로 꺼내 쓸 수 있는 자산이 몇 개월분인지 보여줘요. 수입이 없어도 현금성 자산만으로 필수지출을 충당할 수 있는 기간을 의미해요.',
       criteria: '6개월분 이상',
       improve: '예적금·입출금처럼 즉시 인출 가능한 자산을 6개월치 이상 확보해 보세요.',
     },
@@ -75,7 +75,7 @@ const toItems = (res: LifeStabilityResponse): StabilityItem[] => {
       status: labelToStatus(i.debtBurdenStatus),
       value: formatPercent(m.debtBurdenRate),
       meaning:
-        '월 소득 대비 대출 원리금 상환이 차지하는 비중이에요. 높을수록 현금흐름이 대출 상환에 묶여 생활이 빠듯해져요.',
+        '월 소득 대비 대출 원리금 상환이 차지하는 비중이에요. 높을수록 현금흐름이 대출 상환에 묶여 쓸 수 있는 여유 자금이 줄어들어요.',
       criteria: '20% 이하',
       improve: '고금리 대출부터 상환해 월 상환 부담을 20% 이하로 낮추는 것이 좋아요.',
     },
