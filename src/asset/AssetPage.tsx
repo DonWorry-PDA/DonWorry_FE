@@ -8,7 +8,6 @@ import useGetAssetIncome from './hooks/useGetAssetIncome'
 import useGetAssetSchedule from './hooks/useGetAssetSchedule'
 import useGetAssetPension from './hooks/useGetAssetPension'
 import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
-import type { AssetAccount } from './types/assetAnalysis'
 
 const INCOME_EVENT_TYPES = new Set(['ETF_DIVIDEND', 'DEPOSIT_INTEREST'])
 
@@ -20,11 +19,15 @@ const ALLOCATION_COLORS = [
   'bg-track',
 ] as const
 
-function buildSubLabel(accounts: AssetAccount[] | undefined): string {
-  if (!accounts || accounts.length === 0) return ''
-  const names = accounts.map((a) => a.institutionName)
-  if (names.length <= 2) return names.join(' · ')
-  return `${names.slice(0, 2).join(' · ')} 외 ${names.length - 2}개`
+const ACCOUNT_TYPE_LABELS: Record<string, string> = {
+  DEPOSIT: '정기예금',
+  CMA: 'CMA',
+  BROKERAGE: '위탁계좌',
+  IRP: 'IRP',
+  PENSION_SAVING: '연금저축',
+}
+function accountTypeLabel(type: string): string {
+  return ACCOUNT_TYPE_LABELS[type] ?? type
 }
 
 // 'YYYY-MM-DD' 문자열을 로컬 자정 기준 Date로 파싱
@@ -44,10 +47,12 @@ function AssetPage() {
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
 
+  const sortedGroups = [...(composition?.groups ?? [])].sort((a, b) => b.totalAmount - a.totalAmount)
+
   const allocationBase =
     composition && composition.totalAsset > 0
       ? composition.totalAsset
-      : (composition?.groups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0) ?? 0)
+      : sortedGroups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0)
   const toAllocationPercent = (amount: number) =>
     allocationBase > 0 ? Math.round((amount / allocationBase) * 100) : 0
 
@@ -147,16 +152,17 @@ function AssetPage() {
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-1.5">
               <p className="text-sub font-semibold text-ink-sub">내 자산 구성</p>
 
-              {composition.groups.length === 0 ? (
+              {sortedGroups.length === 0 ? (
                 <p className="text-body text-ink-hint py-6 text-center">자산 정보가 없습니다</p>
               ) : (
                 <>
+                  {/* 비율 바 — 비율 높은 순 */}
                   <div
                     className="flex overflow-hidden rounded-badge pt-1.5"
                     role="img"
-                    aria-label={`자산 구성: ${composition.groups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
+                    aria-label={`자산 구성: ${sortedGroups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
                   >
-                    {composition.groups.map((seg, i) => (
+                    {sortedGroups.map((seg, i) => (
                       <div
                         key={seg.category}
                         className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
@@ -166,21 +172,47 @@ function AssetPage() {
                     ))}
                   </div>
 
-                  <div className="flex flex-col gap-0.5 pt-2">
-                    {composition.groups.map((seg, i) => (
+                  {/* 그룹 목록 — 비율 높은 순, 하위 계좌·보유종목 상세 포함 */}
+                  <div className="flex flex-col pt-2">
+                    {sortedGroups.map((seg, i) => (
                       <div
                         key={seg.category}
-                        className={`flex items-center gap-3 py-[11px] ${i < composition.groups.length - 1 ? 'border-b border-divider' : ''}`}
+                        className={`flex flex-col py-[11px] ${i < sortedGroups.length - 1 ? 'border-b border-divider' : ''}`}
                       >
-                        <span className={`size-[9px] shrink-0 rounded-[4.5px] ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`} />
-                        <div className="flex-1 min-w-0 flex flex-col gap-0.5 pl-0.5">
-                          <p className="text-body font-semibold text-ink">{seg.label}</p>
-                          <p className="text-sub text-ink-sub">{buildSubLabel(seg.accounts)}</p>
+                        {/* 그룹 헤더 */}
+                        <div className="flex items-center gap-3">
+                          <span className={`size-[9px] shrink-0 rounded-[4.5px] ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`} />
+                          <p className="flex-1 text-body font-semibold text-ink">{seg.label}</p>
+                          <div className="flex flex-col items-end gap-0.5 shrink-0">
+                            <p className="font-inter text-md font-bold text-ink">{formatKrwShort(seg.totalAmount)}</p>
+                            <p className="text-sub text-ink-sub">{toAllocationPercent(seg.totalAmount)}%</p>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-end gap-0.5 shrink-0">
-                          <p className="font-inter text-md font-bold text-ink">{formatKrwShort(seg.totalAmount)}</p>
-                          <p className="text-body text-ink-sub">{toAllocationPercent(seg.totalAmount)}%</p>
-                        </div>
+
+                        {/* 계좌별 상세 */}
+                        {seg.accounts.map((account) => (
+                          <div key={account.accountId} className="flex flex-col gap-1 mt-2 ml-[21px]">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <p className="text-sub font-semibold text-ink-sub">{account.institutionName}</p>
+                                <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">
+                                  {accountTypeLabel(account.accountType)}
+                                </span>
+                              </div>
+                              {account.balance > 0 && account.holdings.length === 0 && (
+                                <p className="font-inter text-sub font-semibold text-ink">{formatKrwShort(account.balance)}</p>
+                              )}
+                            </div>
+
+                            {/* 보유 종목/상품 */}
+                            {account.holdings.map((holding) => (
+                              <div key={holding.productName} className="flex items-center justify-between pl-1 py-0.5">
+                                <p className="text-sub text-ink-hint truncate mr-3">{holding.productName}</p>
+                                <p className="font-inter text-sub text-ink-sub shrink-0">{formatKrwShort(holding.evaluationAmount)}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>
@@ -201,7 +233,7 @@ function AssetPage() {
               <button
                 className="flex w-full min-h-[44px] items-center gap-3 pt-3 px-0.5 text-left rounded-card hover:bg-surface active:bg-surface-muted transition-colors"
                 aria-label="투자 건강검진 보기 — 어떤 자산이 월급이 되는지 자세히 확인"
-                onClick={() => navigate('/investment-checkup')}
+                onClick={() => navigate('/asset-management/investment-checkup')}
               >
                 <div className="bg-primary-tint rounded-icon size-10 shrink-0 flex items-center justify-center">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-primary">

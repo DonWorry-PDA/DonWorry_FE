@@ -170,10 +170,11 @@ describe('AssetPage 자산 구성 카드', () => {
     expect(screen.getByText('월급 만드는 자산')).toBeInTheDocument()
   })
 
-  it('서브 레이블에 기관명을 최대 2개 표시한다', () => {
+  it('계좌의 기관명을 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('KB · 신한')).toBeInTheDocument()
+    expect(screen.getAllByText('KB').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('신한').length).toBeGreaterThanOrEqual(1)
   })
 
   it('한 줄 요약에 cashflowAssetRatio를 보여준다', () => {
@@ -265,8 +266,9 @@ describe('AssetPage 연금 재원 카드', () => {
   it('연금 항목 레이블을 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('IRP')).toBeInTheDocument()
-    expect(screen.getByText('연금저축')).toBeInTheDocument()
+    // IRP appears in both composition account chip and pension label
+    expect(screen.getAllByText('IRP').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('연금저축').length).toBeGreaterThanOrEqual(1)
   })
 
   it('현재 잔액을 표시한다', () => {
