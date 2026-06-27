@@ -57,10 +57,13 @@ function AssetConnectedDetail({ onClose }: Props) {
           <p className="text-body text-ink">
             {isPending ? (
               <span className="inline-block h-4 w-6 animate-pulse rounded bg-surface-muted align-middle" />
+            ) : isError ? (
+              '연결 기관 수를 확인하지 못했어요.'
             ) : (
-              <span className="font-bold text-primary">{count}</span>
+              <>
+                <span className="font-bold text-primary">{count}</span>개 금융기관을 연결했어요.
+              </>
             )}
-            개 금융기관을 연결했어요.
           </p>
         </div>
 
@@ -79,6 +82,8 @@ function AssetConnectedDetail({ onClose }: Props) {
         </ul>
       ) : isError ? (
         <p className="flex-1 px-6 py-6 text-sub text-ink-hint">연결 기관 정보를 불러오지 못했어요</p>
+      ) : institutions.length === 0 ? (
+        <p className="flex-1 px-6 py-6 text-sub text-ink-hint">연결된 금융기관이 없어요</p>
       ) : (
         <ul className="flex-1 overflow-y-auto px-6">
           {institutions.map((inst) => (
@@ -118,9 +123,9 @@ function InstitutionRow({
         </div>
       )}
 
-      <span className="flex-1 text-body font-medium text-ink">{institution.name}</span>
+      <span className="min-w-0 flex-1 truncate text-body font-medium text-ink">{institution.name}</span>
 
-      <span className={`text-sub ${isConnected ? 'text-success' : 'text-danger'}`}>
+      <span className={`shrink-0 text-sub ${isConnected ? 'text-success' : 'text-danger'}`}>
         {isConnected ? '연결됨' : '오류'}
       </span>
     </li>
