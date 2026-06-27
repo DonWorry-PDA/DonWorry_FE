@@ -22,12 +22,33 @@ export const BLOCK_ORDER: EventCategory[] = [
 ]
 
 // 라벨로 구분되므로 색은 부드럽게. 빨강/파랑은 매수·매도 점에 양보.
-export const BLOCK_STYLE: Record<string, { label: string; chip: string }> = {
-  pension: { label: '연금', chip: 'bg-event-transaction/15 text-event-transaction' }, // 주황
-  dividend: { label: '배당', chip: 'bg-event-investment/15 text-event-investment' }, // 청록
-  interest: { label: '이자', chip: 'bg-event-interest/15 text-event-interest' }, // 앰버
-  payment: { label: '납입', chip: 'bg-event-payment/15 text-event-payment' }, // 초록
-  maturity: { label: '만기', chip: 'bg-event-maturity/15 text-event-maturity' }, // 보라
+// chip=확정(채운 칩), estimatedChip=예정(점선 테두리). 박스 크기 일관 위해 둘 다 border 유지.
+export const BLOCK_STYLE: Record<string, { label: string; chip: string; estimatedChip: string }> = {
+  pension: {
+    label: '연금',
+    chip: 'border border-transparent bg-event-transaction/15 text-event-transaction',
+    estimatedChip: 'border border-dashed border-event-transaction/50 text-event-transaction',
+  }, // 주황
+  dividend: {
+    label: '배당',
+    chip: 'border border-transparent bg-event-investment/15 text-event-investment',
+    estimatedChip: 'border border-dashed border-event-investment/50 text-event-investment',
+  }, // 청록
+  interest: {
+    label: '이자',
+    chip: 'border border-transparent bg-event-interest/15 text-event-interest',
+    estimatedChip: 'border border-dashed border-event-interest/50 text-event-interest',
+  }, // 앰버
+  payment: {
+    label: '납입',
+    chip: 'border border-transparent bg-event-payment/15 text-event-payment',
+    estimatedChip: 'border border-dashed border-event-payment/50 text-event-payment',
+  }, // 초록
+  maturity: {
+    label: '만기',
+    chip: 'border border-transparent bg-event-maturity/15 text-event-maturity',
+    estimatedChip: 'border border-dashed border-event-maturity/50 text-event-maturity',
+  }, // 보라
 }
 
 function isBlockCategory(category: EventCategory): boolean {
@@ -53,6 +74,16 @@ export function flowTypesOf(events: CalendarEvent[]): FlowType[] {
     if (flow) set.add(flow)
   }
   return FLOW_ORDER.filter((f) => set.has(f))
+}
+
+/**
+ * 해당 날짜에서 특정 블록 카테고리가 '예정(estimated)'인지 판정.
+ * 그 카테고리 이벤트가 하나라도 있고 전부 estimated일 때만 예정으로 본다
+ * (확정 1건이라도 있으면 확정 칩으로 표시). 배당의 확정/예정 구분에 사용.
+ */
+export function isBlockEstimated(events: CalendarEvent[], category: EventCategory): boolean {
+  const ofCategory = events.filter((e) => e.category === category)
+  return ofCategory.length > 0 && ofCategory.every((e) => e.estimated === true)
 }
 
 /** 이벤트 목록에서 등장하는 블록 카테고리(중복 제거 + 정해진 순서) */
