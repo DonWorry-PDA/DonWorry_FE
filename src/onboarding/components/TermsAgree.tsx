@@ -105,10 +105,15 @@ function TermsAgree({ onNext, onPrev }: Props) {
   async function handleProceed() {
     setIsPending(true)
     sessionStorage.removeItem(STORAGE_KEY)
-    await Promise.allSettled([
+    const results = await Promise.allSettled([
       client.patch('/api/user/terms/thirdParty/consent', { agreed: checked.thirdParty }),
       client.patch('/api/user/terms/marketing/consent', { agreed: checked.marketing }),
     ])
+    results.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.error(`선택 약관 동의 저장 실패 [${i === 0 ? 'thirdParty' : 'marketing'}]:`, result.reason)
+      }
+    })
     setIsPending(false)
     onNext()
   }

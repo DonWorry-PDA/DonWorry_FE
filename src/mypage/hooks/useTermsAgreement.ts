@@ -14,7 +14,7 @@ const REQUIRED_TERMS: TermAgreement[] = [
 export function useTermsAgreement() {
   const queryClient = useQueryClient()
 
-  const { data: optionalData } = useQuery({
+  const { data: optionalData, isLoading: isOptionalLoading, isError: isOptionalError } = useQuery({
     queryKey: ['terms', 'optional'],
     queryFn: () =>
       client
@@ -73,5 +73,7 @@ export function useTermsAgreement() {
     isUpdating: isPending,
     mutationError: isError ? '동의 설정을 변경하지 못했어요. 다시 시도해 주세요.' : null,
     dismissMutationError: reset,
+    isOptionalLoading,
+    isOptionalError,
   }
 }
