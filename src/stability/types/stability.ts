@@ -14,13 +14,6 @@ export type StabilityItem = {
   improve: string
 }
 
-/** 성장형 플랜 가드레일 (생활 안정도 기반 추천 플랜) */
-export type StabilityGuardrail = {
-  growthPlanAllowed: boolean
-  recommendedPlanLabel: string
-  reason: string
-}
-
 /** 화면에서 사용하는 뷰 모델 (API 응답을 가공한 결과) */
 export type StabilityData = {
   percentage: number
@@ -29,7 +22,6 @@ export type StabilityData = {
   items: StabilityItem[]
   /** 개선 메시지 전체 (없으면 빈 배열) */
   improvementMessages: string[]
-  guardrail: StabilityGuardrail | null
 }
 
 // ── API 응답 원형 (GET /api/user/life-stability/me) ──────────────

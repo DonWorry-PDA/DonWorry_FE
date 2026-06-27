@@ -98,13 +98,6 @@ const toStabilityData = (res: LifeStabilityResponse): StabilityData => ({
   summaryMessage: res.summaryMessage,
   items: toItems(res),
   improvementMessages: res.improvementMessages ?? [],
-  guardrail: res.planGuardrail
-    ? {
-        growthPlanAllowed: res.planGuardrail.growthPlanAllowed,
-        recommendedPlanLabel: res.planGuardrail.recommendedPlanLabel,
-        reason: res.planGuardrail.reason,
-      }
-    : null,
 })
 
 const useGetLifeStability = () =>

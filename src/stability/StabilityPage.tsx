@@ -133,36 +133,6 @@ function StabilityPage() {
               </>
             )}
 
-            {/* 추천 플랜 가드레일 */}
-            {data.guardrail && (
-              <>
-                <div className="px-[22px] pt-[22px] pb-[12px]">
-                  <p className="text-md font-bold text-ink">추천 플랜</p>
-                </div>
-                <div className="px-[22px]">
-                  <div className="bg-surface rounded-btn px-4 py-[15px]">
-                    <div className="flex items-center gap-2 pb-[6px]">
-                      <p className="text-sub font-bold text-ink flex-1 min-w-0">
-                        {data.guardrail.recommendedPlanLabel}
-                      </p>
-                      <span
-                        className={`rounded-badge px-2 py-[3px] text-caption font-bold shrink-0 ${
-                          data.guardrail.growthPlanAllowed
-                            ? 'bg-success-bg text-success'
-                            : 'bg-surface-muted text-ink-sub'
-                        }`}
-                      >
-                        {data.guardrail.growthPlanAllowed ? '성장형 가능' : '안정 우선'}
-                      </span>
-                    </div>
-                    <p className="text-caption text-ink-sub leading-[1.6] whitespace-pre-line">
-                      {data.guardrail.reason}
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-
             <div className="h-6" />
           </>
         )}
