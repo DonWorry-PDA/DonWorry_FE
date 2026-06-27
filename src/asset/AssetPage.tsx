@@ -336,10 +336,10 @@ function AssetPage() {
             </div>
           ) : schedule ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
-              <p className="text-sub font-semibold text-ink-sub">{nextMonthLabel} 현금 일정</p>
+              <p className="text-sub font-semibold text-ink-sub">{nextMonthLabel} 들어올 돈</p>
 
               {nextMonthEvents.length === 0 ? (
-                <p className="text-body text-ink-hint text-center py-8">{nextMonthLabel}에 예정된 현금 일정이 없어요</p>
+                <p className="text-body text-ink-hint text-center py-8">{nextMonthLabel}에 예정된 수입이 없어요</p>
               ) : (
                 nextMonthEvents.map((event, i) => (
                   <div

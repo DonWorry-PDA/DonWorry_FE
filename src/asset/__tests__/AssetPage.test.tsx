@@ -255,7 +255,7 @@ describe('AssetPage 현금 일정 카드', () => {
     mockAll({ schedule: { data: { events: [] } } })
     render(<AssetPage />)
     const nextMonthNum = new Date(today.getFullYear(), today.getMonth() + 1, 1).getMonth() + 1
-    expect(screen.getByText(`${nextMonthNum}월에 예정된 현금 일정이 없어요`)).toBeInTheDocument()
+    expect(screen.getByText(`${nextMonthNum}월에 예정된 수입이 없어요`)).toBeInTheDocument()
   })
 })
 
