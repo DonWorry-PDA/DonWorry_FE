@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'
+import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
-import { NotificationIc } from '../common/assets/icons'
+import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
-import useGetProfile from '@/mypage/hooks/useGetProfile'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
@@ -14,51 +14,19 @@ const SOL_CARDS = [
     key: 'investmentCheck' as const,
     title: '투자 건강검진',
     path: '/asset/investment-checkup',
-    icon: (
-      <svg width={34} height={34} viewBox="0 0 24 24" fill="none">
-        <circle cx="10.5" cy="10.5" r="7" fill="#069A53" fillOpacity="0.18"/>
-        <circle cx="10.5" cy="10.5" r="7" stroke="#069A53" strokeWidth="1.9"/>
-        <rect x="7.5"  y="12"  width="1.5" height="3.5" rx="0.6" fill="#069A53" fillOpacity="0.3"/>
-        <rect x="9.75" y="9.5" width="1.5" height="6"   rx="0.6" fill="#069A53" fillOpacity="0.62"/>
-        <rect x="12"   y="7"   width="1.5" height="8.5" rx="0.6" fill="#069A53"/>
-        <path d="M15.5 15.5 L19.5 19.5" stroke="#069A53" strokeWidth="2.6" strokeLinecap="round"/>
-      </svg>
-    ),
+    icon: <InvestmentCheckIc width={44} height={44} />,
   },
   {
     key: 'pensionDefer' as const,
     title: '국민연금 연기',
     path: '/pension/defer',
-    icon: (
-      <svg width={34} height={34} viewBox="0 0 24 24" fill="none">
-        <circle cx="10.5" cy="13" r="7.5" fill="#0046FF" fillOpacity="0.1"/>
-        <circle cx="10.5" cy="13" r="7.5" stroke="#0046FF" strokeWidth="1.9"/>
-        <line x1="10.5" y1="7"    x2="10.5" y2="8.5"  stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
-        <line x1="10.5" y1="17.5" x2="10.5" y2="19"   stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
-        <line x1="4.5"  y1="13"   x2="6"    y2="13"   stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
-        <line x1="15"   y1="13"   x2="16.5" y2="13"   stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
-        <path d="M10.5 13 L10.5 9"   stroke="#0046FF" strokeWidth="2.2" strokeLinecap="round"/>
-        <path d="M10.5 13 L14 14.5"  stroke="#0046FF" strokeWidth="1.9" strokeLinecap="round"/>
-        <circle cx="10.5" cy="13" r="1.3" fill="#0046FF"/>
-        <path d="M19 3 L22 5 L19 7" stroke="#0046FF" strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17 5 H22"          stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
-      </svg>
-    ),
+    icon: <PensionDeferIc width={44} height={44} />,
   },
   {
     key: 'retirementSim' as const,
     title: '은퇴 시뮬레이션',
     path: '/retirement-simulation',
-    icon: (
-      <svg width={34} height={34} viewBox="0 0 24 24" fill="none">
-        <rect x="3"    y="17"  width="4.5" height="5"    rx="1.5" fill="#DD7A06" fillOpacity="0.28"/>
-        <rect x="9.75" y="12"  width="4.5" height="10"   rx="1.5" fill="#DD7A06" fillOpacity="0.58"/>
-        <rect x="16.5" y="6.5" width="4.5" height="15.5" rx="1.5" fill="#DD7A06"/>
-        <path d="M2 22 H22" stroke="#DD7A06" strokeWidth="1.9" strokeLinecap="round"/>
-        <line x1="16.5" y1="2" x2="16.5" y2="6.5" stroke="#DD7A06" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M16.5 2 L21.5 4.25 L16.5 6.5" fill="#DD7A06"/>
-      </svg>
-    ),
+    icon: <RetirementSimIc width={44} height={44} />,
   },
 ]
 
@@ -164,15 +132,11 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
 function HomePage() {
   const navigate = useNavigate()
   const { data: hub, isLoading, refetch } = useGetAssetHub()
-  const { data: profile } = useGetProfile()
+
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
-  const menus = hub
-    ? buildMenus(hub).filter(
-        (m) => !(m.key === 'pensionDefer' && profile?.pensionStatus === '수령 중'),
-      )
-    : []
+  const allMenus = hub ? buildMenus(hub) : []
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -182,18 +146,16 @@ function HomePage() {
           <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} />
         </button>
         <div className="flex-1 min-w-0">
-          {profile ? (
-            <p className="text-heading font-bold text-ink">{profile.name}님</p>
-          ) : (
-            <div className="h-5 w-20 animate-pulse rounded bg-surface-muted" />
-          )}
+          <p className="font-brand font-bold text-ink" style={{ fontSize: pxr(28) }}>
+            연금<span className="text-primary">SOL</span>사
+          </p>
         </div>
         <button
           aria-label="알림"
           className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >
-          <NotificationIc className="text-ink" width={22} height={22} />
+          <NotificationIc className="text-ink" width={33} height={33} />
         </button>
       </header>
 
@@ -258,7 +220,7 @@ function HomePage() {
                       onClick={() => navigate('/asset/monthly-report')}
                       className="text-sub font-bold text-ink-sub px-[14px] py-[7px] rounded-badge bg-surface whitespace-nowrap"
                     >
-                      {month} 내역 전체 보기
+                      {month} 월간리포트 보기
                     </button>
                   </div>
                 </div>
@@ -337,8 +299,8 @@ function HomePage() {
             <section className="mt-1">
               <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
               <div className="grid grid-cols-3 gap-2">
-                {SOL_CARDS.filter(c => menus.some(m => m.key === c.key)).map(card => {
-                  const caption = menus.find(m => m.key === card.key)?.caption
+                {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
+                  const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
                     <button
                       key={card.key}
