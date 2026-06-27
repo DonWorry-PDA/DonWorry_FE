@@ -81,22 +81,14 @@ function AssetPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <header className="flex h-[52px] shrink-0 items-center gap-2 px-6 w-full">
-        <button
-          className="flex size-11 shrink-0 -ml-2 items-center justify-center"
-          aria-label="뒤로 가기"
-          onClick={() => navigate(-1)}
-        >
-          <BackArrowIc className="text-ink" width={22} height={22} />
-        </button>
+      <header className="flex h-[52px] items-center pl-6 pr-[14px]">
         <h1 className="flex-1 text-heading font-bold text-ink">자산분석</h1>
         <button
-          className="flex size-11 shrink-0 -mr-2 items-center justify-center"
+          className="flex size-11 items-center justify-center"
           aria-label="알림"
           onClick={() => navigate('/notification')}
-          className="flex size-11 items-center justify-center"
         >
-          <NotificationIc className="text-ink" width={22} height={22} />
+          <NotificationIc className="text-ink" width={24} height={24} />
         </button>
       </header>
 
