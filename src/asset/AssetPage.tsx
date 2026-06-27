@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackArrowIc, NotificationIc } from '../common/assets/icons'
 import { formatKrw, formatKrwShort } from '../common/utils/formatKrw'
@@ -46,6 +47,15 @@ function AssetPage() {
   const { data: schedule, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useGetAssetSchedule()
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
+
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
+
+  const toggleGroup = (category: string) =>
+    setExpandedGroups((prev) => {
+      const next = new Set(prev)
+      next.has(category) ? next.delete(category) : next.add(category)
+      return next
+    })
 
   const sortedGroups = [...(composition?.groups ?? [])].sort((a, b) => b.totalAmount - a.totalAmount)
 
@@ -172,49 +182,71 @@ function AssetPage() {
                     ))}
                   </div>
 
-                  {/* 그룹 목록 — 비율 높은 순, 하위 계좌·보유종목 상세 포함 */}
+                  {/* 그룹 목록 — 비율 높은 순, 탭 토글로 계좌·보유종목 상세 표시 */}
                   <div className="flex flex-col pt-2">
-                    {sortedGroups.map((seg, i) => (
-                      <div
-                        key={seg.category}
-                        className={`flex flex-col py-[11px] ${i < sortedGroups.length - 1 ? 'border-b border-divider' : ''}`}
-                      >
-                        {/* 그룹 헤더 */}
-                        <div className="flex items-center gap-3">
-                          <span className={`size-[9px] shrink-0 rounded-[4.5px] ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`} />
-                          <p className="flex-1 text-body font-semibold text-ink">{seg.label}</p>
-                          <div className="flex flex-col items-end gap-0.5 shrink-0">
-                            <p className="font-inter text-md font-bold text-ink">{formatKrwShort(seg.totalAmount)}</p>
-                            <p className="text-sub text-ink-sub">{toAllocationPercent(seg.totalAmount)}%</p>
-                          </div>
-                        </div>
-
-                        {/* 계좌별 상세 */}
-                        {seg.accounts.map((account) => (
-                          <div key={account.accountId} className="flex flex-col gap-1 mt-2 ml-[21px]">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5">
-                                <p className="text-sub font-semibold text-ink-sub">{account.institutionName}</p>
-                                <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">
-                                  {accountTypeLabel(account.accountType)}
-                                </span>
+                    {sortedGroups.map((seg, i) => {
+                      const isExpanded = expandedGroups.has(seg.category)
+                      return (
+                        <div
+                          key={seg.category}
+                          className={`flex flex-col ${i < sortedGroups.length - 1 ? 'border-b border-divider' : ''}`}
+                        >
+                          {/* 그룹 헤더 — 버튼으로 토글 */}
+                          <button
+                            type="button"
+                            className="flex items-center gap-3 py-[11px] w-full text-left"
+                            onClick={() => toggleGroup(seg.category)}
+                            aria-expanded={isExpanded}
+                            aria-controls={`group-detail-${seg.category}`}
+                          >
+                            <span className={`size-[9px] shrink-0 rounded-[4.5px] ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`} />
+                            <p className="flex-1 text-body font-semibold text-ink">{seg.label}</p>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div className="flex flex-col items-end gap-0.5">
+                                <p className="font-inter text-md font-bold text-ink">{formatKrwShort(seg.totalAmount)}</p>
+                                <p className="text-sub text-ink-sub">{toAllocationPercent(seg.totalAmount)}%</p>
                               </div>
-                              {account.balance > 0 && account.holdings.length === 0 && (
-                                <p className="font-inter text-sub font-semibold text-ink">{formatKrwShort(account.balance)}</p>
-                              )}
+                              <svg
+                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                aria-hidden="true"
+                                className={`text-ink-hint transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                              >
+                                <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
                             </div>
+                          </button>
 
-                            {/* 보유 종목/상품 */}
-                            {account.holdings.map((holding) => (
-                              <div key={holding.productName} className="flex items-center justify-between pl-1 py-0.5">
-                                <p className="text-sub text-ink-hint truncate mr-3">{holding.productName}</p>
-                                <p className="font-inter text-sub text-ink-sub shrink-0">{formatKrwShort(holding.evaluationAmount)}</p>
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
+                          {/* 계좌별 상세 — 토글 시 표시 */}
+                          {isExpanded && (
+                            <div id={`group-detail-${seg.category}`} className="flex flex-col gap-1 pb-3 ml-[21px]">
+                              {seg.accounts.map((account) => (
+                                <div key={account.accountId} className="flex flex-col gap-1">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5">
+                                      <p className="text-sub font-semibold text-ink-sub">{account.institutionName}</p>
+                                      <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">
+                                        {accountTypeLabel(account.accountType)}
+                                      </span>
+                                    </div>
+                                    {account.balance > 0 && account.holdings.length === 0 && (
+                                      <p className="font-inter text-sub font-semibold text-ink">{formatKrwShort(account.balance)}</p>
+                                    )}
+                                  </div>
+
+                                  {/* 보유 종목/상품 */}
+                                  {account.holdings.map((holding) => (
+                                    <div key={holding.productName} className="flex items-center justify-between pl-1 py-0.5">
+                                      <p className="text-sub text-ink-hint truncate mr-3">{holding.productName}</p>
+                                      <p className="font-inter text-sub text-ink-sub shrink-0">{formatKrwShort(holding.evaluationAmount)}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
 
                   {investmentCheck != null && (
