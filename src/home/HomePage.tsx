@@ -4,16 +4,11 @@ import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
-import useGetMonthlyReport from '@/asset/hooks/useGetMonthlyReport'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
-
-function currentYearMonth() {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-}
 import type { ManageMenu } from '@/asset/types/asset'
+
 
 const SOL_CARDS = [
   {
@@ -104,7 +99,6 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
     return menu
   })
 
-
 const toAssetData = (hub: AssetHubResponse): AssetData => ({
   totalAmountKrw: hub.totalAsset,
   changeAmount: hub.changeAmount,
@@ -112,13 +106,11 @@ const toAssetData = (hub: AssetHubResponse): AssetData => ({
   segments: hub.allocation.map((item) => ({ label: item.category, pct: item.ratio })),
 })
 
-// 생활 안정도가 아직 산출되지 않은 사용자는 null → 카드 대신 대체 표시
 const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   const lifeStability = hub.menus.lifeStability
   const salaryMaking = hub.menus.salaryMaking
   if (!lifeStability || lifeStability.grade == null) return null
 
-  // 급여 데이터가 없으면 0원으로 위장하지 않고 카드를 표시하지 않는다(대체 표시로 폴백).
   if (!salaryMaking || salaryMaking.currentAmount == null || salaryMaking.targetAmount == null) {
     return null
   }
@@ -135,80 +127,13 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   }
 }
 
-function toMan(val: number) {
-  return Math.round(val / 10_000).toLocaleString('ko-KR')
-}
-
 function HomePage() {
   const navigate = useNavigate()
   const { data: hub, isLoading, refetch } = useGetAssetHub()
 
-  const thisMonth = currentYearMonth()
-  const { data: report, isLoading: isReportLoading, isError: isReportError } = useGetMonthlyReport(thisMonth)
-
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
   const allMenus = hub ? buildMenus(hub) : []
-
-  const reportMonth = report
-    ? `${parseInt(report.month.split('-')[1])}월`
-    : `${new Date().getMonth() + 1}월`
-
-  const reportItems: ReportItem[] = report
-    ? [
-        {
-          label: '자산 변화',
-          value:
-            report.assetChange.changeAmount !== null
-              ? `${report.assetChange.changeAmount >= 0 ? '+' : ''}${toMan(report.assetChange.changeAmount)}만원`
-              : '-',
-          valueClass:
-            report.assetChange.changeAmount !== null
-              ? report.assetChange.changeAmount >= 0
-                ? 'text-success'
-                : 'text-danger'
-              : undefined,
-        },
-        {
-          label: '이번 달 지출',
-          value: `${toMan(report.spending.expenseAmount)}만원`,
-        },
-        {
-          label: '다음 달 수입',
-          value: `${toMan(report.nextMonthPreview.incomingTotal)}만원`,
-        },
-      ]
-    : []
-
-  const reportMonth = report
-    ? `${parseInt(report.month.split('-')[1])}월`
-    : `${new Date().getMonth() + 1}월`
-
-  const reportItems: ReportItem[] = report
-    ? [
-        {
-          label: '자산 변화',
-          value:
-            report.assetChange.changeAmount !== null
-              ? `${report.assetChange.changeAmount >= 0 ? '+' : ''}${toMan(report.assetChange.changeAmount)}만원`
-              : '-',
-          valueClass:
-            report.assetChange.changeAmount !== null
-              ? report.assetChange.changeAmount >= 0
-                ? 'text-success'
-                : 'text-danger'
-              : undefined,
-        },
-        {
-          label: '이번 달 지출',
-          value: `${toMan(report.spending.expenseAmount)}만원`,
-        },
-        {
-          label: '다음 달 수입',
-          value: `${toMan(report.nextMonthPreview.incomingTotal)}만원`,
-        },
-      ]
-    : []
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -249,7 +174,6 @@ function HomePage() {
             </div>
           </div>
         ) : !hub || !asset ? (
-          // 캐시된 데이터가 없을 때만 에러 화면. 백그라운드 재요청 실패 시엔 기존 데이터를 그대로 보여준다.
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
         ) : (
           <div className="flex flex-col gap-5 px-6">
@@ -276,7 +200,6 @@ function HomePage() {
               const month = hub.menus.monthlyReport?.month ?? `${new Date().getMonth() + 1}월`
               return (
                 <div className="rounded-card-lg border border-line bg-white px-5 py-[14px] flex items-center gap-3">
-                  {/* 라벨 + 금액: 화면 중앙선 기준 우측정렬 */}
                   <div className="w-[55%] grid grid-cols-[auto_1fr] gap-x-3 gap-y-[9px] items-baseline">
                     <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
                     <span className="font-inter text-btn font-bold text-ink text-right tabular-nums">
@@ -302,14 +225,12 @@ function HomePage() {
             {/* 생활 안정도 + 월급 만들기 */}
             {stability ? (
               <div className="bg-white rounded-card-xl border border-line px-5 pt-5 pb-4 flex flex-col gap-4">
-                {/* 설명 문장 + 분석 버튼 */}
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-btn text-ink-sub leading-snug flex-1">
                     {stability.status === 'stable' ? (
                       <>목표 생활비가 <span className="text-primary">채워졌어요</span></>
                     ) : (
                       <>목표 생활비의 <span className="text-primary font-bold">{stability.percentage}%</span>가 채워졌어요</>
-
                     )}
                   </p>
                   <button
@@ -320,7 +241,6 @@ function HomePage() {
                   </button>
                 </div>
 
-                {/* 달성률 그래프 */}
                 <div className="flex flex-col gap-[7px]">
                   <div className="h-[9px] rounded-full bg-track overflow-hidden">
                     <div
@@ -338,7 +258,6 @@ function HomePage() {
                   </div>
                 </div>
 
-                {/* 현금 흐름 설계하기 CTA */}
                 {stability.shortfallKrw != null && stability.shortfallKrw > 0 && (
                   <button
                     onClick={() => navigate('/paycheck-plan/assets')}
@@ -397,7 +316,6 @@ function HomePage() {
                 })}
               </div>
             </section>
-
           </div>
         )}
       </main>
