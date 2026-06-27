@@ -170,8 +170,8 @@ function ConsultPrepPage() {
         <div className="px-6 pt-[1.375rem]">
           <p className="text-caption font-semibold text-ink-hint mb-2">이번 상담에서 다룰 내용</p>
           <div className="bg-surface rounded-card-xl px-[1.1875rem] py-[1.0625rem] flex flex-col gap-[0.6875rem]">
-            {topics.map((topic) => (
-              <div key={topic} className="flex gap-[0.625rem] items-start">
+            {topics.map((topic, i) => (
+              <div key={`${i}-${topic}`} className="flex gap-[0.625rem] items-start">
                 <span className="text-primary text-body font-extrabold leading-[21px] shrink-0">·</span>
                 <span className="text-body text-ink-sub leading-[21px]">{topic}</span>
               </div>

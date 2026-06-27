@@ -70,9 +70,9 @@ function PaycheckConsultPage() {
           <ConsultCard
             card={consultCard}
             selected
+            interactive={false}
             sendChecked={sendChecked}
             onSendToggle={setSendChecked}
-            onClick={() => {}}
           />
         </div>
 
