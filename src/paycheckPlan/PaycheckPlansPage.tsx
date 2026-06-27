@@ -114,7 +114,13 @@ function PaycheckPlansPage() {
           </div>
 
           <StickyFooter>
-            <Button onClick={() => navigate('/paycheck-plan/consult')}>전문가와 같이 보기</Button>
+            <Button
+              onClick={() =>
+                navigate('/paycheck-plan/consult', { state: { context: 'SALARY_SHORTAGE' } })
+              }
+            >
+              전문가와 같이 보기
+            </Button>
           </StickyFooter>
         </>
       ) : (
