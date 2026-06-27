@@ -37,8 +37,15 @@ function StabilityPage() {
   const { data, isLoading, isError, error, refetch } = useGetLifeStability()
   const isEmptyResult = isAxiosError(error) && error.response?.status === 404
 
-  // 지표 행 탭 → 세부 정보 시트
+  // 지표 행 탭 → 세부 정보 시트. 닫힘 애니메이션(약 300ms) 동안 내용이 먼저
+  // 사라지지 않도록 열림 여부(sheetOpen)와 표시 항목(selectedItem)을 분리한다.
   const [selectedItem, setSelectedItem] = useState<StabilityItem | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+
+  const openItemDetail = (item: StabilityItem) => {
+    setSelectedItem(item)
+    setSheetOpen(true)
+  }
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -103,7 +110,7 @@ function StabilityPage() {
 
             <div className="flex flex-col gap-[9px] px-[22px]">
               {data.items.map((item) => (
-                <StabilityItemRow key={item.id} item={item} onSelect={setSelectedItem} />
+                <StabilityItemRow key={item.id} item={item} onSelect={openItemDetail} />
               ))}
             </div>
 
@@ -139,7 +146,7 @@ function StabilityPage() {
       </main>
 
       {/* 지표 세부 정보 시트 */}
-      <BottomSheet open={selectedItem !== null} onClose={() => setSelectedItem(null)}>
+      <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
         {selectedItem && <StabilityItemDetail item={selectedItem} />}
       </BottomSheet>
     </div>
