@@ -15,7 +15,7 @@ const userName = '고객'
 
 function PaycheckPlansPage() {
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useGetRecommendation()
+  const { data, isLoading, isError, refetch } = useGetRecommendation()
 
   if (isLoading) {
     return (
@@ -38,7 +38,18 @@ function PaycheckPlansPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
-        <CenterMessage variant="alert">설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</CenterMessage>
+        <CenterMessage variant="alert">
+          <div className="flex flex-col items-center gap-3">
+            <p>설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+            >
+              다시 시도
+            </button>
+          </div>
+        </CenterMessage>
       </div>
     )
   }

@@ -20,13 +20,14 @@ const won = (v: number) => `${toManwon(v).toLocaleString('ko-KR')}만원`
 
 function PaycheckPlanStatusPage() {
   const navigate = useNavigate()
-  const { data, isLoading } = useGetSalaryPlanStatus()
+  const { data, isLoading, refetch } = useGetSalaryPlanStatus()
 
   if (isLoading) {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
-        <div className="flex-1 overflow-y-auto px-6 pt-4">
+        <div role="status" aria-live="polite" className="flex-1 overflow-y-auto px-6 pt-4">
+          <span className="sr-only">월급 현황을 불러오는 중입니다.</span>
           <div className="mb-4 h-[120px] animate-pulse rounded-card-xl bg-surface-muted" />
           <div className="flex flex-col gap-3">
             {[0, 1, 2, 3].map((i) => (
@@ -43,7 +44,18 @@ function PaycheckPlanStatusPage() {
     return (
       <div className="flex flex-col h-full">
         <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
-        <CenterMessage variant="alert">현황을 불러오지 못했어요</CenterMessage>
+        <CenterMessage variant="alert">
+          <div className="flex flex-col items-center gap-3">
+            <p>현황을 불러오지 못했어요</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+            >
+              다시 시도
+            </button>
+          </div>
+        </CenterMessage>
       </div>
     )
   }
