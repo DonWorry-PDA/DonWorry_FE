@@ -1,9 +1,12 @@
 import type { ManageMenuKey, MenuIconTone } from '../types/asset'
 
 const TONE_BOX: Record<MenuIconTone, string> = {
-  primary: 'bg-primary-tint text-primary',
-  warning: 'bg-warning-bg text-warning',
-  muted: 'bg-primary-tint text-ink-sub',
+  blue:   'bg-card-blue text-white',
+  coral:  'bg-card-coral text-white',
+  pink:   'bg-card-pink text-white',
+  yellow: 'bg-card-yellow text-white',
+  mint:   'bg-card-mint text-white',
+  muted:  'bg-surface text-ink-sub',
 }
 
 const PATHS: Record<ManageMenuKey, React.ReactNode> = {
