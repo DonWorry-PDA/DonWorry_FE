@@ -134,7 +134,7 @@ export type ExecutionSummary = {
   notice: string
 }
 
-export type ConsultType = 'pb' | 'insurance'
+export type ConsultType = 'pb'
 
 export type ConsultCard = {
   type: ConsultType

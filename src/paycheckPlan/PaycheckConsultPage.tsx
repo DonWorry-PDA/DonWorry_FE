@@ -1,21 +1,36 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import SelectChip from '../common/components/SelectChip'
 import ConsultCard from './components/ConsultCard'
-import { mockConsultCards, mockTimeSlots } from './mock/paycheckPlan'
-import type { ConsultType } from './types/paycheckPlan'
+import { mockTimeSlots } from './mock/paycheckPlan'
+import type { ConsultCard as ConsultCardType } from './types/paycheckPlan'
+import { resolveConsultContext, type ConsultContext } from './constants/consultContext'
 import { usePostConsultation } from '../mypage/hooks/consultation'
 import { buildScheduledAtIso } from '../mypage/utils/consultation'
 
+type ConsultLocationState = { context?: ConsultContext; planId?: string | number | null }
+
 function PaycheckConsultPage() {
   const navigate = useNavigate()
-  const [selectedType, setSelectedType] = useState<ConsultType>('pb')
+  const { state } = useLocation() as { state: ConsultLocationState | null }
+  const copy = resolveConsultContext(state?.context)
+  const planId = state?.planId != null ? Number(state.planId) : null
   const [sendChecked, setSendChecked] = useState(true)
   const [selectedTime, setSelectedTime] = useState('10:30')
   const createConsultation = usePostConsultation()
+
+  // PB 카드 단일 — 진입 맥락별로 부제/설명만 교체. 보험 점검 카드는 제거됨.
+  const consultCard: ConsultCardType = {
+    type: 'pb',
+    title: 'PB 상담',
+    subtitle: copy.subtitle,
+    description: copy.description,
+    badge: '검토 중',
+    hasSendToggle: true,
+  }
 
   // 날짜 선택 UI 미연동 — 시연용으로 5일 뒤로 고정(표시·전송에 동일 값 사용)
   const [reservationDate] = useState(() => {
@@ -29,9 +44,11 @@ function PaycheckConsultPage() {
   const handleReserve = () => {
     createConsultation.mutate(
       {
-        consultType: selectedType === 'pb' ? 'PB' : 'INSURANCE',
+        consultType: 'PB',
         scheduledAt: buildScheduledAtIso(reservationDate, selectedTime),
-        planId: null,
+        planId,
+        // 토글이 켜진 경우에만 진입 맥락을 함께 전달. 끄면 BE 기본 제목·빈 다룰내용으로 저장.
+        ...(sendChecked ? { topic: copy.topic, contextTopics: copy.topics } : {}),
       },
       { onSuccess: () => navigate('/mypage/consult-history') },
     )
@@ -50,16 +67,13 @@ function PaycheckConsultPage() {
         <p className="text-body text-ink-sub mb-5">가입을 권하는 게 아니라, 진단에서 나온 것만 연결해드려요.</p>
 
         <div className="flex flex-col gap-3 mb-6">
-          {mockConsultCards.map((card) => (
-            <ConsultCard
-              key={card.type}
-              card={card}
-              selected={selectedType === card.type}
-              sendChecked={sendChecked}
-              onSendToggle={setSendChecked}
-              onClick={() => setSelectedType(card.type)}
-            />
-          ))}
+          <ConsultCard
+            card={consultCard}
+            selected
+            sendChecked={sendChecked}
+            onSendToggle={setSendChecked}
+            onClick={() => {}}
+          />
         </div>
 
         <div className="mb-1">
