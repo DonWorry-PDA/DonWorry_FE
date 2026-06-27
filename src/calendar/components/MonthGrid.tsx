@@ -1,5 +1,5 @@
 import type { DayEventsMap } from '../types/calendar'
-import { BLOCK_STYLE, FLOW_STYLE, blockCategoriesOf, flowTypesOf } from '../flowType'
+import { BLOCK_STYLE, FLOW_STYLE, blockCategoriesOf, flowTypesOf, isBlockEstimated } from '../flowType'
 import { buildMonthGrid, WEEKDAY_LABELS } from '../utils/monthGrid'
 
 type Props = {
@@ -70,10 +70,14 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                 <span className="flex w-full flex-col items-stretch gap-px px-0.5">
                   {blocks.map((cat) => {
                     const b = BLOCK_STYLE[cat]
+                    // 확정=채운 칩 / 예정(estimated)=점선 테두리 칩 (배당 등 미래 예정분 구분)
+                    const estimated = isBlockEstimated(dayEvents, cat)
                     return (
                       <span
                         key={cat}
-                        className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${b.chip}`}
+                        className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${
+                          estimated ? b.estimatedChip : b.chip
+                        }`}
                       >
                         {b.label}
                       </span>
