@@ -33,6 +33,11 @@ export type TermAgreement = {
   agreedAt: string | null
 }
 
+export type OptionalTermsResponse = {
+  thirdParty: { agreed: boolean; agreedAt: string | null }
+  marketing: { agreed: boolean; agreedAt: string | null }
+}
+
 export type ConsultStatus = 'reserved' | 'completed'
 
 export type ConsultRecord = {

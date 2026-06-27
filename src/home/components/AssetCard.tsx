@@ -46,7 +46,7 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
               strokeDashoffset={0}
               transform={`rotate(${segmentAngles[i]} ${CX} ${CY})`}
               opacity={isDimmed ? 0.3 : 1}
-              style={{ transition: 'stroke-width 0.15s, opacity 0.15s' }}
+              className="donut-transition"
             />
             {/* 히트 영역 */}
             <circle
