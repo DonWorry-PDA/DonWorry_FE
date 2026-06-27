@@ -48,11 +48,11 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
             key={label}
             cx={CX} cy={CY} r={R}
             stroke={SEGMENT_COLORS[i % SEGMENT_COLORS.length]}
-            strokeWidth={16}
+            strokeWidth={active?.label === label ? 24 : 16}
             strokeDasharray={`${segLength} ${circumference}`}
             strokeDashoffset={0}
             transform={`rotate(${segmentAngles[i]} ${CX} ${CY})`}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', transition: 'stroke-width 0.18s ease' }}
             onMouseEnter={() => setActive({ label, pct })}
             onMouseLeave={() => setActive(null)}
             onClick={e => {
@@ -65,7 +65,7 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
       {active && (
         <>
           <text
-            x={CX} y={CY - 5}
+            x={CX} y={CY - 7}
             textAnchor="middle" dominantBaseline="central"
             fontFamily="'Noto Sans KR', sans-serif" fontWeight="400" fontSize="7"
             fill="rgba(255,255,255,0.8)"
@@ -73,7 +73,7 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
             {active.label}
           </text>
           <text
-            x={CX} y={CY + 8}
+            x={CX} y={CY + 6}
             textAnchor="middle" dominantBaseline="central"
             fontFamily="Inter, sans-serif" fontWeight="600" fontSize="9"
             fill="white"
