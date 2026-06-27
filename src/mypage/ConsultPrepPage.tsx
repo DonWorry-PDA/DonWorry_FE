@@ -4,6 +4,7 @@ import AppBar from '../common/components/AppBar'
 import StickyFooter from '../common/components/StickyFooter'
 import { useGetConsultation } from './hooks/consultation'
 import { methodLabel, parseScheduledAt } from './utils/consultation'
+import { CONSULT_CONTEXT_FALLBACK } from '../paycheckPlan/constants/consultContext'
 
 type CheckItem = {
   id: string
@@ -17,12 +18,6 @@ const PREP_ITEMS: CheckItem[] = [
   { id: 'account', label: '연결된 계좌 정보', subLabel: '앱에 연결한 자산이면 충분해요' },
   { id: 'pension', label: '국민연금 가입내역서', subLabel: '정부24·국민연금공단에서 발급' },
   { id: 'insurance', label: '보유 보험 증권', subLabel: '의료비 대비 점검 시 참고', optional: true },
-]
-
-const TOPICS = [
-  '은퇴 자산 배분 점검 — 예금에 쏠린 비중 진단',
-  '월 220만원 목표 현금흐름 설계',
-  '국민연금 수령 시점(연기 1년) 비교',
 ]
 
 function CheckIcon({ checked }: { checked: boolean }) {
@@ -102,6 +97,8 @@ function ConsultPrepPage() {
   }
 
   const parsed = parseScheduledAt(record.scheduledAt)
+  // 신청 시 전달된 맥락 "다룰 내용". 없으면(직접 진입·미전송) 중립 폴백.
+  const topics = record.contextTopics?.length ? record.contextTopics : CONSULT_CONTEXT_FALLBACK.topics
   const reservationRows = [
     { label: '지점', value: record.location ?? '—' },
     { label: '상담원', value: record.counselorName ?? '—' },
@@ -173,8 +170,8 @@ function ConsultPrepPage() {
         <div className="px-6 pt-[1.375rem]">
           <p className="text-caption font-semibold text-ink-hint mb-2">이번 상담에서 다룰 내용</p>
           <div className="bg-surface rounded-card-xl px-[1.1875rem] py-[1.0625rem] flex flex-col gap-[0.6875rem]">
-            {TOPICS.map((topic) => (
-              <div key={topic} className="flex gap-[0.625rem] items-start">
+            {topics.map((topic, i) => (
+              <div key={`${i}-${topic}`} className="flex gap-[0.625rem] items-start">
                 <span className="text-primary text-body font-extrabold leading-[21px] shrink-0">·</span>
                 <span className="text-body text-ink-sub leading-[21px]">{topic}</span>
               </div>
