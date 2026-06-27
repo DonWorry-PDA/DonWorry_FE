@@ -181,16 +181,18 @@ function HomePage() {
             <section>
               <div
                 className="w-full cursor-pointer"
-                onClick={() => navigate('/asset')}
+                onClick={() => navigate('/asset', { state: { from: 'home' } })}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/asset', { state: { from: 'home' } }) }}
                 role="link"
                 aria-label="자산분석 페이지로 이동"
+                tabIndex={0}
               >
                 <AssetCard
                   totalAmountKrw={asset.totalAmountKrw}
                   changeAmount={asset.changeAmount}
                   changeDirection={asset.changeDirection}
                   segments={asset.segments}
-                  onAnalysisClick={() => navigate('/asset')}
+                  onAnalysisClick={() => navigate('/asset', { state: { from: 'home' } })}
                 />
               </div>
             </section>
@@ -296,7 +298,7 @@ function HomePage() {
                     <button
                       key={card.key}
                       onClick={() => navigate(card.path)}
-                      className="bg-surface rounded-card-lg aspect-square flex flex-col justify-between p-[14px] text-left"
+                      className="bg-surface rounded-card-lg min-h-[9.5rem] flex flex-col justify-between p-[14px] text-left"
                     >
                       <div className="flex flex-col gap-1">
                         <p className="text-md font-bold text-ink leading-snug break-keep">
