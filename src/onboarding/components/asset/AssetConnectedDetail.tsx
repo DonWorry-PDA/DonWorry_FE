@@ -10,11 +10,13 @@ interface Props {
 
 function AssetConnectedDetail({ onClose }: Props) {
   const { data: institutions, isPending, isError } = useGetMydataInstitutions()
-  const { data: institutionCount } = useGetMydataInstitutionCount()
+  const { data: institutionCount, isPending: isCountPending } = useGetMydataInstitutionCount()
 
   const connected = (institutions ?? []).filter((i) => i.connected)
-  // 연결 기관 수는 BE의 단일 출처(connected-count)를 우선 쓰고, 로딩 중에는 목록 길이로 채운다.
+  // 연결 기관 수는 BE의 단일 출처(connected-count)를 우선 쓰고, 미도착 시 목록 길이로 채운다.
   const count = institutionCount ?? connected.length
+  // 두 쿼리가 모두 도착하기 전에는 0이 잠깐 노출되므로 숫자를 스켈레톤으로 가린다.
+  const isCountReady = !isPending && !isCountPending
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -44,7 +46,11 @@ function AssetConnectedDetail({ onClose }: Props) {
             마이데이터
           </span>
           <p className="text-body text-ink">
-            <span className="font-bold text-primary">{count}</span>
+            {isCountReady ? (
+              <span className="font-bold text-primary">{count}</span>
+            ) : (
+              <span className="inline-block h-4 w-6 animate-pulse rounded bg-surface-muted align-middle" />
+            )}
             개 기관의 자산을 연결했어요.
           </p>
         </div>
