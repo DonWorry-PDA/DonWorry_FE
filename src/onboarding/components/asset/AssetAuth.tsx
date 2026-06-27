@@ -1,5 +1,6 @@
 import { BackArrowIc } from '../../../common/assets/icons'
 import useCurrentUser from '../../../common/hooks/useCurrentUser'
+import { calcDday } from '../../../common/utils/formatDate'
 
 interface Props {
   onNext: () => void
@@ -7,7 +8,7 @@ interface Props {
 }
 
 // 신한인증서 만료일(목업). 사용자별 인증서 데이터가 BE에 없어 정적 값으로 유지하되,
-// 만료일을 단일 출처로 두고 표시 문자열과 D-day를 함께 파생해 값이 서로 어긋나지 않게 한다.
+// 만료일을 단일 출처로 두고 표시 문자열과 D-day(calcDday)를 함께 파생해 값이 서로 어긋나지 않게 한다.
 const CERT_EXPIRY = new Date(2028, 1, 29) // 2028-02-29
 
 function formatExpiry(date: Date) {
@@ -15,12 +16,6 @@ function formatExpiry(date: Date) {
   const mm = String(date.getMonth() + 1).padStart(2, '0')
   const dd = String(date.getDate()).padStart(2, '0')
   return `${yy}.${mm}.${dd}`
-}
-
-function daysUntil(date: Date) {
-  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
-  const diff = startOfDay(date).getTime() - startOfDay(new Date()).getTime()
-  return Math.round(diff / (1000 * 60 * 60 * 24))
 }
 
 function AssetAuth({ onNext, onPrev }: Props) {
@@ -100,7 +95,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
           <p className="text-body mt-4">만료일 {formatExpiry(CERT_EXPIRY)}</p>
 
           <span className="rounded-badge text-sub mt-2 inline-block bg-white/20 px-2.5 py-0.5">
-            D-{daysUntil(CERT_EXPIRY)}
+            {calcDday(CERT_EXPIRY)}
           </span>
         </div>
 
