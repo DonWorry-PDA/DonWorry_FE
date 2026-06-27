@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import client from '@/common/api/client'
 import { BackArrowIc } from '../../common/assets/icons'
 import StickyFooter from '../../common/components/StickyFooter'
 
@@ -83,6 +84,7 @@ function AllAgreeCheckbox({ checked }: { checked: boolean }) {
 function TermsAgree({ onNext, onPrev }: Props) {
   const navigate = useNavigate()
   const [checked, setChecked] = useState<CheckedState>(loadChecked)
+  const [isPending, setIsPending] = useState(false)
 
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(checked))
@@ -100,8 +102,19 @@ function TermsAgree({ onNext, onPrev }: Props) {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  function handleProceed() {
+  async function handleProceed() {
+    setIsPending(true)
     sessionStorage.removeItem(STORAGE_KEY)
+    const results = await Promise.allSettled([
+      client.patch('/api/user/terms/thirdParty/consent', { agreed: checked.thirdParty }),
+      client.patch('/api/user/terms/marketing/consent', { agreed: checked.marketing }),
+    ])
+    results.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.error(`선택 약관 동의 저장 실패 [${i === 0 ? 'thirdParty' : 'marketing'}]:`, result.reason)
+      }
+    })
+    setIsPending(false)
     onNext()
   }
 
@@ -196,7 +209,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
         <button
           type="button"
           onClick={handleProceed}
-          disabled={!allRequiredChecked}
+          disabled={!allRequiredChecked || isPending}
           className="h-[54px] w-full rounded-card bg-primary text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           동의하고 시작하기
