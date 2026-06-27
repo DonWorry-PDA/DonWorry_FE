@@ -16,7 +16,8 @@ const MENU_BASE: ManageMenu[] = [
     key: 'salaryMaking',
     title: '월급 만들기',
     caption: '목표 대비 현재 현금흐름',
-    path: '/paycheck-plan/assets',
+    // 기이용자(ACTIVE plan)면 운용현황, 아니면 status 페이지가 /assets로 자체 리다이렉트.
+    path: '/paycheck-plan/status',
     iconTone: 'primary',
     highlighted: true,
   },

@@ -25,6 +25,7 @@ import PaycheckDiagnosisPage from './paycheckPlan/PaycheckDiagnosisPage'
 import PaycheckPlansPage from './paycheckPlan/PaycheckPlansPage'
 import PaycheckComparePage from './paycheckPlan/PaycheckComparePage'
 import PaycheckPlanDetailPage from './paycheckPlan/PaycheckPlanDetailPage'
+import PaycheckPlanStatusPage from './paycheckPlan/PaycheckPlanStatusPage'
 import PaycheckExecutePage from './paycheckPlan/PaycheckExecutePage'
 import PaycheckConsultPage from './paycheckPlan/PaycheckConsultPage'
 import StabilityPage from './stability/StabilityPage'
@@ -89,6 +90,7 @@ const router = createBrowserRouter([
   { path: '/mypage', element: <MypagePage /> },
   { path: '/notification', element: <NotificationPage /> },
   { path: '/notification/settings', element: <NotificationSettingsPage /> },
+  { path: '/paycheck-plan/status', element: <PaycheckPlanStatusPage /> },
   { path: '/paycheck-plan/assets', element: <PaycheckAssetSelectPage /> },
   { path: '/paycheck-plan/diagnosis', element: <PaycheckDiagnosisPage /> },
   { path: '/paycheck-plan/plans', element: <PaycheckPlansPage /> },
