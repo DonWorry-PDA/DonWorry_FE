@@ -2,14 +2,65 @@ import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
-import StabilityCard from './components/StabilityCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
 import useGetProfile from '@/mypage/hooks/useGetProfile'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
-import type { AssetData, HomeStabilityData, ReportItem } from './types/home'
+import type { AssetData, HomeStabilityData } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
-import ManageMenuCard from '@/asset/components/ManageMenuCard'
 import type { ManageMenu } from '@/asset/types/asset'
+
+const SOL_CARDS = [
+  {
+    key: 'investmentCheck' as const,
+    title: '투자 건강검진',
+    path: '/asset/investment-checkup',
+    icon: (
+      <svg width={34} height={34} viewBox="0 0 24 24" fill="none">
+        <circle cx="10.5" cy="10.5" r="7" fill="#069A53" fillOpacity="0.18"/>
+        <circle cx="10.5" cy="10.5" r="7" stroke="#069A53" strokeWidth="1.9"/>
+        <rect x="7.5"  y="12"  width="1.5" height="3.5" rx="0.6" fill="#069A53" fillOpacity="0.3"/>
+        <rect x="9.75" y="9.5" width="1.5" height="6"   rx="0.6" fill="#069A53" fillOpacity="0.62"/>
+        <rect x="12"   y="7"   width="1.5" height="8.5" rx="0.6" fill="#069A53"/>
+        <path d="M15.5 15.5 L19.5 19.5" stroke="#069A53" strokeWidth="2.6" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    key: 'pensionDefer' as const,
+    title: '국민연금 연기',
+    path: '/pension/defer',
+    icon: (
+      <svg width={34} height={34} viewBox="0 0 24 24" fill="none">
+        <circle cx="10.5" cy="13" r="7.5" fill="#0046FF" fillOpacity="0.1"/>
+        <circle cx="10.5" cy="13" r="7.5" stroke="#0046FF" strokeWidth="1.9"/>
+        <line x1="10.5" y1="7"    x2="10.5" y2="8.5"  stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
+        <line x1="10.5" y1="17.5" x2="10.5" y2="19"   stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
+        <line x1="4.5"  y1="13"   x2="6"    y2="13"   stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
+        <line x1="15"   y1="13"   x2="16.5" y2="13"   stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
+        <path d="M10.5 13 L10.5 9"   stroke="#0046FF" strokeWidth="2.2" strokeLinecap="round"/>
+        <path d="M10.5 13 L14 14.5"  stroke="#0046FF" strokeWidth="1.9" strokeLinecap="round"/>
+        <circle cx="10.5" cy="13" r="1.3" fill="#0046FF"/>
+        <path d="M19 3 L22 5 L19 7" stroke="#0046FF" strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 5 H22"          stroke="#0046FF" strokeWidth="2"   strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    key: 'retirementSim' as const,
+    title: '은퇴 시뮬레이션',
+    path: '/retirement-simulation',
+    icon: (
+      <svg width={34} height={34} viewBox="0 0 24 24" fill="none">
+        <rect x="3"    y="17"  width="4.5" height="5"    rx="1.5" fill="#DD7A06" fillOpacity="0.28"/>
+        <rect x="9.75" y="12"  width="4.5" height="10"   rx="1.5" fill="#DD7A06" fillOpacity="0.58"/>
+        <rect x="16.5" y="6.5" width="4.5" height="15.5" rx="1.5" fill="#DD7A06"/>
+        <path d="M2 22 H22" stroke="#DD7A06" strokeWidth="1.9" strokeLinecap="round"/>
+        <line x1="16.5" y1="2" x2="16.5" y2="6.5" stroke="#DD7A06" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M16.5 2 L21.5 4.25 L16.5 6.5" fill="#DD7A06"/>
+      </svg>
+    ),
+  },
+]
 
 const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
   if (grade === 'STABLE') return 'stable'
@@ -23,58 +74,30 @@ const MENU_BASE: ManageMenu[] = [
     title: '월급 만들기',
     caption: '목표 대비 현재 현금흐름',
     path: '/paycheck-plan/assets',
-    iconTone: 'primary',
-    highlighted: true,
-  },
-  {
-    key: 'lifeStability',
-    title: '생활 안정도',
-    caption: '생활비 충당률',
-    path: '/stability',
-    iconTone: 'muted',
+    iconTone: 'pink',
   },
   {
     key: 'investmentCheck',
     title: '투자 건강검진',
     caption: '월급 만드는 자산\n32%뿐이에요',
     path: '/asset/investment-checkup',
-    iconTone: 'muted',
+    iconTone: 'coral',
   },
   {
     key: 'pensionDefer',
     title: '국민연금 연기',
-    caption: '5년 미루면\n평생 +43만원',
+    caption: '5년 미루면\n평생 +43만원이에요',
     path: '/pension/defer',
-    iconTone: 'muted',
+    iconTone: 'yellow',
   },
   {
     key: 'retirementSim',
     title: '은퇴 시뮬레이션',
-    caption: '조건 바꿔\n미리 보기',
+    caption: '조건을 바꿔\n미리 볼 수 있어요',
     path: '/retirement-simulation',
-    iconTone: 'muted',
-  },
-  {
-    key: 'monthlyReport',
-    title: '월간 리포트',
-    caption: '6월 리포트가\n도착했어요',
-    path: '/asset/monthly-report',
-    iconTone: 'muted',
-    isNew: true,
+    iconTone: 'mint',
   },
 ]
-
-const STATUS_TEXT: Record<StabilityStatus, string> = {
-  stable: '안정',
-  warning: '주의',
-  danger: '위험',
-}
-
-const STATUS_ICON_TONE: Record<StabilityStatus, ManageMenu['iconTone']> = {
-  stable: 'muted',
-  warning: 'warning',
-  danger: 'warning',
-}
 
 const toMan = (krw: number) => Math.round(krw / 10_000).toLocaleString('ko-KR')
 
@@ -90,34 +113,16 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
       return { ...menu, caption, progressPct: salaryMaking.achievementRate ?? undefined }
     }
 
-    if (menu.key === 'lifeStability') {
-      const lifeStability = hub.menus.lifeStability
-      if (!lifeStability || lifeStability.grade == null) {
-        return { ...menu, caption: '아직 결과가 없어요' }
-      }
-      const status = gradeToStatus(lifeStability.grade)
-      return {
-        ...menu,
-        caption:
-          lifeStability.coverageRate != null
-            ? `충당률 ${Math.round(lifeStability.coverageRate)}%`
-            : menu.caption,
-        iconTone: STATUS_ICON_TONE[status],
-        statusDot: status,
-        statusText: STATUS_TEXT[status],
-      }
-    }
-
     if (menu.key === 'investmentCheck') {
       const ratio = hub.menus.investmentCheck?.cashflowAssetRatio
       if (ratio == null) return menu
-      return { ...menu, caption: `월급 만드는 자산\n${ratio}%뿐이에요` }
+      return { ...menu, caption: `월급 만드는 자산이\n${ratio}%뿐이에요` }
     }
 
     if (menu.key === 'retirementSim') {
       const retirementSim = hub.menus.retirementSim
       if (retirementSim && retirementSim.available === false) {
-        return { ...menu, caption: '준비 중', iconTone: 'muted' }
+        return { ...menu, caption: '곧 이용할 수 있어요', iconTone: 'muted' }
       }
       return menu
     }
@@ -125,18 +130,12 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
     return menu
   })
 
-// 월간 리포트(#6)는 아직 미구현이라 mock 유지
-const MOCK_REPORT_MONTH = '6월'
-const MOCK_REPORT: ReportItem[] = [
-  { label: '배당금 변동', value: '+12.4%', valueClass: 'text-success' },
-  { label: '다음 달 수입', value: '130만원' },
-  { label: '소비 수준', value: '적정' },
-]
 
 const toAssetData = (hub: AssetHubResponse): AssetData => ({
   totalAmountKrw: hub.totalAsset,
+  changeAmount: hub.changeAmount,
+  changeDirection: hub.changeDirection,
   segments: hub.allocation.map((item) => ({ label: item.category, pct: item.ratio })),
-  monthlyIncomeKrw: hub.monthlyIncome,
 })
 
 // 생활 안정도가 아직 산출되지 않은 사용자는 null → 카드 대신 대체 표시
@@ -169,6 +168,11 @@ function HomePage() {
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
+  const menus = hub
+    ? buildMenus(hub).filter(
+        (m) => !(m.key === 'pensionDefer' && profile?.pensionStatus === '수령 중'),
+      )
+    : []
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -205,7 +209,7 @@ function HomePage() {
               ))}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {[0, 1, 2, 3, 4, 5].map((i) => (
+              {[0, 1, 2, 3].map((i) => (
                 <div key={i} className="h-[120px] animate-pulse rounded-card-lg border border-line bg-surface-muted" />
               ))}
             </div>
@@ -217,70 +221,149 @@ function HomePage() {
           <div className="flex flex-col gap-5 px-6">
             {/* 총 자산 */}
             <section>
-              <div className="mb-3 flex items-center justify-between">
-                <button className="text-body text-ink font-bold min-h-11 px-2 -ml-2" onClick={() => navigate('/asset')}>총 자산 ›</button>
-                <button className="text-sub text-ink-hint min-h-11 px-2 -mr-2" onClick={() => navigate('/asset')}>분석 보기</button>
-              </div>
-              <button
-                className="w-full text-left"
+              <div
+                className="w-full cursor-pointer"
                 onClick={() => navigate('/asset')}
+                role="link"
                 aria-label="자산분석 페이지로 이동"
               >
                 <AssetCard
                   totalAmountKrw={asset.totalAmountKrw}
+                  changeAmount={asset.changeAmount}
+                  changeDirection={asset.changeDirection}
                   segments={asset.segments}
-                  monthlyIncomeKrw={asset.monthlyIncomeKrw}
+                  onAnalysisClick={() => navigate('/asset')}
                 />
-              </button>
+              </div>
             </section>
 
-            {/* 생활 안정도 */}
+            {/* 월간 리포트 요약 */}
+            {(() => {
+              const month = hub.menus.monthlyReport?.month ?? `${new Date().getMonth() + 1}월`
+              return (
+                <div className="rounded-card-lg border border-line bg-white px-5 py-[14px] flex items-center gap-3">
+                  {/* 라벨 + 금액: 화면 중앙선 기준 우측정렬 */}
+                  <div className="w-[55%] grid grid-cols-[auto_1fr] gap-x-3 gap-y-[9px] items-baseline">
+                    <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
+                    <span className="font-inter text-btn font-bold text-ink text-right tabular-nums">
+                      {hub.monthlyExpense.toLocaleString('ko-KR')}원
+                    </span>
+                    <span className="text-sub text-ink-hint shrink-0">{month} 수입</span>
+                    <span className="font-inter text-btn font-bold text-primary text-right tabular-nums">
+                      {hub.monthlyIncome.toLocaleString('ko-KR')}원
+                    </span>
+                  </div>
+                  <div className="flex-1 flex justify-end">
+                    <button
+                      onClick={() => navigate('/asset/monthly-report')}
+                      className="text-sub font-bold text-ink-sub px-[14px] py-[7px] rounded-badge bg-surface whitespace-nowrap"
+                    >
+                      {month} 내역 전체 보기
+                    </button>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* 생활 안정도 + 월급 만들기 */}
             {stability ? (
-              <StabilityCard data={stability} />
+              <div className="bg-white rounded-card-xl border border-line px-5 pt-5 pb-4 flex flex-col gap-4">
+                {/* 설명 문장 + 분석 버튼 */}
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-btn text-ink-sub leading-snug flex-1">
+                    {stability.status === 'stable' ? (
+                      <>목표 생활비가 <span className="text-primary">채워졌어요</span></>
+                    ) : (
+                      <>목표 생활비의 <span className="text-primary font-bold">{stability.percentage}%</span>가 채워졌어요</>
+
+                    )}
+                  </p>
+                  <button
+                    onClick={() => navigate('/stability')}
+                    className="shrink-0 text-sub font-bold text-ink-sub px-[14px] py-[7px] rounded-badge bg-surface whitespace-nowrap"
+                  >
+                    분석
+                  </button>
+                </div>
+
+                {/* 달성률 그래프 */}
+                <div className="flex flex-col gap-[7px]">
+                  <div className="h-[9px] rounded-full bg-track overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${Math.min(Math.max(stability.percentage, 0), 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-caption text-ink-hint">
+                      현재 {Math.round(stability.currentIncomeKrw / 10_000).toLocaleString('ko-KR')}만원
+                    </span>
+                    <span className="text-caption text-ink-hint">
+                      목표 {Math.round(stability.targetIncomeKrw / 10_000).toLocaleString('ko-KR')}만원
+                    </span>
+                  </div>
+                </div>
+
+                {/* 현금 흐름 설계하기 CTA */}
+                {stability.shortfallKrw != null && stability.shortfallKrw > 0 && (
+                  <button
+                    onClick={() => navigate('/paycheck-plan/assets')}
+                    className="w-full bg-surface text-ink rounded-btn py-[14px] px-5 flex items-center justify-between"
+                  >
+                    <span className="text-btn font-bold">월급 설계하기</span>
+                    <span className="text-body flex items-center gap-[3px]">
+                      <span className="text-ink-sub">부족한 금액</span>
+                      <span className="text-ink tabular-nums">{stability.shortfallKrw.toLocaleString('ko-KR')}원</span>
+                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-ink-sub">
+                        <path d="M9 18 L15 12 L9 6"/>
+                      </svg>
+                    </span>
+                  </button>
+                )}
+              </div>
             ) : (
               <button
-                onClick={() => navigate('/stability')}
-                className="w-full bg-white rounded-card-xl border border-line p-5 text-left flex flex-col gap-[7px]"
+                onClick={() => navigate('/paycheck-plan/assets')}
+                className="w-full bg-white rounded-card-xl border border-line p-5 text-left flex flex-col gap-2"
               >
-                <span className="text-card font-bold text-ink">생활 안정도</span>
+                <span className="text-md font-bold text-ink">월급 만들기</span>
                 <p className="text-sub text-ink-sub leading-[1.62]">
                   아직 생활 안정도 결과가 없어요. 자산을 연결하면 분석해 드려요.
                 </p>
               </button>
             )}
 
-            {/* 관리 메뉴 */}
-            <section>
-              <h2 className="text-body text-ink mb-3 font-bold">관리 메뉴</h2>
-              <div className="grid grid-cols-2 gap-3 [grid-auto-rows:1fr]">
-                {buildMenus(hub).map((menu) => (
-                  <ManageMenuCard key={menu.key} menu={menu} onClick={() => navigate(menu.path)} />
-                ))}
+            {/* 마이 SOL */}
+            <section className="mt-1">
+              <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
+              <div className="grid grid-cols-3 gap-2">
+                {SOL_CARDS.filter(c => menus.some(m => m.key === c.key)).map(card => {
+                  const caption = menus.find(m => m.key === card.key)?.caption
+                  return (
+                    <button
+                      key={card.key}
+                      onClick={() => navigate(card.path)}
+                      className="bg-surface rounded-card-lg aspect-square flex flex-col justify-between p-[14px] text-left"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <p className="text-md font-bold text-ink leading-snug">
+                          {card.title}
+                        </p>
+                        {caption && (
+                          <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                            {caption}
+                          </p>
+                        )}
+                      </div>
+                      <div className="self-end">
+                        {card.icon}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             </section>
 
-            {/* 리포트 */}
-            <section className="pb-2">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-body text-ink font-bold">{MOCK_REPORT_MONTH} 리포트 ›</span>
-                <span className="text-sub text-ink-hint">전체보기</span>
-              </div>
-              <div className="rounded-card-lg border border-line bg-white px-3 py-[9px]">
-                <div className="flex gap-2">
-                  {MOCK_REPORT.map(({ label, value, valueClass }) => (
-                    <div
-                      key={label}
-                      className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
-                    >
-                      <p className="text-caption text-ink-hint">{label}</p>
-                      <p className={`text-md text-ink pt-0.5 font-bold ${valueClass ?? ''}`}>
-                        {value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
           </div>
         )}
       </main>
