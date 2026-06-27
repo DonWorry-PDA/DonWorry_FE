@@ -5,7 +5,6 @@ import type {
   ComparisonTable,
   PlanDetail,
   ExecutionSummary,
-  ConsultCard,
   TimeSlot,
 } from '../types/paycheckPlan'
 
@@ -243,23 +242,6 @@ export const mockExecutionSummary: ExecutionSummary = {
   estimatedFee: 12,
   notice: '주문은 장중에 시장가로 체결돼요. 지금은 거래 시간이라 바로 진행됩니다.',
 }
-
-export const mockConsultCards: ConsultCard[] = [
-  {
-    type: 'pb',
-    title: 'PB 상담',
-    subtitle: '국민연금 미루기 결정',
-    description: "보고 계시던 '전부 5년 미루기' 비교표를 상담사에게 미리 전달해요.",
-    badge: '검토 중',
-    hasSendToggle: true,
-  },
-  {
-    type: 'insurance',
-    title: '보험 점검',
-    subtitle: '의료비 대비',
-    description: "의료비 대비력이 '주의' 단계예요. 지금 보장으로 충분한지 점검해요.",
-  },
-]
 
 export const mockTimeSlots: TimeSlot[] = [
   { time: '10:30', period: '오전' },

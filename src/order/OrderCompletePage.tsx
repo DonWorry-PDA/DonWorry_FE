@@ -1,10 +1,19 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../common/components/Button'
 import CheckBadge from '../common/components/CheckBadge'
+import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
+import { findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
 
 function OrderCompletePage() {
   const navigate = useNavigate()
   const { state } = useLocation()
+  const planId = (state as { planId?: string } | null)?.planId
+
+  const { data, isLoading, isError } = useGetRecommendation()
+  const plan = data && planId ? findPlan(data, planId) : undefined
+  const summary = data && plan ? mapExecutionSummary(data, plan) : undefined
+
+  const summaryUnavailable = isLoading || isError || !planId || (data && !plan)
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -17,17 +26,26 @@ function OrderCompletePage() {
         {/* 월수입 변화 카드 */}
         <div className="w-full rounded-card-lg bg-primary px-5 py-5 mb-4">
           <p className="text-sub text-white/70 mb-1">이제 매달 받는 돈</p>
-          <div className="flex items-center gap-2">
-            <span className="font-inter text-display font-bold text-white">130만원</span>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white/60">
-              <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="font-inter text-display font-bold text-white">185만원</span>
-          </div>
-          <p className="text-sub text-white/70 mt-2">다음 분배금 입금 · 7월 15일</p>
+          {summaryUnavailable ? (
+            <p className="text-body text-white/70">
+              {isLoading ? '불러오는 중...' : '설계안 정보를 확인할 수 없어요'}
+            </p>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="font-inter text-display font-bold text-white">
+                {summary!.cashflowFrom.toLocaleString('ko-KR')}만원
+              </span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white/60">
+                <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="font-inter text-display font-bold text-white">
+                {summary!.cashflowTo.toLocaleString('ko-KR')}만원
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* 홈·캘린더 반영 */}
+        {/* 충당률 반영 */}
         <div className="w-full rounded-card border border-line px-4 py-4 flex items-center gap-3 mb-4">
           <div className="size-6 rounded-full bg-success flex items-center justify-center shrink-0">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -36,7 +54,13 @@ function OrderCompletePage() {
           </div>
           <div>
             <p className="text-body font-semibold text-ink">홈·캘린더에 반영됐어요</p>
-            <p className="text-sub text-ink-hint">생활 안정도 충당률 59% → 84%</p>
+            {summary ? (
+              <p className="text-sub text-ink-hint">
+                생활 안정도 충당률 {summary.coverageFrom}% → {summary.coverageTo}%
+              </p>
+            ) : (
+              <p className="text-sub text-ink-hint">충당률이 개선됐어요</p>
+            )}
           </div>
         </div>
 

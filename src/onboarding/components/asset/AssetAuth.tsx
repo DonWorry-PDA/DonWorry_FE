@@ -1,11 +1,25 @@
 import { BackArrowIc } from '../../../common/assets/icons'
+import useCurrentUser from '../../../common/hooks/useCurrentUser'
+import { calcDday } from '../../../common/utils/formatDate'
 
 interface Props {
   onNext: () => void
   onPrev: () => void
 }
 
+// 신한인증서 만료일(목업). 사용자별 인증서 데이터가 BE에 없어 정적 값으로 유지하되,
+// 만료일을 단일 출처로 두고 표시 문자열과 D-day(calcDday)를 함께 파생해 값이 서로 어긋나지 않게 한다.
+const CERT_EXPIRY = new Date(2028, 1, 29) // 2028-02-29
+
+function formatExpiry(date: Date) {
+  const yy = String(date.getFullYear()).slice(2)
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yy}.${mm}.${dd}`
+}
+
 function AssetAuth({ onNext, onPrev }: Props) {
+  const { data: currentUser } = useCurrentUser()
   return (
     <div className="flex h-dvh flex-col bg-white">
       {/* AppBar */}
@@ -55,7 +69,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
             신
           </div>
 
-          <p className="text-card font-bold">김준수</p>
+          <p className="text-card font-bold">{currentUser?.name ?? ''}</p>
 
           <div className="mt-3 flex items-center gap-2">
             <div className="flex size-6 items-center justify-center rounded-full border border-white/50">
@@ -78,10 +92,10 @@ function AssetAuth({ onNext, onPrev }: Props) {
             <span className="text-body">신한인증서</span>
           </div>
 
-          <p className="text-body mt-4">만료일 28.02.29</p>
+          <p className="text-body mt-4">만료일 {formatExpiry(CERT_EXPIRY)}</p>
 
           <span className="rounded-badge text-sub mt-2 inline-block bg-white/20 px-2.5 py-0.5">
-            D-620
+            {calcDday(CERT_EXPIRY)}
           </span>
         </div>
 

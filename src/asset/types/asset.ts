@@ -20,7 +20,7 @@ export type ManageMenuKey =
   | 'retirementSim'
   | 'monthlyReport'
 
-export type MenuIconTone = 'blue' | 'coral' | 'pink' | 'yellow' | 'mint' | 'muted'
+export type MenuIconTone = 'primary' | 'blue' | 'coral' | 'pink' | 'yellow' | 'mint' | 'warning' | 'muted'
 
 export type ManageMenu = {
   key: ManageMenuKey

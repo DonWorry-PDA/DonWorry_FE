@@ -4,9 +4,15 @@ import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
+import useGetMonthlyReport from '@/asset/hooks/useGetMonthlyReport'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
+
+function currentYearMonth() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
 import type { ManageMenu } from '@/asset/types/asset'
 
 const SOL_CARDS = [
@@ -129,14 +135,80 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   }
 }
 
+function toMan(val: number) {
+  return Math.round(val / 10_000).toLocaleString('ko-KR')
+}
+
 function HomePage() {
   const navigate = useNavigate()
   const { data: hub, isLoading, refetch } = useGetAssetHub()
 
+  const thisMonth = currentYearMonth()
+  const { data: report, isLoading: isReportLoading, isError: isReportError } = useGetMonthlyReport(thisMonth)
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
   const allMenus = hub ? buildMenus(hub) : []
+
+  const reportMonth = report
+    ? `${parseInt(report.month.split('-')[1])}월`
+    : `${new Date().getMonth() + 1}월`
+
+  const reportItems: ReportItem[] = report
+    ? [
+        {
+          label: '자산 변화',
+          value:
+            report.assetChange.changeAmount !== null
+              ? `${report.assetChange.changeAmount >= 0 ? '+' : ''}${toMan(report.assetChange.changeAmount)}만원`
+              : '-',
+          valueClass:
+            report.assetChange.changeAmount !== null
+              ? report.assetChange.changeAmount >= 0
+                ? 'text-success'
+                : 'text-danger'
+              : undefined,
+        },
+        {
+          label: '이번 달 지출',
+          value: `${toMan(report.spending.expenseAmount)}만원`,
+        },
+        {
+          label: '다음 달 수입',
+          value: `${toMan(report.nextMonthPreview.incomingTotal)}만원`,
+        },
+      ]
+    : []
+
+  const reportMonth = report
+    ? `${parseInt(report.month.split('-')[1])}월`
+    : `${new Date().getMonth() + 1}월`
+
+  const reportItems: ReportItem[] = report
+    ? [
+        {
+          label: '자산 변화',
+          value:
+            report.assetChange.changeAmount !== null
+              ? `${report.assetChange.changeAmount >= 0 ? '+' : ''}${toMan(report.assetChange.changeAmount)}만원`
+              : '-',
+          valueClass:
+            report.assetChange.changeAmount !== null
+              ? report.assetChange.changeAmount >= 0
+                ? 'text-success'
+                : 'text-danger'
+              : undefined,
+        },
+        {
+          label: '이번 달 지출',
+          value: `${toMan(report.spending.expenseAmount)}만원`,
+        },
+        {
+          label: '다음 달 수입',
+          value: `${toMan(report.nextMonthPreview.incomingTotal)}만원`,
+        },
+      ]
+    : []
 
   return (
     <div className="flex h-dvh flex-col bg-white">
