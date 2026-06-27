@@ -59,7 +59,7 @@ function StabilityPage() {
             className="flex size-11 items-center justify-center"
             onClick={() => navigate('/notification')}
           >
-            <NotificationIc className="text-ink" width={22} height={22} />
+            <NotificationIc className="text-ink" width={24} height={24} />
           </button>
         }
       />

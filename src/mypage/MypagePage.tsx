@@ -42,15 +42,11 @@ function MypagePage() {
   const { data: consultations } = useGetConsultations()
   const { data: institutions, isPending: isInstitutionsPending, isError: isInstitutionsError } = useGetMydataInstitutions()
   const connectedInstitutions = (institutions ?? []).filter((i) => i.connected)
-  const accountRows = connectedInstitutions.flatMap(
-    (inst): { institution: MydataInstitution; accountNumber: string | null }[] =>
-      inst.accountNumbers?.length
-        ? inst.accountNumbers.map((num) => ({ institution: inst, accountNumber: num }))
-        : [{ institution: inst, accountNumber: null }]
-  )
   const [accountsExpanded, setAccountsExpanded] = useState(false)
   const ACCOUNTS_PREVIEW = 3
-  const visibleAccountRows = accountsExpanded ? accountRows : accountRows.slice(0, ACCOUNTS_PREVIEW)
+  const visibleInstitutions = accountsExpanded
+    ? connectedInstitutions
+    : connectedInstitutions.slice(0, ACCOUNTS_PREVIEW)
 
   // 가장 가까운 예약(RESERVED)을 상담 내역 메뉴 부제로
   const nextReserved = (consultations ?? [])
@@ -75,13 +71,13 @@ function MypagePage() {
     <div className="relative flex flex-col bg-white h-dvh">
       {/* 헤더 */}
       <header className="flex h-[52px] items-center pl-6 pr-[14px]">
-        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
         <h1 className="flex-1 text-heading font-bold text-ink">마이페이지</h1>
         <button
           className="flex size-11 items-center justify-center"
+          aria-label="알림"
           onClick={() => navigate('/notification')}
         >
-          <NotificationIc className="text-ink" width={22} height={22} />
+          <NotificationIc className="text-ink" width={24} height={24} />
         </button>
       </header>
 
@@ -142,21 +138,24 @@ function MypagePage() {
           <p className="py-4 text-sub text-ink-hint">계좌 정보를 불러오지 못했어요</p>
         ) : (
           <>
-            {visibleAccountRows.map(({ institution, accountNumber }) => (
-              <AccountRow
-                key={`${institution.id}-${accountNumber}`}
-                institution={institution}
-                accountNumber={accountNumber}
-                onCopy={showCopyToast}
-              />
-            ))}
+            {connectedInstitutions.length === 0 ? (
+              <p className="py-4 text-sub text-ink-hint">연결된 계좌가 없어요</p>
+            ) : (
+              visibleInstitutions.map((institution) => (
+                <AccountRow
+                  key={institution.id}
+                  institution={institution}
+                  onCopy={showCopyToast}
+                />
+              ))
+            )}
 
-            {accountRows.length > ACCOUNTS_PREVIEW && (
+            {connectedInstitutions.length > ACCOUNTS_PREVIEW && (
               <button
                 className="flex w-full items-center justify-center gap-1 py-3 text-sub font-semibold text-ink-hint"
                 onClick={() => setAccountsExpanded((v) => !v)}
               >
-                {accountsExpanded ? '접기' : `${accountRows.length - ACCOUNTS_PREVIEW}개 더 보기`}
+                {accountsExpanded ? '접기' : `${connectedInstitutions.length - ACCOUNTS_PREVIEW}개 더 보기`}
                 <svg
                   width="14" height="14" viewBox="0 0 14 14" fill="none"
                   className={`transition-transform duration-200 ${accountsExpanded ? 'rotate-180' : ''}`}
@@ -339,19 +338,18 @@ function CopyButton({ text, onCopy }: { text: string; onCopy: () => void }) {
 
 function AccountRow({
   institution,
-  accountNumber,
   onCopy,
 }: {
   institution: MydataInstitution
-  accountNumber: string | null
   onCopy: () => void
 }) {
   const [imgFailed, setImgFailed] = useState(false)
   const handleError = useCallback(() => setImgFailed(true), [])
   const logo = LOGO_MAP[institution.id]
+  const accountNumbers = institution.accountNumbers ?? []
 
   return (
-    <div className="flex items-center gap-3 border-b border-divider py-[13px]">
+    <div className="flex items-start gap-3 border-b border-divider py-[13px]">
       {logo && !imgFailed ? (
         <div className="flex size-10 shrink-0 items-center justify-center rounded-icon bg-white overflow-hidden">
           <img src={logo} alt={institution.name} className="size-8 object-contain" onError={handleError} />
@@ -368,12 +366,12 @@ function AccountRow({
       )}
       <div className="flex flex-1 min-w-0 flex-col gap-0.5">
         <p className="text-md font-semibold text-ink">{institution.name}</p>
-        {accountNumber && (
-          <div className="flex items-center">
-            <p className="text-sub text-ink-sub">{accountNumber}</p>
-            <CopyButton text={accountNumber} onCopy={onCopy} />
+        {accountNumbers.map((num) => (
+          <div key={num} className="flex items-center">
+            <p className="text-sub text-ink-sub">{num}</p>
+            <CopyButton text={num} onCopy={onCopy} />
           </div>
-        )}
+        ))}
       </div>
     </div>
   )
