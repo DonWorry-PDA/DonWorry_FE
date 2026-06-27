@@ -7,8 +7,9 @@ export type AssetSegment = {
 
 export type AssetData = {
   totalAmountKrw: number
+  changeAmount: number | null
+  changeDirection: 'UP' | 'DOWN' | 'FLAT'
   segments: AssetSegment[]
-  monthlyIncomeKrw: number
 }
 
 export type HomeStabilityData = {
