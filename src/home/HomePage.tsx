@@ -5,17 +5,15 @@ import AssetCard from './components/AssetCard'
 import StabilityCard from './components/StabilityCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
 import useGetProfile from '@/mypage/hooks/useGetProfile'
+import useGetMonthlyReport from '@/asset/hooks/useGetMonthlyReport'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData, ReportItem } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
 
-// 월간 리포트(#6)는 아직 미구현이라 mock 유지
-const MOCK_REPORT_MONTH = '6월'
-const MOCK_REPORT: ReportItem[] = [
-  { label: '배당금 변동', value: '+12.4%', valueClass: 'text-success' },
-  { label: '다음 달 수입', value: '130만원' },
-  { label: '소비 수준', value: '적정' },
-]
+function currentYearMonth() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
 
 const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
   if (grade === 'STABLE') return 'stable'
@@ -52,13 +50,49 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   }
 }
 
+function toMan(val: number) {
+  return Math.round(val / 10_000).toLocaleString('ko-KR')
+}
+
 function HomePage() {
   const navigate = useNavigate()
   const { data: hub, isLoading, refetch } = useGetAssetHub()
   const { data: profile } = useGetProfile()
+  const thisMonth = currentYearMonth()
+  const { data: report, isLoading: isReportLoading, isError: isReportError } = useGetMonthlyReport(thisMonth)
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
+
+  const reportMonth = report
+    ? `${parseInt(report.month.split('-')[1])}월`
+    : `${new Date().getMonth() + 1}월`
+
+  const reportItems: ReportItem[] = report
+    ? [
+        {
+          label: '자산 변화',
+          value:
+            report.assetChange.changeAmount !== null
+              ? `${report.assetChange.changeAmount >= 0 ? '+' : ''}${toMan(report.assetChange.changeAmount)}만원`
+              : '-',
+          valueClass:
+            report.assetChange.changeAmount !== null
+              ? report.assetChange.changeAmount >= 0
+                ? 'text-success'
+                : 'text-danger'
+              : undefined,
+        },
+        {
+          label: '이번 달 지출',
+          value: `${toMan(report.spending.expenseAmount)}만원`,
+        },
+        {
+          label: '다음 달 수입',
+          value: `${toMan(report.nextMonthPreview.incomingTotal)}만원`,
+        },
+      ]
+    : []
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -135,23 +169,49 @@ function HomePage() {
             {/* 리포트 */}
             <section className="pb-2">
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-body text-ink font-bold">{MOCK_REPORT_MONTH} 리포트 ›</span>
-                <span className="text-sub text-ink-hint">전체보기</span>
+                <button
+                  className="text-body text-ink font-bold min-h-11 -ml-2 px-2"
+                  onClick={() => navigate('/asset-management/monthly-report')}
+                >
+                  {reportMonth} 리포트 ›
+                </button>
+                <button
+                  className="text-sub text-ink-hint min-h-11 -mr-2 px-2"
+                  onClick={() => navigate('/asset-management/monthly-report')}
+                >
+                  전체보기
+                </button>
               </div>
               <div className="rounded-card-lg border border-line bg-white px-3 py-[9px]">
-                <div className="flex gap-2">
-                  {MOCK_REPORT.map(({ label, value, valueClass }) => (
-                    <div
-                      key={label}
-                      className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
-                    >
-                      <p className="text-caption text-ink-hint">{label}</p>
-                      <p className={`text-md text-ink pt-0.5 font-bold ${valueClass ?? ''}`}>
-                        {value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                {reportItems.length > 0 ? (
+                  <div className="flex gap-2">
+                    {reportItems.map(({ label, value, valueClass }) => (
+                      <div
+                        key={label}
+                        className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
+                      >
+                        <p className="text-caption text-ink-hint">{label}</p>
+                        <p className={`text-md text-ink pt-0.5 font-bold ${valueClass ?? ''}`}>
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : isReportError ? (
+                  <p className="text-sub text-ink-hint py-3 text-center">리포트를 불러오지 못했어요.</p>
+                ) : isReportLoading ? (
+                  <div className="flex gap-2">
+                    {['자산 변화', '이번 달 지출', '다음 달 수입'].map((label) => (
+                      <div
+                        key={label}
+                        className="border-line rounded-card flex flex-1 flex-col gap-[3px] border px-3 py-[13px]"
+                      >
+                        <p className="text-caption text-ink-hint">{label}</p>
+                        <div className="mt-1 h-4 w-10 animate-pulse rounded bg-surface-muted" />
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             </section>
           </div>

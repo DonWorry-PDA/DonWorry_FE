@@ -1,40 +1,79 @@
-import { useState, useCallback } from 'react'
-import { MOCK_TERMS_AGREEMENTS } from '../mock/mypage'
-import type { TermAgreement } from '../types/mypage'
+import { useCallback } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import client from '@/common/api/client'
+import type { ApiResponse } from '@/common/types/api'
+import type { OptionalTermsResponse, TermAgreement } from '../types/mypage'
 
-function formatAgreedAt(date: Date): string {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}.${m}.${d}`
-}
+const REQUIRED_TERMS: TermAgreement[] = [
+  { id: 'service', label: '연금SOL사 서비스 이용약관', required: true, agreed: true, agreedAt: null },
+  { id: 'privacy', label: '개인정보 수집·이용 동의', required: true, agreed: true, agreedAt: null },
+  { id: 'biometric', label: '고유식별정보 처리 동의', required: true, agreed: true, agreedAt: null },
+  { id: 'electronic', label: '전자금융거래 이용약관', required: true, agreed: true, agreedAt: null },
+]
 
 export function useTermsAgreement() {
-  const [terms, setTerms] = useState<TermAgreement[]>(MOCK_TERMS_AGREEMENTS)
-  const [mutationError, setMutationError] = useState<string | null>(null)
-  const [isUpdating, setIsUpdating] = useState(false)
+  const queryClient = useQueryClient()
 
-  const toggleConsent = useCallback(async (id: string, agreed: boolean) => {
-    let snapshot: TermAgreement[] = []
-    setMutationError(null)
-    setIsUpdating(true)
-    setTerms(prev => {
-      snapshot = prev
-      return prev.map(t => (t.id === id ? { ...t, agreed, agreedAt: formatAgreedAt(new Date()) } : t))
-    })
+  const { data: optionalData, isLoading: isOptionalLoading, isError: isOptionalError } = useQuery({
+    queryKey: ['terms', 'optional'],
+    queryFn: () =>
+      client
+        .get<ApiResponse<OptionalTermsResponse>>('/api/user/terms/optional')
+        .then((res) => res.data.data),
+  })
 
-    try {
-      // await api.patch(`/terms/${id}/consent`, { agreed })
-    } catch (err) {
-      console.error('Failed to update term consent:', err)
-      setTerms(snapshot)
-      setMutationError('동의 설정을 변경하지 못했어요. 다시 시도해 주세요.')
-    } finally {
-      setIsUpdating(false)
-    }
-  }, [])
+  const { mutate, isPending, isError, reset } = useMutation({
+    mutationFn: ({ termId, agreed }: { termId: string; agreed: boolean }) =>
+      client
+        .patch<ApiResponse<void>>(`/api/user/terms/${termId}/consent`, { agreed })
+        .then((res) => res.data),
+    onSuccess: (_, variables) => {
+      queryClient.setQueryData<OptionalTermsResponse>(['terms', 'optional'], (old) => {
+        if (!old) return old
+        const now = new Date()
+        const agreedAt = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`
+        return {
+          ...old,
+          [variables.termId]: {
+            agreed: variables.agreed,
+            agreedAt: variables.agreed ? agreedAt : null,
+          },
+        }
+      })
+    },
+  })
 
-  const dismissMutationError = useCallback(() => setMutationError(null), [])
+  const optionalTerms: TermAgreement[] = optionalData
+    ? [
+        {
+          id: 'thirdParty',
+          label: '개인정보 제3자 제공 동의',
+          required: false,
+          agreed: optionalData.thirdParty.agreed,
+          agreedAt: optionalData.thirdParty.agreedAt,
+        },
+        {
+          id: 'marketing',
+          label: '마케팅 정보 수신 동의',
+          required: false,
+          agreed: optionalData.marketing.agreed,
+          agreedAt: optionalData.marketing.agreedAt,
+        },
+      ]
+    : []
 
-  return { terms, mutationError, dismissMutationError, toggleConsent, isUpdating }
+  const toggleConsent = useCallback(
+    (id: string, agreed: boolean) => mutate({ termId: id, agreed }),
+    [mutate],
+  )
+
+  return {
+    terms: [...REQUIRED_TERMS, ...optionalTerms],
+    toggleConsent,
+    isUpdating: isPending,
+    mutationError: isError ? '동의 설정을 변경하지 못했어요. 다시 시도해 주세요.' : null,
+    dismissMutationError: reset,
+    isOptionalLoading,
+    isOptionalError,
+  }
 }

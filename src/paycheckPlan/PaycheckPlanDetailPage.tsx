@@ -106,7 +106,13 @@ function PaycheckPlanDetailPage() {
           <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute', { state: { planId } })}>
             진행하기
           </Button>
-          <Button onClick={() => navigate('/paycheck-plan/consult')}>전문가와 같이 보기</Button>
+          <Button
+            onClick={() =>
+              navigate('/paycheck-plan/consult', { state: { context: 'SALARY_PLAN', planId } })
+            }
+          >
+            전문가와 같이 보기
+          </Button>
         </div>
       </StickyFooter>
     </div>

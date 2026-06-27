@@ -13,6 +13,7 @@ export type ConsultationResponse = {
   location: string | null
   counselorName: string | null
   planId: number | null
+  contextTopics: string[]
   hasSummary: boolean
 }
 
@@ -27,4 +28,8 @@ export type CreateConsultationRequest = {
   consultType: ConsultApiType
   scheduledAt: string
   planId?: number | null
+  /** 진입 맥락 제목. 없으면 BE가 consultType 기본 제목으로 폴백. */
+  topic?: string
+  /** 진입 맥락 "다룰 내용". */
+  contextTopics?: string[]
 }
