@@ -20,7 +20,9 @@ const SEGMENT_COLORS = [
 type ActiveSegment = { label: string; pct: number }
 
 function DonutChart({ segments }: { segments: AssetSegment[] }) {
-  const [active, setActive] = useState<ActiveSegment | null>(null)
+  const [pinned, setPinned] = useState<ActiveSegment | null>(null)
+  const [hovered, setHovered] = useState<ActiveSegment | null>(null)
+  const active = hovered ?? pinned
 
   if (segments.length === 0) return null
 
@@ -53,11 +55,11 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
             strokeDashoffset={0}
             transform={`rotate(${segmentAngles[i]} ${CX} ${CY})`}
             style={{ cursor: 'pointer', transition: 'stroke-width 0.18s ease' }}
-            onMouseEnter={() => setActive({ label, pct })}
-            onMouseLeave={() => setActive(null)}
+            onMouseEnter={() => setHovered({ label, pct })}
+            onMouseLeave={() => setHovered(null)}
             onClick={e => {
               e.stopPropagation()
-              setActive(prev => prev?.label === label ? null : { label, pct })
+              setPinned(prev => prev?.label === label ? null : { label, pct })
             }}
           />
         )
