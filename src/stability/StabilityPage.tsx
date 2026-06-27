@@ -145,14 +145,20 @@ function StatusMessage({ text, onRetry }: { text: string; onRetry?: () => void }
 
 function StabilityItemRow({ item }: { item: StabilityItem }) {
   return (
-    <div className="bg-surface flex items-center gap-3 rounded-btn px-4 py-[15px]">
-      <div className="bg-white flex items-center justify-center rounded-icon size-[30px] shrink-0">
+    <div className="bg-surface flex items-start gap-3 rounded-btn px-4 py-[15px]">
+      <div className="bg-white flex items-center justify-center rounded-icon size-[30px] shrink-0 mt-[1px]">
         <ListIcon />
       </div>
-      <p className="text-sub font-semibold text-ink flex-1 min-w-0">{item.label}</p>
-      <p className={`text-sub font-bold shrink-0 ${ITEM_STATUS_CLASS[item.status]}`}>
-        {ITEM_STATUS_LABEL[item.status]}
-      </p>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="text-sub font-semibold text-ink flex-1 min-w-0">{item.label}</p>
+          <p className="text-sub font-bold text-ink shrink-0">{item.value}</p>
+          <p className={`text-caption font-bold shrink-0 ${ITEM_STATUS_CLASS[item.status]}`}>
+            {ITEM_STATUS_LABEL[item.status]}
+          </p>
+        </div>
+        <p className="text-caption text-ink-hint leading-[1.5] mt-[3px]">{item.description}</p>
+      </div>
     </div>
   )
 }
