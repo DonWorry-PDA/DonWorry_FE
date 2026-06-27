@@ -49,7 +49,6 @@ function AssetPage() {
   const { data: investmentCheck } = useGetInvestmentCheck()
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
-
   const toggleGroup = (category: string) =>
     setExpandedGroups((prev) => {
       const next = new Set(prev)
@@ -170,20 +169,28 @@ function AssetPage() {
                 <p className="text-body text-ink-hint py-6 text-center">자산 정보가 없습니다</p>
               ) : (
                 <>
-                  {/* 비율 바 — 비율 높은 순 */}
-                  <div
-                    className="flex overflow-hidden rounded-badge pt-1.5"
-                    role="img"
-                    aria-label={`자산 구성: ${sortedGroups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
-                  >
-                    {sortedGroups.map((seg, i) => (
-                      <div
-                        key={seg.category}
-                        className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
-                        style={{ width: `${toAllocationPercent(seg.totalAmount)}%` }}
-                        aria-hidden="true"
-                      />
-                    ))}
+                  {/* 비율 바 — 좌→우 스윕 채움 후 shimmer */}
+                  <div className="pt-1.5">
+                    <div
+                      className="animate-bar-reveal relative flex overflow-hidden rounded-badge"
+                      role="img"
+                      aria-label={`자산 구성: ${sortedGroups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
+                    >
+                      {sortedGroups.map((seg, i) => (
+                        <div
+                          key={seg.category}
+                          className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
+                          style={{ width: `${toAllocationPercent(seg.totalAmount)}%` }}
+                          aria-hidden="true"
+                        />
+                      ))}
+                      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+                        <div
+                          className="animate-bar-shimmer absolute inset-y-0 w-[30%]"
+                          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* 그룹 목록 — 비율 높은 순, 탭 토글로 계좌·보유종목 상세 표시 */}

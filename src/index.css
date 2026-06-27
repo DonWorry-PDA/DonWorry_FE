@@ -314,3 +314,32 @@ html.large {
     animation: none !important;
   }
 }
+
+/* ─── 자산 구성 바 애니메이션 ─── */
+@keyframes bar-reveal {
+  from { clip-path: inset(0 100% 0 0 round 9px); }
+  to   { clip-path: inset(0 0% 0 0 round 9px); }
+}
+
+@keyframes bar-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(450%); }
+}
+
+.animate-bar-reveal {
+  animation: bar-reveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-bar-shimmer {
+  animation: bar-shimmer 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bar-reveal {
+    animation: none;
+    clip-path: none !important;
+  }
+  .animate-bar-shimmer {
+    display: none;
+  }
+}
