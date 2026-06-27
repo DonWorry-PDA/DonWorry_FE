@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
-import { NotificationIc } from '../common/assets/icons'
+import BottomSheet from '../common/components/BottomSheet'
+import { BackArrowIc, NotificationIc } from '../common/assets/icons'
 import GaugeChart from './components/GaugeChart'
 import useGetLifeStability from './hooks/useGetLifeStability'
 import type { StabilityItem, StabilityStatus } from './types/stability'
@@ -34,6 +36,9 @@ function StabilityPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError, error, refetch } = useGetLifeStability()
   const isEmptyResult = isAxiosError(error) && error.response?.status === 404
+
+  // 지표 행 탭 → 세부 정보 시트
+  const [selectedItem, setSelectedItem] = useState<StabilityItem | null>(null)
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -98,7 +103,7 @@ function StabilityPage() {
 
             <div className="flex flex-col gap-[9px] px-[22px]">
               {data.items.map((item) => (
-                <StabilityItemRow key={item.id} item={item} />
+                <StabilityItemRow key={item.id} item={item} onSelect={setSelectedItem} />
               ))}
             </div>
 
@@ -162,6 +167,50 @@ function StabilityPage() {
           </>
         )}
       </main>
+
+      {/* 지표 세부 정보 시트 */}
+      <BottomSheet open={selectedItem !== null} onClose={() => setSelectedItem(null)}>
+        {selectedItem && <StabilityItemDetail item={selectedItem} />}
+      </BottomSheet>
+    </div>
+  )
+}
+
+function StabilityItemDetail({ item }: { item: StabilityItem }) {
+  return (
+    <div className="px-6 pb-9 pt-1">
+      <div className="flex items-center gap-2 pb-[14px]">
+        <h2 className="text-card font-bold text-ink flex-1 min-w-0">{item.label}</h2>
+        <span className={`text-md font-bold shrink-0 ${ITEM_STATUS_CLASS[item.status]}`}>
+          {ITEM_STATUS_LABEL[item.status]}
+        </span>
+      </div>
+
+      <div className="bg-surface rounded-btn flex items-baseline justify-between px-4 py-[14px]">
+        <span className="text-sub text-ink-sub">현재 값</span>
+        <span className="text-heading font-extrabold text-ink">{item.value}</span>
+      </div>
+
+      <div className="pt-[18px]">
+        <p className="text-sub font-bold text-ink pb-[6px]">어떤 지표예요?</p>
+        <p className="text-sub text-ink-sub leading-[1.62]">{item.meaning}</p>
+      </div>
+
+      <div className="pt-[16px]">
+        <p className="text-sub font-bold text-ink pb-[6px]">권장 기준</p>
+        <p className="text-sub text-ink-sub leading-[1.62]">{item.criteria}</p>
+      </div>
+
+      {item.status !== 'stable' && (
+        <div className="bg-primary-tint rounded-btn flex items-start gap-3 px-4 py-[14px] mt-[18px]">
+          <div className="bg-white rounded-badge px-2 py-[3px] shrink-0 mt-[1px]">
+            <span className="font-inter text-caption font-extrabold text-primary">TIP</span>
+          </div>
+          <p className="text-caption text-primary-dark flex-1 min-w-0 leading-[1.6]">
+            {item.improve}
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -187,23 +236,30 @@ function StatusMessage({ text, onRetry }: { text: string; onRetry?: () => void }
   )
 }
 
-function StabilityItemRow({ item }: { item: StabilityItem }) {
+function StabilityItemRow({
+  item,
+  onSelect,
+}: {
+  item: StabilityItem
+  onSelect: (item: StabilityItem) => void
+}) {
   return (
-    <div className="bg-surface flex items-start gap-3 rounded-btn px-4 py-[15px]">
-      <div className="bg-white flex items-center justify-center rounded-icon size-[30px] shrink-0 mt-[1px]">
+    <button
+      type="button"
+      onClick={() => onSelect(item)}
+      aria-label={`${item.label} 세부 정보 보기`}
+      className="bg-surface flex w-full items-center gap-3 rounded-btn px-4 py-[15px] text-left"
+    >
+      <div className="bg-white flex items-center justify-center rounded-icon size-[30px] shrink-0">
         <ListIcon />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="text-sub font-semibold text-ink flex-1 min-w-0">{item.label}</p>
-          <p className="text-sub font-bold text-ink shrink-0">{item.value}</p>
-          <p className={`text-caption font-bold shrink-0 ${ITEM_STATUS_CLASS[item.status]}`}>
-            {ITEM_STATUS_LABEL[item.status]}
-          </p>
-        </div>
-        <p className="text-caption text-ink-hint leading-[1.5] mt-[3px]">{item.description}</p>
-      </div>
-    </div>
+      <p className="text-sub font-semibold text-ink flex-1 min-w-0">{item.label}</p>
+      <p className="text-sub font-bold text-ink shrink-0">{item.value}</p>
+      <p className={`text-caption font-bold shrink-0 ${ITEM_STATUS_CLASS[item.status]}`}>
+        {ITEM_STATUS_LABEL[item.status]}
+      </p>
+      <BackArrowIc width={13} height={13} className="rotate-180 text-disabled shrink-0" />
+    </button>
   )
 }
 

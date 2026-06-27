@@ -6,8 +6,12 @@ export type StabilityItem = {
   status: StabilityStatus
   /** 지표 실값(포맷 완료). 예: "112%", "8개월" */
   value: string
-  /** 지표 의미·권장 기준을 설명하는 한 줄 */
-  description: string
+  /** 지표가 무엇을 뜻하는지 (세부 시트 본문) */
+  meaning: string
+  /** 권장 기준. 예: "100% 이상", "6개월분 이상" */
+  criteria: string
+  /** 개선 방법 안내 (세부 시트, 보완/개선 상태일 때 노출) */
+  improve: string
 }
 
 /** 성장형 플랜 가드레일 (생활 안정도 기반 추천 플랜) */
