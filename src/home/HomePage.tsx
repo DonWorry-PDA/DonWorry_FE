@@ -59,7 +59,7 @@ function HomePage() {
   const { data: hub, isLoading, refetch } = useGetAssetHub()
   const { data: profile } = useGetProfile()
   const thisMonth = currentYearMonth()
-  const { data: report } = useGetMonthlyReport(thisMonth)
+  const { data: report, isLoading: isReportLoading, isError: isReportError } = useGetMonthlyReport(thisMonth)
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
@@ -197,7 +197,9 @@ function HomePage() {
                       </div>
                     ))}
                   </div>
-                ) : (
+                ) : isReportError ? (
+                  <p className="text-sub text-ink-hint py-3 text-center">리포트를 불러오지 못했어요.</p>
+                ) : isReportLoading ? (
                   <div className="flex gap-2">
                     {['자산 변화', '이번 달 지출', '다음 달 수입'].map((label) => (
                       <div
@@ -209,7 +211,7 @@ function HomePage() {
                       </div>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
             </section>
           </div>
