@@ -347,15 +347,12 @@ function AssetPage() {
                     className={`flex items-center gap-3 py-4 ${i < nextMonthEvents.length - 1 ? 'border-b border-divider' : ''}`}
                   >
                     <div className={`rounded-icon size-10 shrink-0 flex items-center justify-center ${INCOME_EVENT_TYPES.has(event.type) ? 'bg-primary-tint' : 'bg-surface-muted'}`}>
-                      {INCOME_EVENT_TYPES.has(event.type) ? (
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-primary">
-                          <path d="M9 14V4M9 4L4 9M9 4L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="text-ink-sub">
-                          <path d="M9 4V14M9 14L4 9M9 14L14 9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
+                      <span
+                        aria-hidden="true"
+                        className={`font-inter text-card font-bold leading-none ${INCOME_EVENT_TYPES.has(event.type) ? 'text-primary' : 'text-ink-sub'}`}
+                      >
+                        ₩
+                      </span>
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col gap-0.5">
                       <div className="flex items-center gap-2">
