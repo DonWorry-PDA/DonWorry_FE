@@ -71,15 +71,12 @@ function MypagePage() {
     <div className="relative flex flex-col bg-white h-dvh">
       {/* 헤더 */}
       <header className="flex h-[52px] items-center pl-6 pr-[14px]">
-        <button onClick={() => navigate('/home')} className="mr-3 shrink-0" aria-label="홈으로 이동">
-          <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} />
-        </button>
         <h1 className="flex-1 text-heading font-bold text-ink">마이페이지</h1>
         <button
           className="flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >
-          <NotificationIc className="text-ink" width={22} height={22} />
+          <NotificationIc className="text-ink" width={24} height={24} />
         </button>
       </header>
 
