@@ -341,21 +341,30 @@ function HomePage() {
             <section className="mt-1">
               <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
               <div className="grid grid-cols-3 gap-2">
-                {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => (
-                  <div key={card.key} className="relative aspect-square">
+                {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
+                  const caption = allMenus.find(m => m.key === card.key)?.caption
+                  return (
                     <button
+                      key={card.key}
                       onClick={() => navigate(card.path)}
-                      className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between overflow-hidden p-3 text-left"
+                      className="bg-surface rounded-card-lg flex flex-col justify-between overflow-hidden p-3 text-left"
                     >
-                      <p className="text-body font-bold text-ink leading-snug break-keep">
-                        {card.title}
-                      </p>
-                      <div className="self-end">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sub font-bold text-ink leading-snug break-keep">
+                          {card.title}
+                        </p>
+                        {caption && (
+                          <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                            {caption}
+                          </p>
+                        )}
+                      </div>
+                      <div className="self-end mt-2">
                         {card.icon}
                       </div>
                     </button>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </section>
           </div>
