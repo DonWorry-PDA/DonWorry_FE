@@ -148,7 +148,7 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
 
       {/* Chart + legend */}
       <div className="flex items-center gap-4">
-        <div className="shrink-0">
+        <div className="shrink-0 max-[420px]:[&>svg]:w-28 max-[420px]:[&>svg]:h-28">
           <DonutChart segments={sortedSegments} />
         </div>
         <div className="flex-1 grid grid-cols-[1fr_auto] gap-x-2 gap-y-[11px] items-center">
