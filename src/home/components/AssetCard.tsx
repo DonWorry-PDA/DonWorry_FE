@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react'
-import { formatWon, formatKrw } from '@/common/utils/formatKrw'
+import { formatKrw } from '@/common/utils/formatKrw'
 import type { AssetSegment } from '../types/home'
 
 type Props = {
@@ -108,12 +108,12 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
 function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, onAnalysisClick }: Props) {
   const sortedSegments = [...segments].sort((a, b) => b.pct - a.pct)
 
-  const amountStr = formatWon(totalAmountKrw)
-  // 360px 기준 좌측 가용폭 ~163px에서 폰트별 최대 글자 수 기준
+  const amountStr = formatKrw(totalAmountKrw)
+  // 360px 기준 좌측 가용폭 ~163px, formatKrw 출력 기준 (예: "9,999만원"=7자, "99억 9,999만원"=11자)
   const amountSizeClass =
-    amountStr.length <= 11 ? 'text-display' :      // ~999,999,999원 (24px)
-    amountStr.length <= 14 ? 'text-[1.25rem]' :    // ~9,999,999,999원 (20px)
-    'text-[1.0625rem]'                              // 100억+ (17px)
+    amountStr.length <= 9  ? 'text-display' :      // ~수천만원 (24px)
+    amountStr.length <= 12 ? 'text-[1.25rem]' :    // ~수백억원 (20px)
+    'text-[1.0625rem]'                              // 수천억+ (17px)
 
   const changeText =
     changeAmount != null && changeDirection !== 'FLAT'
