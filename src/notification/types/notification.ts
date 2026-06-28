@@ -1,4 +1,4 @@
-export type NotificationType = 'BALANCE_ALERT' | (string & {})
+export type NotificationType = 'PENSION_DEPOSIT' | 'DIVIDEND' | 'MONTHLY_REPORT' | (string & {})
 
 // UI(목/로컬) 알림 아이템 — API 응답과 별도
 export type NotificationUIItem = {
@@ -6,6 +6,7 @@ export type NotificationUIItem = {
   title: string
   subtitle?: string
   isUnread?: boolean
+  linkTarget?: string
 }
 
 export type NotificationGroup = {

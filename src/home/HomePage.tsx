@@ -4,6 +4,7 @@ import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
+import useGetNotificationUnreadCount from '@/notification/hooks/useGetNotificationUnreadCount'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData } from './types/home'
 import type { StabilityStatus } from '../stability/types/stability'
@@ -142,6 +143,7 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
 function HomePage() {
   const navigate = useNavigate()
   const { data: hub, isLoading, refetch } = useGetAssetHub()
+  const { data: unreadCount = 0 } = useGetNotificationUnreadCount()
 
   const asset = hub ? toAssetData(hub) : null
   const stability = hub ? toStabilityData(hub) : null
@@ -160,11 +162,18 @@ function HomePage() {
           </p>
         </div>
         <button
-          aria-label="알림"
-          className="flex size-11 items-center justify-center"
+          aria-label={unreadCount > 0 ? `알림 ${unreadCount}개` : '알림'}
+          className="relative flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >
           <NotificationIc className="text-ink" width={24} height={24} />
+          {unreadCount > 0 && (
+            <span className="absolute top-[9px] right-[9px] flex min-w-[14px] h-[14px] items-center justify-center rounded-full bg-danger px-[3px]">
+              <span className="text-white font-bold leading-none" style={{ fontSize: pxr(9) }}>
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            </span>
+          )}
         </button>
       </header>
 
