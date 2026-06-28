@@ -343,3 +343,20 @@ html.large {
     display: none;
   }
 }
+
+/* ─── 자산 구성 바 세그먼트 칩 ─── */
+@keyframes chip-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-75%) scale(0.82); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(-100%) scale(1); }
+}
+
+.animate-chip-in {
+  animation: chip-in 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-chip-in {
+    animation: none;
+    transform: translateX(-50%) translateY(-100%);
+  }
+}
