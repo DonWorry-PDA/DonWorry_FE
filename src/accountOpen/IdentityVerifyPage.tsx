@@ -1,5 +1,5 @@
 import { Fragment, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -20,6 +20,8 @@ function formatPhone(value: string) {
 
 function IdentityVerifyPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { returnTo, planId } = (location.state as { returnTo?: string; planId?: string } | null) ?? {}
   const { data: currentUser } = useCurrentUser()
 
   const [activeTab, setActiveTab] = useState<'phone' | 'shinhan'>('phone')
@@ -82,20 +84,24 @@ function IdentityVerifyPage() {
 
         {/* 탭 */}
         <div className="mt-[1.125rem] flex border-b border-divider px-6">
-          {(['phone', 'shinhan'] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-3 text-center text-body font-bold transition-colors ${
-                activeTab === tab
-                  ? '-mb-px border-b-[2.5px] border-primary text-primary'
-                  : 'text-ink-hint'
-              }`}
-            >
-              {tab === 'phone' ? '휴대폰 인증' : '신한인증서'}
-            </button>
-          ))}
+          <button
+            type="button"
+            onClick={() => setActiveTab('phone')}
+            className={`flex-1 py-3 text-center text-body font-bold transition-colors ${
+              activeTab === 'phone'
+                ? '-mb-px border-b-[2.5px] border-primary text-primary'
+                : 'text-ink-hint'
+            }`}
+          >
+            휴대폰 인증
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/account-open/shinhan-cert', { state: { returnTo, planId } })}
+            className="flex-1 py-3 text-center text-body font-bold transition-colors text-ink-hint"
+          >
+            신한인증서
+          </button>
         </div>
 
         {/* 필드 */}
@@ -176,7 +182,7 @@ function IdentityVerifyPage() {
       <StickyFooter>
         <Button
           disabled={!isValid}
-          onClick={() => navigate('/account-open/otp', { state: { phone } })}
+          onClick={() => navigate('/account-open/otp', { state: { phone, returnTo, planId } })}
         >
           인증번호 받기
         </Button>

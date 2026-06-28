@@ -46,6 +46,7 @@ import TermsDetailPage from './terms/TermsDetailPage'
 import IdentityVerifyPage from './accountOpen/IdentityVerifyPage'
 import OtpVerifyPage from './accountOpen/OtpVerifyPage'
 import AccountOpenCompletePage from './accountOpen/AccountOpenCompletePage'
+import ShinhanCertPage from './accountOpen/ShinhanCertPage'
 import PensionDeferPage from './pension/PensionDeferPage'
 import OrderProductPage from './order/OrderProductPage'
 import OrderTermsPage from './order/OrderTermsPage'
@@ -122,6 +123,7 @@ const router = createBrowserRouter([
   { path: '/terms/:termId', element: <TermsDetailPage /> },
   { path: '/account-open', element: <IdentityVerifyPage /> },
   { path: '/account-open/otp', element: <OtpVerifyPage /> },
+  { path: '/account-open/shinhan-cert', element: <ShinhanCertPage /> },
   { path: '/account-open/terms', element: <TermsAgreePage2 /> },
   { path: '/account-open/complete', element: <AccountOpenCompletePage /> },
   { path: '/order/product', element: <OrderProductPage /> },

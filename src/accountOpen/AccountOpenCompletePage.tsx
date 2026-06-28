@@ -25,7 +25,7 @@ function AccountOpenCompletePage() {
     <div className="flex flex-col bg-white h-dvh">
       <AppBar title="계좌 개설" onBack={() => navigate(-1)} />
 
-      <main className="flex-1 overflow-y-auto px-6 pt-2">
+      <main className="flex-1 flex flex-col px-6 pt-2">
         {/* 단계 표시 */}
         <div className="flex items-center justify-between pb-5 pt-[0.375rem]">
           {STEPS.map(({ step, label, state }, index) => (
@@ -38,29 +38,42 @@ function AccountOpenCompletePage() {
           ))}
         </div>
 
-        {/* 성공 아이콘 + 타이틀 */}
-        <div className="flex flex-col items-center gap-[1.125rem] pb-[0.625rem] pt-6">
-          <CheckBadge />
-          <h2 className="text-center text-heading font-bold text-ink leading-[1.46]">
-            계좌 개설이
-            <br />
-            완료되었어요
-          </h2>
-        </div>
+        {/* 중앙 정렬 콘텐츠 */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-6 pb-8">
+          {/* 성공 아이콘 + 타이틀 */}
+          <div className="flex flex-col items-center gap-[1.125rem]">
+            <CheckBadge />
+            <h2 className="text-center text-heading font-bold text-ink leading-[1.46]">
+              계좌 개설이
+              <br />
+              완료되었어요
+            </h2>
+          </div>
 
-        {/* 계좌 정보 카드 */}
-        <div className="mt-[0.625rem] rounded-card border border-line p-[1.1875rem]">
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-sub font-bold text-primary">신한 은퇴솔루션 계좌</span>
-            <span className="font-inter text-btn font-bold text-ink">{result?.accountNumber}</span>
-            <span className="mt-1 text-caption text-ink-hint">개설일 {result?.openedAt}</span>
+          {/* 계좌 정보 카드 */}
+          <div className="w-full rounded-card border border-line p-[1.1875rem]">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-sub font-bold text-primary">신한 은퇴솔루션 계좌</span>
+              <span className="font-inter text-btn font-bold text-ink">{result?.accountNumber}</span>
+              <span className="mt-1 text-caption text-ink-hint">개설일 {result?.openedAt}</span>
+            </div>
           </div>
         </div>
       </main>
 
       {/* 하단 CTA */}
       <StickyFooter>
-        <Button onClick={() => navigate('/home')}>자산관리 시작하기</Button>
+        {result?.returnTo === 'execute' ? (
+          <Button
+            onClick={() =>
+              navigate('/paycheck-plan/execute', { state: { planId: result.planId } })
+            }
+          >
+            설계안 실행하기
+          </Button>
+        ) : (
+          <Button onClick={() => navigate('/home')}>자산관리 시작하기</Button>
+        )}
       </StickyFooter>
     </div>
   )
