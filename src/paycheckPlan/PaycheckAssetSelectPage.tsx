@@ -14,9 +14,11 @@ import usePutSalaryAssetExclusions from './hooks/usePutSalaryAssetExclusions'
 function PaycheckAssetSelectPage() {
   const navigate = useNavigate()
   // 월급 설계 추천은 투자성향 설문이 선행돼야 한다. 미완료(404)면 설문으로 보낸다(#161).
-  const { isLoading: isSurveyLoading, error: surveyError } = useGetSurvey()
+  const { isLoading: isSurveyLoading, error: surveyError, refetch: refetchSurvey } = useGetSurvey()
   const surveyMissing = isAxiosError(surveyError) && surveyError.response?.status === 404
-  const { data, isLoading, isError } = useGetSalaryAssets()
+  // 설문이 정상 확인(200)된 뒤에만 자산을 조회한다(미완료/오류 시 선조회 방지).
+  const surveyReady = !isSurveyLoading && !surveyError
+  const { data, isLoading, isError } = useGetSalaryAssets({ enabled: surveyReady })
   const { mutate: saveExclusions, isPending } = usePutSalaryAssetExclusions()
 
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
@@ -93,6 +95,25 @@ function PaycheckAssetSelectPage() {
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="h-[64px] animate-pulse rounded-card bg-surface-muted" />
           ))}
+        </div>
+      </div>
+    )
+  }
+
+  // 설문 상태 확인 실패(404 외 네트워크/서버 오류) — 게이트 우회 방지 위해 진행 차단·재시도 유도.
+  if (surveyError) {
+    return (
+      <div className="flex flex-col h-full">
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <div className="flex-1 px-6 flex flex-col items-center justify-center gap-4">
+          <p className="text-body text-ink-sub text-center">설문 상태를 확인하지 못했어요.</p>
+          <button
+            type="button"
+            onClick={() => refetchSurvey()}
+            className="rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-ink"
+          >
+            다시 시도
+          </button>
         </div>
       </div>
     )
