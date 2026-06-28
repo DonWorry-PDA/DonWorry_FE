@@ -51,10 +51,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
             <button
               key={cell.iso}
               onClick={() => onSelect(cell.iso)}
-              className="flex min-h-[68px] flex-col items-center gap-[4px] py-1.5"
+              className="flex min-h-[76px] flex-col items-center gap-[5px] py-1.5"
             >
               <span
-                className={`flex size-9 items-center justify-center rounded-full text-base font-medium leading-none ${
+                className={`flex size-9 items-center justify-center rounded-full text-btn font-medium leading-none ${
                   isToday
                     ? 'bg-primary font-bold text-white'
                     : isSelected
@@ -67,7 +67,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
 
               {/* 카테고리 라벨 블록 */}
               {blocks.length > 0 && (
-                <span className="flex w-full flex-col items-stretch gap-px px-0.5">
+                <span className="flex w-full flex-col items-stretch gap-0.5 px-0.5">
                   {blocks.map((cat) => {
                     const b = BLOCK_STYLE[cat]
                     // 확정=채운 칩 / 예정(estimated)=점선 테두리 칩 (배당 등 미래 예정분 구분)
@@ -75,7 +75,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                     return (
                       <span
                         key={cat}
-                        className={`truncate rounded-[4px] px-1 text-center text-[0.6875rem] leading-[1.4] ${
+                        className={`truncate rounded-[5px] px-1.5 py-0.5 text-center text-caption leading-[1.4] ${
                           estimated ? b.estimatedChip : b.chip
                         }`}
                       >
