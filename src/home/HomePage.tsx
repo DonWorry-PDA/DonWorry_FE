@@ -29,19 +29,19 @@ const SOL_CARDS = [
     key: 'investmentCheck' as const,
     title: '투자 건강검진',
     path: '/asset/investment-checkup',
-    icon: <InvestmentCheckIc width={32} height={32} />,
+    icon: <InvestmentCheckIc width={44} height={44} />,
   },
   {
     key: 'pensionDefer' as const,
     title: '국민연금 연기',
     path: '/pension/defer',
-    icon: <PensionDeferIc width={32} height={32} />,
+    icon: <PensionDeferIc width={44} height={44} />,
   },
   {
     key: 'retirementSim' as const,
     title: '은퇴 시뮬레이션',
     path: '/retirement-simulation',
-    icon: <RetirementSimIc width={32} height={32} />,
+    icon: <RetirementSimIc width={44} height={44} />,
   },
 ]
 
@@ -344,26 +344,25 @@ function HomePage() {
                 {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
                   const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
-                    <div key={card.key} className="relative aspect-square">
-                      <button
-                        onClick={() => navigate(card.path)}
-                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between overflow-hidden p-2 text-left"
-                      >
-                        <div className="flex flex-col gap-0.5">
-                          <p className="text-sub max-[420px]:text-caption font-bold text-ink leading-tight break-keep">
-                            {card.title}
+                    <button
+                      key={card.key}
+                      onClick={() => navigate(card.path)}
+                      className="bg-surface rounded-card-lg min-h-[9.5rem] flex flex-col justify-between p-[14px] text-left"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <p className="text-md font-bold text-ink leading-snug break-keep">
+                          {card.title}
+                        </p>
+                        {caption && (
+                          <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                            {caption}
                           </p>
-                          {caption && (
-                            <p className="text-caption text-ink-hint leading-tight line-clamp-2">
-                              {caption}
-                            </p>
-                          )}
-                        </div>
-                        <div className="self-end max-[420px]:[&>svg]:w-6 max-[420px]:[&>svg]:h-6">
-                          {card.icon}
-                        </div>
-                      </button>
-                    </div>
+                        )}
+                      </div>
+                      <div className="self-end">
+                        {card.icon}
+                      </div>
+                    </button>
                   )
                 })}
               </div>
