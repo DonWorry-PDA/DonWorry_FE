@@ -162,7 +162,7 @@ function HomePage() {
           </p>
         </div>
         <button
-          aria-label={unreadCount > 0 ? `알림 ${unreadCount}개` : '알림'}
+          aria-label={unreadCount > 0 ? `읽지 않은 알림 ${unreadCount}개, 알림 페이지로 이동` : '알림 페이지로 이동'}
           className="relative flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
         >

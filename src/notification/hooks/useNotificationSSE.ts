@@ -21,7 +21,10 @@ const useNotificationSSE = () => {
       if (!mounted) return
 
       const token = getAccessToken()
-      if (!token) return
+      if (!token) {
+        reconnectTimer = setTimeout(connect, SSE_RECONNECT_DELAY_MS)
+        return
+      }
 
       abortController = new AbortController()
 
