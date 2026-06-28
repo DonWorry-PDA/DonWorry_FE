@@ -4,22 +4,11 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import useCurrentUser from '../common/hooks/useCurrentUser'
-import { calcDday } from '../common/utils/formatDate'
-
 const STEPS = [
   { step: 1, label: '인증' },
   { step: 2, label: '약관' },
   { step: 3, label: '완료' },
 ] as const
-
-const CERT_EXPIRY = new Date(2028, 1, 29)
-
-function formatExpiry(date: Date) {
-  const yy = String(date.getFullYear()).slice(2)
-  const mm = String(date.getMonth() + 1).padStart(2, '0')
-  const dd = String(date.getDate()).padStart(2, '0')
-  return `${yy}.${mm}.${dd}`
-}
 
 function ShinhanCertPage() {
   const navigate = useNavigate()
@@ -87,11 +76,6 @@ function ShinhanCertPage() {
             <span className="text-body">신한인증서</span>
           </div>
 
-          <p className="text-body mt-4">만료일 {formatExpiry(CERT_EXPIRY)}</p>
-
-          <span className="rounded-badge text-sub mt-2 inline-block bg-white/20 px-2.5 py-0.5">
-            {calcDday(CERT_EXPIRY)}
-          </span>
         </div>
       </main>
 

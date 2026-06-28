@@ -12,8 +12,8 @@ import type { RecommendationResponse } from './types/recommendation'
 
 const toMan = (won: number) => Math.round(won / 10_000)
 const formatShortfall = (won: number) => {
-  const man = toMan(won)
-  return man < 1 ? '1만원 미만' : `${man}만원`
+  if (won < 10_000) return '1만원 미만'
+  return `${toMan(won)}만원`
 }
 
 const LOADING_MESSAGES = [

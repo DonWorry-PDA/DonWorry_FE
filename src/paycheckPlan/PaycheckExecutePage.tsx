@@ -40,7 +40,7 @@ function TapBubble() {
   const phase = useTapPhase()
   if (phase === 'gone') return null
   return (
-    <div className={`absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-opacity duration-500 ${phase === 'visible' ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-opacity motion-reduce:transition-none duration-500 ${phase === 'visible' ? 'opacity-100' : 'opacity-0'}`}>
       <div className="relative bg-ink rounded-card px-3 py-1.5">
         <p className="text-caption font-semibold text-white whitespace-nowrap">탭하면 상세를 볼 수 있어요</p>
         <div className="absolute top-full right-3 border-x-[5px] border-t-[6px] border-x-transparent border-t-ink" />
@@ -53,9 +53,9 @@ function TapRipple() {
   const phase = useTapPhase()
   if (phase === 'gone') return null
   return (
-    <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 transition-opacity duration-500 ${phase === 'visible' ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 transition-opacity motion-reduce:transition-none duration-500 ${phase === 'visible' ? 'opacity-100' : 'opacity-0'}`}>
       <div className="relative size-7">
-        <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+        <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping motion-reduce:animate-none" />
         <div className="size-7 rounded-full bg-primary/15" />
       </div>
     </div>
