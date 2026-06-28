@@ -1,5 +1,5 @@
 import type { DayEventsMap } from '../types/calendar'
-import { BLOCK_STYLE, FLOW_STYLE, blockCategoriesOf, flowTypesOf } from '../flowType'
+import { BLOCK_STYLE, FLOW_STYLE, blockCategoriesOf, flowTypesOf, isBlockEstimated } from '../flowType'
 import { buildMonthGrid, WEEKDAY_LABELS } from '../utils/monthGrid'
 
 type Props = {
@@ -38,7 +38,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       </div>
 
       {/* 날짜 그리드 */}
-      <div className="grid grid-cols-7 gap-y-[6px]">
+      <div className="grid grid-cols-7 gap-y-[10px]">
         {cells.map((cell) => {
           const dayEvents = events[cell.iso] ?? []
           // 연금·배당·이자·납입·만기는 라벨 블록, 매수/매도/입금/출금(소비 포함)은 점.
@@ -51,10 +51,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
             <button
               key={cell.iso}
               onClick={() => onSelect(cell.iso)}
-              className="flex min-h-[58px] flex-col items-center gap-[3px] py-1.5"
+              className="flex min-h-[76px] flex-col items-center gap-[5px] py-1.5"
             >
               <span
-                className={`flex size-8 items-center justify-center rounded-full text-md font-medium leading-none ${
+                className={`flex size-9 items-center justify-center rounded-full text-btn font-medium leading-none ${
                   isToday
                     ? 'bg-primary font-bold text-white'
                     : isSelected
@@ -67,15 +67,21 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
 
               {/* 카테고리 라벨 블록 */}
               {blocks.length > 0 && (
-                <span className="flex w-full flex-col items-stretch gap-px px-0.5">
+                <span className="flex w-full flex-col items-stretch gap-0.5 px-0.5">
                   {blocks.map((cat) => {
                     const b = BLOCK_STYLE[cat]
+                    // 확정=채운 칩 / 예정(estimated)=점선 테두리 칩 (배당 등 미래 예정분 구분)
+                    const estimated = isBlockEstimated(dayEvents, cat)
                     return (
                       <span
                         key={cat}
-                        className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${b.chip}`}
+                        className={`truncate rounded-[5px] px-1.5 py-0.5 text-center text-caption leading-[1.4] ${
+                          estimated ? b.estimatedChip : b.chip
+                        }`}
                       >
                         {b.label}
+                        {/* 예정(점선)은 시각으로만 구분되므로 스크린리더용 상태 텍스트 제공("배당 예정") */}
+                        {estimated && <span className="sr-only"> 예정</span>}
                       </span>
                     )
                   })}
@@ -83,9 +89,9 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
               )}
 
               {/* 흐름 점(입금/출금/매수/매도). 빈 날도 높이 유지해 행 정렬 */}
-              <span className="flex h-[6px] items-center gap-[3px]">
+              <span className="flex h-[7px] items-center gap-[4px]">
                 {flows.map((f) => (
-                  <span key={f} className={`size-[5px] rounded-full ${FLOW_STYLE[f].dot}`} />
+                  <span key={f} className={`size-[6px] rounded-full ${FLOW_STYLE[f].dot}`} />
                 ))}
               </span>
             </button>
