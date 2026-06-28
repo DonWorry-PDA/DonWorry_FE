@@ -348,7 +348,7 @@ function HomePage() {
                     <button
                       key={card.key}
                       onClick={() => navigate(card.path)}
-                      className="bg-surface rounded-card-lg aspect-square flex flex-col justify-between p-[14px] text-left"
+                      className="bg-surface rounded-card-lg aspect-square min-h-[9.5rem] flex flex-col justify-between p-[14px] text-left"
                     >
                       <div className="flex flex-col gap-1">
                         <p className="text-md font-bold text-ink leading-snug break-keep">
