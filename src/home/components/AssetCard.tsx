@@ -1,4 +1,5 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
+import { formatKrw } from '@/common/utils/formatKrw'
 import type { AssetSegment } from '../types/home'
 
 type Props = {
@@ -22,7 +23,13 @@ type ActiveSegment = { label: string; pct: number }
 function DonutChart({ segments }: { segments: AssetSegment[] }) {
   const [pinned, setPinned] = useState<ActiveSegment | null>(null)
   const [hovered, setHovered] = useState<ActiveSegment | null>(null)
+  const [drawn, setDrawn] = useState(false)
   const active = hovered ?? pinned
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDrawn(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
 
   if (segments.length === 0) return null
 
@@ -51,10 +58,13 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
             cx={CX} cy={CY} r={R}
             stroke={SEGMENT_COLORS[i % SEGMENT_COLORS.length]}
             strokeWidth={active?.label === label ? 24 : 16}
-            strokeDasharray={`${segLength} ${circumference}`}
+            strokeDasharray={drawn ? `${segLength} ${circumference}` : `0 ${circumference}`}
             strokeDashoffset={0}
             transform={`rotate(${segmentAngles[i]} ${CX} ${CY})`}
-            style={{ cursor: 'pointer', transition: 'stroke-width 0.18s ease' }}
+            style={{
+              cursor: 'pointer',
+              transition: `stroke-dasharray 0.5s cubic-bezier(0.4,0,0.2,1) ${i * 0.07}s, stroke-width 0.18s ease`,
+            }}
             onMouseEnter={() => setHovered({ label, pct })}
             onMouseLeave={() => setHovered(null)}
             onClick={e => {
@@ -90,11 +100,10 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
 
 function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, onAnalysisClick }: Props) {
   const sortedSegments = [...segments].sort((a, b) => b.pct - a.pct)
-  const totalNumber = totalAmountKrw.toLocaleString('ko-KR')
 
   const changeText =
     changeAmount != null && changeDirection !== 'FLAT'
-      ? `${Math.abs(changeAmount).toLocaleString('ko-KR')}원 ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
+      ? `${formatKrw(Math.abs(changeAmount))} ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
       : changeDirection === 'FLAT'
       ? '지난 달과 동일해요'
       : null
@@ -106,7 +115,7 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
         <div className="flex flex-col gap-[5px]">
           <p className="text-sub text-white/75">총자산</p>
           <p className="font-inter text-[1.875rem] font-bold text-white leading-tight tracking-tight">
-            {totalNumber}원
+            {formatKrw(totalAmountKrw)}
           </p>
           {changeText && (
             <p className="text-sub text-white/65">{changeText}</p>
