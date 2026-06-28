@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { formatWon } from '@/common/utils/formatKrw'
 import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
@@ -184,7 +185,7 @@ function HomePage() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto pt-4 pb-6">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-4 pb-6">
         {isLoading ? (
           <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
             <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
@@ -232,12 +233,12 @@ function HomePage() {
                 <div className="rounded-card-lg border border-line bg-white px-5 py-[14px] flex items-center gap-3">
                   <div className="w-[55%] grid grid-cols-[auto_1fr] gap-x-3 gap-y-[9px] items-baseline">
                     <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
-                    <span className="font-inter text-btn font-bold text-ink text-right tabular-nums">
-                      {hub.monthlyExpense.toLocaleString('ko-KR')}원
+                    <span className="font-inter text-md font-bold text-ink text-right tabular-nums whitespace-nowrap">
+                      {formatWon(hub.monthlyExpense)}
                     </span>
                     <span className="text-sub text-ink-hint shrink-0">{month} 수입</span>
-                    <span className="font-inter text-btn font-bold text-primary text-right tabular-nums">
-                      {hub.monthlyIncome.toLocaleString('ko-KR')}원
+                    <span className="font-inter text-md font-bold text-primary text-right tabular-nums whitespace-nowrap">
+                      {formatWon(hub.monthlyIncome)}
                     </span>
                   </div>
                   <div className="flex-1 flex justify-end">
@@ -302,10 +303,10 @@ function HomePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-caption text-ink-hint">
-                      현재 {Math.round(stability.currentIncomeKrw / 10_000).toLocaleString('ko-KR')}만원
+                      현재 {formatWon(stability.currentIncomeKrw)}
                     </span>
                     <span className="text-caption text-ink-hint">
-                      목표 {Math.round(stability.targetIncomeKrw / 10_000).toLocaleString('ko-KR')}만원
+                      목표 {formatWon(stability.targetIncomeKrw)}
                     </span>
                   </div>
                 </div>
@@ -318,7 +319,7 @@ function HomePage() {
                     <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
                     <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
                       <span className="text-ink-sub">부족한 금액</span>
-                      <span className="text-ink tabular-nums">{stability.shortfallKrw.toLocaleString('ko-KR')}원</span>
+                      <span className="text-ink tabular-nums">{formatWon(stability.shortfallKrw)}</span>
                       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-ink-sub">
                         <path d="M9 18 L15 12 L9 6"/>
                       </svg>
@@ -345,25 +346,26 @@ function HomePage() {
                 {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
                   const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
-                    <button
-                      key={card.key}
-                      onClick={() => navigate(card.path)}
-                      className="bg-surface rounded-card-lg aspect-square min-h-[9.5rem] flex flex-col justify-between p-[14px] text-left"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <p className="text-md font-bold text-ink leading-snug break-keep">
-                          {card.title}
-                        </p>
-                        {caption && (
-                          <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
-                            {caption}
+                    <div key={card.key} className="relative aspect-square">
+                      <button
+                        onClick={() => navigate(card.path)}
+                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
+                      >
+                        <div className="flex flex-col gap-1">
+                          <p className="text-md font-bold text-ink leading-snug break-keep">
+                            {card.title}
                           </p>
-                        )}
-                      </div>
-                      <div className="self-end">
-                        {card.icon}
-                      </div>
-                    </button>
+                          {caption && (
+                            <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                              {caption}
+                            </p>
+                          )}
+                        </div>
+                        <div className="self-end">
+                          {card.icon}
+                        </div>
+                      </button>
+                    </div>
                   )
                 })}
               </div>
