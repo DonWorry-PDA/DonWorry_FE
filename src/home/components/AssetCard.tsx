@@ -50,8 +50,8 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
   return (
     <svg
       viewBox="0 0 100 100"
-      width={180}
-      height={180}
+      width={152}
+      height={152}
       fill="none"
       onClick={e => e.stopPropagation()}
     >
