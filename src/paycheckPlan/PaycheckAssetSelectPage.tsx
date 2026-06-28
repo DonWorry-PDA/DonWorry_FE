@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
+import useGetSurvey from '@/survey/hooks/useGetSurvey'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -11,12 +13,19 @@ import usePutSalaryAssetExclusions from './hooks/usePutSalaryAssetExclusions'
 
 function PaycheckAssetSelectPage() {
   const navigate = useNavigate()
+  // 월급 설계 추천은 투자성향 설문이 선행돼야 한다. 미완료(404)면 설문으로 보낸다(#161).
+  const { isLoading: isSurveyLoading, error: surveyError } = useGetSurvey()
+  const surveyMissing = isAxiosError(surveyError) && surveyError.response?.status === 404
   const { data, isLoading, isError } = useGetSalaryAssets()
   const { mutate: saveExclusions, isPending } = usePutSalaryAssetExclusions()
 
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
   const [submitError, setSubmitError] = useState(false)
   const initialized = useRef(false)
+
+  useEffect(() => {
+    if (surveyMissing) navigate('/survey', { replace: true })
+  }, [surveyMissing, navigate])
 
   useEffect(() => {
     if (!data || initialized.current) return
@@ -71,6 +80,21 @@ function PaycheckAssetSelectPage() {
         onSuccess: () => navigate('/paycheck-plan/diagnosis'),
         onError: () => setSubmitError(true),
       },
+    )
+  }
+
+  // 설문 확인 중·미완료(설문으로 리다이렉트 중)엔 자산 화면을 띄우지 않는다.
+  if (isSurveyLoading || surveyMissing) {
+    return (
+      <div role="status" aria-live="polite" className="flex flex-col h-full">
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <span className="sr-only">투자성향 설문 확인 중입니다.</span>
+        <div className="flex-1 px-6 pt-6 flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-[64px] animate-pulse rounded-card bg-surface-muted" />
+          ))}
+        </div>
+      </div>
     )
   }
 
