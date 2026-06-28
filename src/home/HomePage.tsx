@@ -347,19 +347,19 @@ function HomePage() {
                     <div key={card.key} className="relative aspect-square">
                       <button
                         onClick={() => navigate(card.path)}
-                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between overflow-hidden p-[14px] max-[420px]:p-3 text-left"
+                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between overflow-hidden p-[14px] max-[475px]:p-2 text-left"
                       >
-                        <div className="flex flex-col gap-1">
-                          <p className="text-md max-[420px]:text-body font-bold text-ink leading-snug break-keep">
+                        <div className="flex flex-col gap-1 max-[475px]:gap-0.5">
+                          <p className="text-md max-[475px]:text-body font-bold text-ink leading-snug max-[475px]:leading-tight break-keep">
                             {card.title}
                           </p>
                           {caption && (
-                            <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                            <p className="text-caption text-ink-hint leading-snug max-[475px]:leading-tight whitespace-pre-line">
                               {caption}
                             </p>
                           )}
                         </div>
-                        <div className="self-end max-[420px]:[&>svg]:w-9 max-[420px]:[&>svg]:h-9">
+                        <div className="self-end max-[475px]:[&>svg]:w-5 max-[475px]:[&>svg]:h-5">
                           {card.icon}
                         </div>
                       </button>
