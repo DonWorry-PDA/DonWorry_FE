@@ -7,7 +7,7 @@ function OrderReservedPage() {
   const itemCount: number = (state as { itemCount?: number } | null)?.itemCount ?? 0
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-dvh bg-white">
       <div className="flex-1 flex flex-col items-center justify-center px-5 pb-10">
         {/* 아이콘 */}
         <div className="size-16 rounded-full bg-primary-tint flex items-center justify-center mb-6">

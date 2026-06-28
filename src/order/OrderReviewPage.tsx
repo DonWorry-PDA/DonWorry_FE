@@ -25,7 +25,7 @@ function OrderReviewPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="주문 검토" onBack={() => navigate(-1)} />
         <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
       </div>
@@ -35,7 +35,7 @@ function OrderReviewPage() {
   const plan = data && planId ? findPlan(data, planId) : undefined
   if (!data || !plan) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="주문 검토" onBack={() => navigate(-1)} />
         <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 이전 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
       </div>
@@ -75,15 +75,15 @@ function OrderReviewPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="주문 검토" onBack={() => navigate(-1)} />
 
       <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-6">이렇게 주문할게요</h2>
 
         {/* 살 자산 */}
-        <p className="text-sub text-ink-hint mb-2">살 자산</p>
-        <div className="flex flex-col gap-3 mb-5">
+        <p className="text-sub text-ink-hint mb-3">살 자산</p>
+        <div className="flex flex-col gap-4">
           {buyItems.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               <div className="size-8 rounded-icon flex items-center justify-center shrink-0 bg-success-bg text-success">
@@ -99,9 +99,11 @@ function OrderReviewPage() {
             </div>
           ))}
         </div>
+      </div>
 
+      <div className="shrink-0 px-6 pb-6 pt-3 border-t border-line">
         {/* 합계 */}
-        <div className="border border-line rounded-card px-4 py-3 flex flex-col gap-2.5">
+        <div className="border border-line rounded-card px-4 py-3 flex flex-col gap-2.5 mb-2">
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">총 주문액</p>
             <p className="font-inter text-body font-semibold text-ink">
@@ -114,7 +116,7 @@ function OrderReviewPage() {
           </div>
         </div>
 
-        <p className="text-sub text-ink-hint mt-3 px-1">
+        <p className="text-sub text-ink-hint mb-4 px-1">
           예상은 실시간 시세라 체결 가격과 달라질 수 있어요.
         </p>
 
@@ -123,7 +125,7 @@ function OrderReviewPage() {
           role="checkbox"
           aria-checked={confirmed}
           onClick={() => setConfirmed((v) => !v)}
-          className="flex items-center gap-3 mt-5 w-full text-left"
+          className="flex items-center gap-3 mb-4 w-full text-left"
         >
           <span
             className={`shrink-0 size-6 rounded-full flex items-center justify-center transition-colors ${
@@ -138,9 +140,7 @@ function OrderReviewPage() {
           </span>
           <span className="text-body text-ink">위 주문 내용을 확인했어요</span>
         </button>
-      </div>
 
-      <div className="px-5 pb-4 shrink-0">
         <Button disabled={!confirmed} onClick={handleOrderStart}>
           주문 실행
         </Button>
