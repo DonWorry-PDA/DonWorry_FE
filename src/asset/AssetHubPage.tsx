@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc } from '../common/assets/icons'
-import useGetAssetHub from './hooks/useGetAssetHub'
+import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
 import type { AssetHubResponse, LifeStabilityGrade } from './types/assetHub'
 import AssetSummaryCard from './components/AssetSummaryCard'
 import ManageMenuCard from './components/ManageMenuCard'
@@ -80,11 +80,15 @@ const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
 
 const toMan = (krw: number) => Math.round(krw / 10_000).toLocaleString('ko-KR')
 
-const toSummary = (hub: AssetHubResponse): AssetHubSummary => ({
-  totalAmountKrw: hub.totalAsset,
+const toSummary = (
+  hub: AssetHubResponse,
+  totalAsset: number,
+  allocation: AssetHubResponse['allocation'],
+): AssetHubSummary => ({
+  totalAmountKrw: totalAsset,
   changeAmountKrw: hub.changeAmount,
   changeDirection: hub.changeDirection,
-  allocation: hub.allocation.map((item) => ({ label: item.category, pct: item.ratio })),
+  allocation: allocation.map((item) => ({ label: item.category, pct: item.ratio })),
   monthlyIncomeKrw: hub.monthlyIncome,
   monthlyExpenseKrw: hub.monthlyExpense,
 })
@@ -139,7 +143,7 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
 
 function AssetHubPage() {
   const navigate = useNavigate()
-  const { data: hub, isLoading, refetch } = useGetAssetHub()
+  const { hub, realtimeTotalAsset, realtimeAllocation, isLoading, refetch } = useRealtimeAssetHub()
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -170,7 +174,7 @@ function AssetHubPage() {
           <StatusMessage text="자산 정보를 불러오지 못했어요." onRetry={() => refetch()} />
         ) : (
           <div className="flex flex-col gap-5 px-6">
-            <AssetSummaryCard {...toSummary(hub)} />
+            <AssetSummaryCard {...toSummary(hub, realtimeTotalAsset ?? hub.totalAsset, realtimeAllocation ?? hub.allocation)} />
 
             <section>
               <h2 className="text-body text-ink mb-3 font-bold">관리 메뉴</h2>
