@@ -3,6 +3,8 @@
 // ── 자산 구성 ────────────────────────────────────────────────
 export type AssetHolding = {
   productName: string
+  tickerCode: string | null
+  quantity: number | null
   evaluationAmount: number
 }
 
