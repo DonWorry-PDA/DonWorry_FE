@@ -40,11 +40,15 @@ const useRealtimeAssetHub = () => {
         return { ...item, ratio: Math.round((originalAmount / newTotal) * 100) }
       })
 
-      // 반올림 오차 보정: 합이 100이 되도록 첫 항목에 차이 흡수
+      // 반올림 오차 보정: 비율 합이 100이 되도록 가장 큰 항목에 흡수 (음수 방지)
       const ratioSum = updated.reduce((s, a) => s + a.ratio, 0)
       const diff = 100 - ratioSum
       if (diff !== 0 && updated.length > 0) {
-        updated[0] = { ...updated[0], ratio: updated[0].ratio + diff }
+        const targetIdx = updated.reduce(
+          (maxIdx, item, idx) => (item.ratio > updated[maxIdx].ratio ? idx : maxIdx),
+          0,
+        )
+        updated[targetIdx] = { ...updated[targetIdx], ratio: updated[targetIdx].ratio + diff }
       }
 
       realtimeAllocation = updated
@@ -55,6 +59,7 @@ const useRealtimeAssetHub = () => {
     hub,
     realtimeTotalAsset,
     realtimeAllocation,
+    priceMap,
     isLive,
     isLoading,
     isError,

@@ -13,6 +13,7 @@ const useEtfPriceMap = (tickers: string[]) => {
   const tickerSet = tickers.join(',') // 배열 참조 변경 방지용 문자열 키
 
   useEffect(() => {
+    setPriceMap({})
     if (tickers.length === 0) return
 
     const base: string | undefined =

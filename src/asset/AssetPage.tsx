@@ -7,7 +7,6 @@ import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import pxr from '../common/utils/pxr'
 import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
 import useGetAssetComposition from './hooks/useGetAssetComposition'
-import useEtfPriceMap from '@/common/hooks/useEtfPriceMap'
 import useGetAssetIncome from './hooks/useGetAssetIncome'
 import useGetAssetSchedule from './hooks/useGetAssetSchedule'
 import useGetAssetPension from './hooks/useGetAssetPension'
@@ -47,23 +46,8 @@ function AssetPage() {
   const { state } = useLocation()
   const fromHome = state?.from === 'home'
 
-  const { hub, realtimeTotalAsset, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useRealtimeAssetHub()
+  const { hub, realtimeTotalAsset, priceMap, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useRealtimeAssetHub()
   const { data: composition, isLoading: compositionLoading, isError: compositionError, refetch: refetchComposition } = useGetAssetComposition()
-
-  const etfTickers = useMemo(() => {
-    if (!composition) return []
-    const tickers: string[] = []
-    for (const group of composition.groups) {
-      for (const account of group.accounts) {
-        for (const holding of account.holdings) {
-          if (holding.tickerCode) tickers.push(holding.tickerCode)
-        }
-      }
-    }
-    return [...new Set(tickers)]
-  }, [composition])
-
-  const { priceMap } = useEtfPriceMap(etfTickers)
 
   const realtimeComposition = useMemo(() => {
     if (!composition || Object.keys(priceMap).length === 0) return composition

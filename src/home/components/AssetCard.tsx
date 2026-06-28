@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react'
-import { formatKrw } from '@/common/utils/formatKrw'
+import { formatKrw, formatWon } from '@/common/utils/formatKrw'
 import type { AssetSegment } from '../types/home'
 
 type Props = {
@@ -23,12 +23,17 @@ type ActiveSegment = { label: string; pct: number }
 function DonutChart({ segments }: { segments: AssetSegment[] }) {
   const [pinned, setPinned] = useState<ActiveSegment | null>(null)
   const [hovered, setHovered] = useState<ActiveSegment | null>(null)
-  const [drawn, setDrawn] = useState(false)
+  const reducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const [drawn, setDrawn] = useState(reducedMotion)
   const active = hovered ?? pinned
 
   useEffect(() => {
+    if (reducedMotion) return
     const id = requestAnimationFrame(() => setDrawn(true))
     return () => cancelAnimationFrame(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (segments.length === 0) return null
@@ -63,7 +68,9 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
             transform={`rotate(${segmentAngles[i]} ${CX} ${CY})`}
             style={{
               cursor: 'pointer',
-              transition: `stroke-dasharray 0.5s cubic-bezier(0.4,0,0.2,1) ${i * 0.07}s, stroke-width 0.18s ease`,
+              transition: reducedMotion
+                ? 'stroke-width 0.18s ease'
+                : `stroke-dasharray 0.5s cubic-bezier(0.4,0,0.2,1) ${i * 0.07}s, stroke-width 0.18s ease`,
             }}
             onMouseEnter={() => setHovered({ label, pct })}
             onMouseLeave={() => setHovered(null)}
@@ -103,7 +110,7 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
 
   const changeText =
     changeAmount != null && changeDirection !== 'FLAT'
-      ? `${formatKrw(Math.abs(changeAmount))} ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
+      ? `${formatWon(Math.abs(changeAmount))} ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
       : changeDirection === 'FLAT'
       ? '지난 달과 동일해요'
       : null
