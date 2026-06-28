@@ -188,6 +188,27 @@ function InvestmentCheckupPage() {
                   </div>
                 )
               })()}
+
+            {/* 분배 데이터 공백 안내 — 현금흐름 역할 금액엔 잡혔지만 월 분배 데이터가 없어
+                monthlyCashflow에 반영되지 않은 보유. 비난·추정 없이 현황만 차분히 안내한다. */}
+            {data.uncoveredCashflow &&
+              data.uncoveredCashflow.productNames.length > 0 && (
+                <div className="rounded-card-lg bg-surface-muted mt-6 p-4">
+                  <p className="text-body text-ink-sub font-bold">분배 데이터 공백 안내</p>
+                  <p className="text-caption text-ink-hint mt-1.5 leading-[1.6]">
+                    아래 자산 {formatKrw(data.uncoveredCashflow.amount)}은 분배 데이터가 없어 현금흐름에
+                    반영되지 않았어요.
+                  </p>
+                  <ul className="mt-2.5 flex flex-col gap-1">
+                    {data.uncoveredCashflow.productNames.map((name) => (
+                      <li key={name} className="text-caption text-ink-sub flex gap-1.5">
+                        <span className="text-ink-hint">·</span>
+                        {name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
           </main>
 
           <StickyFooter>

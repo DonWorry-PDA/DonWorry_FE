@@ -21,9 +21,14 @@ vi.mock('../hooks/useGetInvestmentCheck', () => ({
   default: () => getInvestmentCheckMock(),
 }))
 
-function mockData(data: InvestmentCheckResponse) {
+// uncoveredCashflow는 nullable additive 필드라 대부분의 케이스에서 null로 기본 주입한다.
+// (공백 보유 케이스만 명시적으로 넘긴다.)
+function mockData(
+  data: Omit<InvestmentCheckResponse, 'uncoveredCashflow'> &
+    Partial<Pick<InvestmentCheckResponse, 'uncoveredCashflow'>>,
+) {
   getInvestmentCheckMock.mockReturnValue({
-    data,
+    data: { uncoveredCashflow: null, ...data } satisfies InvestmentCheckResponse,
     isLoading: false,
     isFetching: false,
     refetch: vi.fn(),
@@ -210,5 +215,56 @@ describe('InvestmentCheckupPage 성장 블록', () => {
     expect(screen.getByText('(0원)')).toBeInTheDocument()
     expect(screen.getByText(/⚠️/)).toBeInTheDocument()
     expect(screen.queryByText(/💡/)).not.toBeInTheDocument()
+  })
+})
+
+describe('InvestmentCheckupPage 분배 데이터 공백 안내', () => {
+  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => cleanup())
+
+  it('uncoveredCashflow가 있으면 금액과 종목명을 안내 카드로 노출한다', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: null,
+      uncoveredCashflow: {
+        amount: 20_000_000,
+        productNames: ['SOL 코스피200채권혼합50', 'KODEX 국고채10년'],
+      },
+    })
+    render(<InvestmentCheckupPage />)
+
+    expect(screen.getByText(/분배 데이터 공백 안내/)).toBeInTheDocument()
+    // 금액은 만원 단위(formatKrw)로 노출, "반영되지 않았어요" 안내 카피와 함께
+    expect(screen.getByText(/2,000만원은 분배 데이터가 없어 현금흐름에/)).toBeInTheDocument()
+    expect(screen.getByText('SOL 코스피200채권혼합50')).toBeInTheDocument()
+    expect(screen.getByText('KODEX 국고채10년')).toBeInTheDocument()
+  })
+
+  it('uncoveredCashflow가 null이면 안내 카드를 렌더하지 않는다', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: null,
+      uncoveredCashflow: null,
+    })
+    render(<InvestmentCheckupPage />)
+
+    expect(screen.queryByText(/분배 데이터 공백 안내/)).not.toBeInTheDocument()
+  })
+
+  it('productNames가 빈 배열이면(이론상) 카드를 숨긴다', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: null,
+      uncoveredCashflow: { amount: 20_000_000, productNames: [] },
+    })
+    render(<InvestmentCheckupPage />)
+
+    expect(screen.queryByText(/분배 데이터 공백 안내/)).not.toBeInTheDocument()
   })
 })
