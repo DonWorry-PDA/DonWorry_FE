@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { NotificationIc, BackArrowIc } from '../common/assets/icons'
 import BottomNav from '../common/components/BottomNav'
 import { formatKrw, formatKrwShort } from '../common/utils/formatKrw'
 import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import pxr from '../common/utils/pxr'
-import useGetAssetHub from './hooks/useGetAssetHub'
+import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
 import useGetAssetComposition from './hooks/useGetAssetComposition'
 import useGetAssetIncome from './hooks/useGetAssetIncome'
 import useGetAssetSchedule from './hooks/useGetAssetSchedule'
@@ -46,8 +46,40 @@ function AssetPage() {
   const { state } = useLocation()
   const fromHome = state?.from === 'home'
 
-  const { data: hub, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useGetAssetHub()
+  const { hub, realtimeTotalAsset, priceMap, isLoading: hubLoading, isError: hubError, refetch: refetchHub } = useRealtimeAssetHub()
   const { data: composition, isLoading: compositionLoading, isError: compositionError, refetch: refetchComposition } = useGetAssetComposition()
+
+  const realtimeComposition = useMemo(() => {
+    if (!composition || Object.keys(priceMap).length === 0) return composition
+
+    const groups = composition.groups.map((group) => {
+      const accounts = group.accounts.map((account) => {
+        const holdings = account.holdings.map((holding) => {
+          if (
+            holding.tickerCode &&
+            holding.quantity != null &&
+            holding.tickerCode in priceMap
+          ) {
+            return { ...holding, evaluationAmount: holding.quantity * priceMap[holding.tickerCode] }
+          }
+          return holding
+        })
+        return { ...account, holdings }
+      })
+
+      const totalAmount = accounts.reduce((sum, acc) => {
+        if (acc.holdings.length > 0) {
+          return sum + acc.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
+        }
+        return sum + acc.balance
+      }, 0)
+
+      return { ...group, accounts, totalAmount }
+    })
+
+    const totalAsset = groups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0)
+    return { ...composition, groups, totalAsset }
+  }, [composition, priceMap])
   const { data: income, isLoading: incomeLoading, isError: incomeError, refetch: refetchIncome } = useGetAssetIncome()
   const { data: schedule, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useGetAssetSchedule()
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
@@ -68,11 +100,11 @@ function AssetPage() {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  const sortedGroups = [...(composition?.groups ?? [])].sort((a, b) => b.totalAmount - a.totalAmount)
+  const sortedGroups = [...(realtimeComposition?.groups ?? [])].sort((a, b) => b.totalAmount - a.totalAmount)
 
   const allocationBase =
-    composition && composition.totalAsset > 0
-      ? composition.totalAsset
+    realtimeComposition && realtimeComposition.totalAsset > 0
+      ? realtimeComposition.totalAsset
       : sortedGroups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0)
   // 레이아웃 폭 계산은 소수 그대로, 라벨 표시만 반올림
   const toAllocationRatio = (amount: number) =>
@@ -138,7 +170,7 @@ function AssetPage() {
               </div>
               <div className="pt-0.5">
                 <p className="font-inter text-jumbo font-bold text-ink leading-tight tracking-tight">
-                  {formatKrw(hub.totalAsset)}
+                  {formatKrw(realtimeTotalAsset ?? hub.totalAsset)}
                 </p>
               </div>
               {hub.changeAmount != null && hub.changeDirection !== 'FLAT' && (
@@ -163,7 +195,7 @@ function AssetPage() {
               <p className="text-body text-ink-sub">자산 구성을 불러오지 못했어요</p>
               <button onClick={() => refetchComposition()} className="text-sub text-primary font-semibold min-h-[44px] px-4">다시 시도</button>
             </div>
-          ) : composition ? (
+          ) : realtimeComposition ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col gap-1.5">
               <p className="text-sub font-semibold text-ink-sub">내 자산 구성</p>
 

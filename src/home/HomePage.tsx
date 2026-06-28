@@ -3,7 +3,7 @@ import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
-import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
+import useRealtimeAssetHub from '@/asset/hooks/useRealtimeAssetHub'
 import useGetNotificationUnreadCount from '@/notification/hooks/useGetNotificationUnreadCount'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
 import type { AssetData, HomeStabilityData } from './types/home'
@@ -112,11 +112,15 @@ const buildMenus = (hub: AssetHubResponse): ManageMenu[] =>
     return menu
   })
 
-const toAssetData = (hub: AssetHubResponse): AssetData => ({
-  totalAmountKrw: hub.totalAsset,
+const toAssetData = (
+  hub: AssetHubResponse,
+  totalAsset: number,
+  allocation: AssetHubResponse['allocation'],
+): AssetData => ({
+  totalAmountKrw: totalAsset,
   changeAmount: hub.changeAmount,
   changeDirection: hub.changeDirection,
-  segments: hub.allocation.map((item) => ({ label: item.category, pct: item.ratio })),
+  segments: allocation.map((item) => ({ label: item.category, pct: item.ratio })),
 })
 
 const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
@@ -142,10 +146,13 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
 
 function HomePage() {
   const navigate = useNavigate()
-  const { data: hub, isLoading, refetch } = useGetAssetHub()
+  const { hub, realtimeTotalAsset, realtimeAllocation, isLoading, refetch } = useRealtimeAssetHub()
   const { data: unreadCount = 0 } = useGetNotificationUnreadCount()
 
-  const asset = hub ? toAssetData(hub) : null
+  const asset =
+    hub && realtimeTotalAsset != null && realtimeAllocation != null
+      ? toAssetData(hub, realtimeTotalAsset, realtimeAllocation)
+      : null
   const stability = hub ? toStabilityData(hub) : null
   const allMenus = hub ? buildMenus(hub) : []
 

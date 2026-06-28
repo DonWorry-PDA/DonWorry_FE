@@ -49,6 +49,11 @@ export type AssetHubMenus = {
   monthlyReport: { isNew: boolean | null; month: string | null } | null
 }
 
+export type EtfHoldingItem = {
+  ticker: string
+  quantity: number
+}
+
 export type AssetHubResponse = {
   totalAsset: number
   changeAmount: number | null // 월간 스냅샷 도입 전까지 null
@@ -56,5 +61,7 @@ export type AssetHubResponse = {
   allocation: AssetHubAllocationItem[]
   monthlyIncome: number
   monthlyExpense: number
+  etfHoldings: EtfHoldingItem[]
+  etfSnapshotAmount: number
   menus: AssetHubMenus
 }
