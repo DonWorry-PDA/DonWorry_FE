@@ -252,22 +252,9 @@ function HomePage() {
                   <button
                     onClick={() => navigate('/stability')}
                     aria-label="생활 안정도 자세히 보기"
-                    className="shrink-0 flex items-center gap-0.5 text-sub font-bold text-ink-sub whitespace-nowrap"
+                    className="shrink-0 text-sub font-bold text-ink-sub px-4 py-[7px] rounded-badge bg-surface whitespace-nowrap"
                   >
-                    자세히
-                    <svg
-                      width={16}
-                      height={16}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      <path d="M9 18 L15 12 L9 6" />
-                    </svg>
+                    자세히 보기
                   </button>
                 </div>
 
