@@ -200,6 +200,7 @@ function InvestmentCheckupPage() {
                             type="button"
                             onClick={() => setShowDividendBasis((v) => !v)}
                             aria-expanded={showDividendBasis}
+                            aria-controls="dividend-basis-note"
                             className="border-line text-ink-hint ml-1.5 rounded-full border px-2 py-0.5 text-[11px] leading-none"
                           >
                             자세히
@@ -210,7 +211,10 @@ function InvestmentCheckupPage() {
                         </span>
                       </div>
                       {showDividendBasis && (
-                        <p className="text-caption text-ink-hint mt-1.5 leading-[1.5]">
+                        <p
+                          id="dividend-basis-note"
+                          className="text-caption text-ink-hint mt-1.5 leading-[1.5]"
+                        >
                           보유 개별주의 평가액 × 시가배당률로 계산한 월 배당이에요. 세금(15.4%)을 뗀 실수령
                           기준이에요.
                         </p>

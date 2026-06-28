@@ -373,9 +373,12 @@ describe('InvestmentCheckupPage 연금 카피·구성·라벨(#170)', () => {
     })
     render(<InvestmentCheckupPage />)
 
-    // 펼치기 전엔 계산 기준 문구가 없다.
+    // 펼치기 전엔 계산 기준 문구가 없고, 토글 버튼은 aria-expanded=false.
     expect(screen.queryByText(/평가액 × 시가배당률/)).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: '자세히' }))
+    const toggleButton = screen.getByRole('button', { name: '자세히' })
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(toggleButton)
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByText(/평가액 × 시가배당률/)).toBeInTheDocument()
     expect(screen.getByText(/세금\(15\.4%\)/)).toBeInTheDocument()
   })
@@ -389,7 +392,9 @@ describe('InvestmentCheckupPage 연금 카피·구성·라벨(#170)', () => {
     })
     render(<InvestmentCheckupPage />)
 
-    // 범례 + 역할 카드 양쪽에서 라벨이 나오므로 최소 2회 노출.
-    expect(screen.getAllByText('현금흐름').length).toBeGreaterThanOrEqual(2)
+    // 모든 역할이 범례 + 역할 카드 양쪽에서 노출되므로 각 라벨이 최소 2회.
+    for (const { label } of rolesWithPension) {
+      expect(screen.getAllByText(label).length).toBeGreaterThanOrEqual(2)
+    }
   })
 })
