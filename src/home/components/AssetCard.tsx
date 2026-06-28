@@ -147,11 +147,11 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
       </div>
 
       {/* Chart + legend */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 max-[420px]:gap-2">
         <div className="shrink-0 max-[420px]:[&>svg]:w-28 max-[420px]:[&>svg]:h-28">
           <DonutChart segments={sortedSegments} />
         </div>
-        <div className="flex-1 grid grid-cols-[1fr_auto] gap-x-2 gap-y-[11px] items-center">
+        <div className="flex-1 grid grid-cols-[1fr_auto] gap-x-2 gap-y-[11px] max-[420px]:gap-y-[6px] items-center">
           {sortedSegments.map(({ label, pct }, i) => (
             <Fragment key={label}>
               <div className="flex min-w-0 items-center gap-[7px]">
@@ -159,9 +159,9 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
                   className="size-[8px] shrink-0 rounded-full"
                   style={{ backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
                 />
-                <span className="truncate text-sub text-white/90">{label}</span>
+                <span className="truncate text-sub max-[420px]:text-caption text-white/90">{label}</span>
               </div>
-              <span className="font-inter text-sub font-bold text-white text-right">{pct}%</span>
+              <span className="font-inter text-sub max-[420px]:text-caption font-bold text-white text-right">{pct}%</span>
             </Fragment>
           ))}
         </div>

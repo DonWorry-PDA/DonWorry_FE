@@ -185,7 +185,7 @@ function HomePage() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-4 pb-6">
+      <main className="flex-1 overflow-y-auto pt-4 pb-6">
         {isLoading ? (
           <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
             <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
@@ -340,11 +340,11 @@ function HomePage() {
             {/* 마이 SOL */}
             <section className="mt-1">
               <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
-              <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory">
+              <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory min-[475px]:grid min-[475px]:grid-cols-3 min-[475px]:gap-2 min-[475px]:overflow-visible">
                 {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
                   const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
-                    <div key={card.key} className="w-36 shrink-0 snap-start relative aspect-square">
+                    <div key={card.key} className="w-36 shrink-0 snap-start relative aspect-square min-[475px]:w-auto">
                       <button
                         onClick={() => navigate(card.path)}
                         className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
