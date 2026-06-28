@@ -1,3 +1,20 @@
+// 카탈로그(bank/securities)에 없는 기관은 이름으로 직접 매핑
+export const NAME_LOGO_MAP: Record<string, string> = {
+  // 연금
+  '국민연금공단': '/logos/pension/nps.svg',
+  // 카드
+  'BC카드': '/logos/cards/bc-card.svg',
+  '현대카드': '/logos/cards/hyundai-card.svg',
+  '롯데카드': '/logos/cards/lotte-card.svg',
+  '삼성카드': '/logos/cards/samsung-card.svg',
+  '페이코': '/logos/cards/payco.svg',
+}
+
+export function getLogoByName(name: string): string | undefined {
+  if (name.startsWith('신한')) return '/logos/sol-mark.svg'
+  return NAME_LOGO_MAP[name]
+}
+
 const LOGO_MAP: Record<string, string> = {
   // 은행
   shinhan_bank: '/logos/sol-mark.svg',
