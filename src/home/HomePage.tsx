@@ -280,10 +280,18 @@ function HomePage() {
 
                 <div className="flex flex-col gap-[7px]">
                   <div className="h-[9px] rounded-full bg-track overflow-hidden">
+                    {/* 채움 reveal + shimmer (자산 비율 바와 동일 효과) */}
                     <div
-                      className="h-full rounded-full bg-primary"
+                      className="animate-bar-reveal relative h-full overflow-hidden rounded-full bg-primary"
                       style={{ width: `${Math.min(Math.max(stability.percentage, 0), 100)}%` }}
-                    />
+                    >
+                      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+                        <div
+                          className="animate-bar-shimmer absolute inset-y-0 w-[30%]"
+                          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-caption text-ink-hint">
