@@ -200,8 +200,8 @@ function InvestmentCheckupPage() {
                     반영되지 않았어요.
                   </p>
                   <ul className="mt-2.5 flex flex-col gap-1">
-                    {data.uncoveredCashflow.productNames.map((name) => (
-                      <li key={name} className="text-caption text-ink-sub flex gap-1.5">
+                    {data.uncoveredCashflow.productNames.map((name, i) => (
+                      <li key={`${name}-${i}`} className="text-caption text-ink-sub flex gap-1.5">
                         <span className="text-ink-hint">·</span>
                         {name}
                       </li>
