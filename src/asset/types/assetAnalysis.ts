@@ -71,14 +71,20 @@ export type PensionItem = {
   label: string
   institutionName: string | null
   startAge: number
-  currentBalance: number | null  // 국민연금은 null (잔액 개념 없음)
-  expectedMonthly: number
+  currentBalance: number | null    // 국민연금은 null (잔액 개념 없음)
+  retirementAmount: number | null  // IRP 퇴직급여 금액
+  personalAmount: number | null    // IRP/연금저축 개인 납입금
+  expectedMonthlyGross: number     // 세전 월 수령 예상액
+  expectedMonthlyNet: number       // 세후 월 수령 예상액 (실수령액)
+  effectiveTaxRate: number         // 유효세율 (e.g. 0.0508)
   taxBenefitLimit: number | null
   estimated: boolean
-  payoutMonths: number | null  // estimated=true 항목만: 수령 개시~기대수명(83세) 개월 수
+  payoutMonths: number | null      // estimated=true 항목만: 수령 개시~기대수명(83세) 개월 수
+  yearsEnrolled: number | null     // IRP 가입기간 (년)
 }
 
 export type AssetPensionResponse = {
-  totalMonthlyPension: number
+  totalMonthlyPension: number      // 세전 총합
+  totalMonthlyPensionNet: number   // 세후 총합
   pensions: PensionItem[]
 }

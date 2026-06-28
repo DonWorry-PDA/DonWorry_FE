@@ -484,7 +484,10 @@ function AssetPage() {
             </div>
           ) : pension ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
-              <p className="text-sub font-semibold text-ink-sub">연금으로 받을 재원</p>
+              <div className="flex items-baseline justify-between">
+                <p className="text-sub font-semibold text-ink-sub">연금으로 받을 재원</p>
+                <p className="text-caption text-ink-hint">세후 실수령액 기준</p>
+              </div>
 
               {pension.pensions.length === 0 ? (
                 <p className="text-body text-ink-hint text-center py-8">연금 재원 정보가 없습니다</p>
@@ -508,7 +511,7 @@ function AssetPage() {
                       )}
                     </div>
                     <p className="font-inter text-md font-semibold text-ink shrink-0">
-                      월 {formatKrwShort(item.expectedMonthly)}{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
+                      월 {formatKrwShort(item.expectedMonthlyNet)}{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
                     </p>
                   </div>
                 ))
@@ -534,7 +537,7 @@ function AssetPage() {
                           <p className="text-sub text-ink-sub">모든 연금 수령 중</p>
                         </div>
                         <p className="font-inter text-sub font-bold text-primary">
-                          월 {formatKrwShort(pension.totalMonthlyPension)}
+                          월 {formatKrwShort(pension.totalMonthlyPensionNet)}
                         </p>
                       </div>
                     </div>
@@ -555,7 +558,7 @@ function AssetPage() {
                         </div>
                         <p className="flex-1 text-sub text-ink-sub min-w-0 truncate">{item.label}</p>
                         <p className="font-inter text-sub font-semibold text-success shrink-0">
-                          +{formatKrwShort(item.expectedMonthly)}/월{item.estimated ? <span className="text-success/60 font-normal"> *</span> : null}
+                          +{formatKrwShort(item.expectedMonthlyNet)}/월{item.estimated ? <span className="text-success/60 font-normal"> *</span> : null}
                         </p>
                       </div>
                     ))}
@@ -567,7 +570,7 @@ function AssetPage() {
                         </div>
                         <p className="flex-1 text-sub text-ink-sub min-w-0 truncate">{item.label}</p>
                         <p className="font-inter text-sub font-semibold text-ink shrink-0">
-                          +{formatKrwShort(item.expectedMonthly)}/월{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
+                          +{formatKrwShort(item.expectedMonthlyNet)}/월{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
                         </p>
                       </div>
                     ))}
@@ -577,7 +580,7 @@ function AssetPage() {
                         {receiving.length > 0 ? '모든 연금 개시 후' : '전체 개시 후'}
                       </p>
                       <p className="font-inter text-sub font-bold text-primary">
-                        월 {formatKrwShort(pension.totalMonthlyPension)}
+                        월 {formatKrwShort(pension.totalMonthlyPensionNet)}
                       </p>
                     </div>
                   </div>
