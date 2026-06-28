@@ -38,7 +38,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
       </div>
 
       {/* 날짜 그리드 */}
-      <div className="grid grid-cols-7 gap-y-[6px]">
+      <div className="grid grid-cols-7 gap-y-[10px]">
         {cells.map((cell) => {
           const dayEvents = events[cell.iso] ?? []
           // 연금·배당·이자·납입·만기는 라벨 블록, 매수/매도/입금/출금(소비 포함)은 점.
@@ -51,10 +51,10 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
             <button
               key={cell.iso}
               onClick={() => onSelect(cell.iso)}
-              className="flex min-h-[58px] flex-col items-center gap-[3px] py-1.5"
+              className="flex min-h-[68px] flex-col items-center gap-[4px] py-1.5"
             >
               <span
-                className={`flex size-8 items-center justify-center rounded-full text-md font-medium leading-none ${
+                className={`flex size-9 items-center justify-center rounded-full text-base font-medium leading-none ${
                   isToday
                     ? 'bg-primary font-bold text-white'
                     : isSelected
@@ -75,7 +75,7 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                     return (
                       <span
                         key={cat}
-                        className={`truncate rounded-[4px] px-1 text-center text-[0.625rem] leading-[1.35] ${
+                        className={`truncate rounded-[4px] px-1 text-center text-[0.6875rem] leading-[1.4] ${
                           estimated ? b.estimatedChip : b.chip
                         }`}
                       >
@@ -87,9 +87,9 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
               )}
 
               {/* 흐름 점(입금/출금/매수/매도). 빈 날도 높이 유지해 행 정렬 */}
-              <span className="flex h-[6px] items-center gap-[3px]">
+              <span className="flex h-[7px] items-center gap-[4px]">
                 {flows.map((f) => (
-                  <span key={f} className={`size-[5px] rounded-full ${FLOW_STYLE[f].dot}`} />
+                  <span key={f} className={`size-[6px] rounded-full ${FLOW_STYLE[f].dot}`} />
                 ))}
               </span>
             </button>

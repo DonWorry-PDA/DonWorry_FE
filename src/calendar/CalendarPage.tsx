@@ -82,7 +82,7 @@ function CalendarPage() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+      <main className="flex-1 overflow-y-auto px-4 pt-4 pb-6">
         {/* 월 헤더 */}
         <div className="relative flex items-center justify-center pt-1 pb-[18px]">
           <div className="flex items-center gap-3">
