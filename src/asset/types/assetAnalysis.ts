@@ -75,6 +75,7 @@ export type PensionItem = {
   expectedMonthly: number
   taxBenefitLimit: number | null
   estimated: boolean
+  payoutMonths: number | null  // estimated=true 항목만: 수령 개시~기대수명(83세) 개월 수
 }
 
 export type AssetPensionResponse = {

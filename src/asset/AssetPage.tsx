@@ -501,14 +501,15 @@ function AssetPage() {
                       <p className="text-sub text-ink-hint">
                         {item.institutionName ?? `${item.startAge}세부터 수령`}
                       </p>
+                      {item.currentBalance != null && (
+                        <p className="font-inter text-sub text-ink-hint">
+                          잔액 {formatKrwShort(item.currentBalance)}
+                        </p>
+                      )}
                     </div>
-                    {item.currentBalance != null ? (
-                      <p className="font-inter text-md font-semibold text-ink">{formatKrw(item.currentBalance)}</p>
-                    ) : (
-                      <p className="font-inter text-md font-semibold text-ink">
-                        {formatKrw(item.expectedMonthly)}<span className="text-sub text-ink-hint font-normal">/월</span>
-                      </p>
-                    )}
+                    <p className="font-inter text-md font-semibold text-ink shrink-0">
+                      월 {formatKrwShort(item.expectedMonthly)}{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
+                    </p>
                   </div>
                 ))
               )}
@@ -554,7 +555,7 @@ function AssetPage() {
                         </div>
                         <p className="flex-1 text-sub text-ink-sub min-w-0 truncate">{item.label}</p>
                         <p className="font-inter text-sub font-semibold text-success shrink-0">
-                          +{formatKrwShort(item.expectedMonthly)}/월
+                          +{formatKrwShort(item.expectedMonthly)}/월{item.estimated ? <span className="text-success/60 font-normal"> *</span> : null}
                         </p>
                       </div>
                     ))}
@@ -566,7 +567,7 @@ function AssetPage() {
                         </div>
                         <p className="flex-1 text-sub text-ink-sub min-w-0 truncate">{item.label}</p>
                         <p className="font-inter text-sub font-semibold text-ink shrink-0">
-                          +{formatKrwShort(item.expectedMonthly)}/월
+                          +{formatKrwShort(item.expectedMonthly)}/월{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
                         </p>
                       </div>
                     ))}
@@ -584,9 +585,14 @@ function AssetPage() {
               })()}
 
               {pension.pensions.length > 0 && (
-                <div className="bg-surface rounded-card px-4 py-[14px] mt-2">
-                  <p className="text-sub text-ink-sub leading-relaxed">
-                    <span className="font-bold text-ink">55세 이후</span> 연금으로 수령 가능 · 수령 시 세율 3.3–5.5% 우대
+                <div className="bg-surface rounded-card px-4 py-[14px] mt-2 flex flex-col gap-1">
+                  {pension.pensions.some((p) => p.estimated) && (
+                    <p className="text-sub text-ink-hint">
+                      * IRP·연금저축 예상액은 연 3% 수익률, 83세까지 수령 기준 추정치
+                    </p>
+                  )}
+                  <p className="text-sub text-ink-sub">
+                    <span className="font-semibold text-ink">55세 이후</span> 수령 가능 · 세율 3.3–5.5% 우대
                   </p>
                 </div>
               )}
