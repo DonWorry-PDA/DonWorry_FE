@@ -36,7 +36,7 @@ function DaySchedule({ title, items, emptyText = '예정된 일정이 없어요'
                   <span className="truncate text-body text-ink">{item.title}</span>
                   {item.estimated && (
                     <span className="shrink-0 rounded-badge bg-surface-muted px-1.5 py-0.5 text-caption text-ink-sub">
-                      예상
+                      예정
                     </span>
                   )}
                 </div>
