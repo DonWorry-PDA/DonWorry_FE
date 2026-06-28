@@ -302,10 +302,10 @@ function HomePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-caption text-ink-hint">
-                      현재 {Math.round(stability.currentIncomeKrw / 10_000).toLocaleString('ko-KR')}만원
+                      현재 {Math.round(stability.currentIncomeKrw).toLocaleString('ko-KR')}원
                     </span>
                     <span className="text-caption text-ink-hint">
-                      목표 {Math.round(stability.targetIncomeKrw / 10_000).toLocaleString('ko-KR')}만원
+                      목표 {Math.round(stability.targetIncomeKrw).toLocaleString('ko-KR')}원
                     </span>
                   </div>
                 </div>

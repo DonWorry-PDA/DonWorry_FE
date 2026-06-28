@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react'
-import { formatKrw, formatWon } from '@/common/utils/formatKrw'
+import { formatWon } from '@/common/utils/formatKrw'
 import type { AssetSegment } from '../types/home'
 
 type Props = {
@@ -122,7 +122,7 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
         <div className="flex flex-col gap-[5px]">
           <p className="text-sub text-white/75">총자산</p>
           <p className="font-inter text-[1.875rem] font-bold text-white leading-tight tracking-tight">
-            {formatKrw(totalAmountKrw)}
+            {formatWon(totalAmountKrw)}
           </p>
           {changeText && (
             <p className="text-sub text-white/65">{changeText}</p>
