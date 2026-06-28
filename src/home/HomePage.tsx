@@ -232,11 +232,11 @@ function HomePage() {
                 <div className="rounded-card-lg border border-line bg-white px-5 py-[14px] flex items-center gap-3">
                   <div className="w-[55%] grid grid-cols-[auto_1fr] gap-x-3 gap-y-[9px] items-baseline">
                     <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
-                    <span className="font-inter text-btn font-bold text-ink text-right tabular-nums">
+                    <span className="font-inter text-md font-bold text-ink text-right tabular-nums whitespace-nowrap">
                       {hub.monthlyExpense.toLocaleString('ko-KR')}원
                     </span>
                     <span className="text-sub text-ink-hint shrink-0">{month} 수입</span>
-                    <span className="font-inter text-btn font-bold text-primary text-right tabular-nums">
+                    <span className="font-inter text-md font-bold text-primary text-right tabular-nums whitespace-nowrap">
                       {hub.monthlyIncome.toLocaleString('ko-KR')}원
                     </span>
                   </div>
