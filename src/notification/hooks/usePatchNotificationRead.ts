@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import client from '@/common/api/client'
 
-const usePatchNotificationsReadAll = () => {
+const usePatchNotificationRead = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: () => client.patch('/api/user/notifications/read-all'),
+    mutationFn: (notificationId: number) =>
+      client.patch(`/api/user/notifications/${notificationId}/read`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] })
       queryClient.invalidateQueries({ queryKey: ['notificationUnreadCount'] })
@@ -13,4 +14,4 @@ const usePatchNotificationsReadAll = () => {
   })
 }
 
-export default usePatchNotificationsReadAll
+export default usePatchNotificationRead

@@ -30,6 +30,7 @@ function groupNotifications(items: NotificationItem[]): NotificationGroup[] {
       title: item.title,
       subtitle: item.content || undefined,
       isUnread: !item.read,
+      linkTarget: item.linkTarget || undefined,
     })
   }
 

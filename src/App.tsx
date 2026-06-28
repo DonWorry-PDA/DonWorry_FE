@@ -1,4 +1,5 @@
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
+import useNotificationSSE from './notification/hooks/useNotificationSSE'
 import SplashPage from './splash/SplashPage'
 import LoginPage from './login/LoginPage'
 import OnboardingPage from './onboarding/OnboardingPage'
@@ -60,7 +61,15 @@ import OrderTransferPage from './order/OrderTransferPage'
 import AssetPage from './asset/AssetPage'
 import RetirementSimulationPage from './retirement/RetirementSimulationPage'
 
+function AppLayout() {
+  useNotificationSSE()
+  return <Outlet />
+}
+
 const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
   { path: '/', element: <SplashPage /> },
   { path: '/login', element: <LoginPage /> },
 
@@ -128,6 +137,8 @@ const router = createBrowserRouter([
   { path: '/order/transfer', element: <OrderTransferPage /> },
   { path: '/pension/defer', element: <PensionDeferPage /> },
   { path: '/retirement-simulation', element: <RetirementSimulationPage /> },
+    ],
+  },
 ])
 
 function App() {
