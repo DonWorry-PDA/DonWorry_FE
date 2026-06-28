@@ -32,7 +32,7 @@ const MENU_BASE: ManageMenu[] = [
     key: 'investmentCheck',
     title: '투자 건강검진',
     caption: '월급 만드는 자산\n32%뿐이에요',
-    path: '/asset-management/investment-checkup',
+    path: '/asset/investment-checkup',
     iconTone: 'muted',
   },
   {
@@ -53,7 +53,7 @@ const MENU_BASE: ManageMenu[] = [
     key: 'monthlyReport',
     title: '월간 리포트',
     caption: '6월 리포트가\n도착했어요',
-    path: '/asset-management/monthly-report',
+    path: '/asset/monthly-report',
     iconTone: 'muted',
     isNew: true,
   },
@@ -144,14 +144,13 @@ function AssetHubPage() {
   return (
     <div className="flex h-dvh flex-col bg-white">
       <header className="flex h-[52px] items-center pl-6 pr-[14px]">
-        <img src="/logos/sol-mark.svg" alt="SOL" width={36} height={36} className="mr-3 shrink-0" />
         <h1 className="flex-1 text-heading font-bold text-ink">자산관리</h1>
         <button
           aria-label="알림"
           onClick={() => navigate('/notification')}
           className="flex size-11 items-center justify-center"
         >
-          <NotificationIc className="text-ink" width={22} height={22} />
+          <NotificationIc className="text-ink" width={24} height={24} />
         </button>
       </header>
 

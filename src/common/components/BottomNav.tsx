@@ -11,7 +11,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: '홈', path: '/home', Icon: NavHomeIc },
-  { label: '자산관리', path: '/asset-management', Icon: NavAssetIc },
+  { label: '자산분석', path: '/asset', Icon: NavAssetIc, activeFor: ['/asset/investment-checkup', '/asset/monthly-report'] },
   { label: '캘린더', path: '/calendar', Icon: NavCalendarIc },
   {
     label: '마이페이지',
