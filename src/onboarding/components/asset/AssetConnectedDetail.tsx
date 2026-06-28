@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from 'react'
 import useGetConnectedInstitutions from '@/mypage/hooks/useGetConnectedInstitutions'
 import useGetMydataInstitutions from '@/mypage/hooks/useGetMydataInstitutions'
 import type { ConnectedInstitution } from '@/mypage/types/mypage'
-import LOGO_MAP from '@/mypage/utils/institutionLogos'
+import LOGO_MAP, { getLogoByName } from '@/mypage/utils/institutionLogos'
 
 interface Props {
   onClose: () => void
@@ -87,7 +87,7 @@ function AssetConnectedDetail({ onClose }: Props) {
       ) : (
         <ul className="flex-1 overflow-y-auto px-6">
           {institutions.map((inst) => (
-            <InstitutionRow key={inst.name} institution={inst} logo={logoByName[inst.name]} />
+            <InstitutionRow key={inst.name} institution={inst} logo={logoByName[inst.name] ?? getLogoByName(inst.name)} />
           ))}
         </ul>
       )}
