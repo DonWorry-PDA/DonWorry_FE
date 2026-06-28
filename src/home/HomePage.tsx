@@ -340,26 +340,26 @@ function HomePage() {
             {/* 마이 SOL */}
             <section className="mt-1">
               <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory">
                 {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
                   const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
-                    <div key={card.key} className="relative aspect-square">
+                    <div key={card.key} className="w-36 shrink-0 snap-start relative aspect-square">
                       <button
                         onClick={() => navigate(card.path)}
-                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between overflow-hidden p-[14px] max-[475px]:p-2 text-left"
+                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
                       >
-                        <div className="flex flex-col gap-1 max-[475px]:gap-0.5">
-                          <p className="text-md max-[475px]:text-body font-bold text-ink leading-snug max-[475px]:leading-tight break-keep">
+                        <div className="flex flex-col gap-1">
+                          <p className="text-md font-bold text-ink leading-snug break-keep">
                             {card.title}
                           </p>
                           {caption && (
-                            <p className="text-caption text-ink-hint leading-snug max-[475px]:leading-tight whitespace-pre-line">
+                            <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
                               {caption}
                             </p>
                           )}
                         </div>
-                        <div className="self-end max-[475px]:[&>svg]:w-5 max-[475px]:[&>svg]:h-5">
+                        <div className="self-end">
                           {card.icon}
                         </div>
                       </button>
