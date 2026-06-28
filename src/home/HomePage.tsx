@@ -345,25 +345,26 @@ function HomePage() {
                 {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
                   const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
-                    <button
-                      key={card.key}
-                      onClick={() => navigate(card.path)}
-                      className="bg-surface rounded-card-lg aspect-square min-h-[9.5rem] flex flex-col justify-between p-[14px] text-left"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <p className="text-md font-bold text-ink leading-snug break-keep">
-                          {card.title}
-                        </p>
-                        {caption && (
-                          <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
-                            {caption}
+                    <div key={card.key} className="relative aspect-square">
+                      <button
+                        onClick={() => navigate(card.path)}
+                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
+                      >
+                        <div className="flex flex-col gap-1">
+                          <p className="text-md font-bold text-ink leading-snug break-keep">
+                            {card.title}
                           </p>
-                        )}
-                      </div>
-                      <div className="self-end">
-                        {card.icon}
-                      </div>
-                    </button>
+                          {caption && (
+                            <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                              {caption}
+                            </p>
+                          )}
+                        </div>
+                        <div className="self-end">
+                          {card.icon}
+                        </div>
+                      </button>
+                    </div>
                   )
                 })}
               </div>
