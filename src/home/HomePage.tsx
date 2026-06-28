@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { formatWon } from '@/common/utils/formatKrw'
+import { formatKrw } from '@/common/utils/formatKrw'
 import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
@@ -185,7 +185,7 @@ function HomePage() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-4 pb-6">
+      <main className="flex-1 overflow-y-auto pt-4 pb-6">
         {isLoading ? (
           <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
             <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
@@ -231,24 +231,22 @@ function HomePage() {
               const month = hub.menus.monthlyReport?.month ?? `${new Date().getMonth() + 1}월`
               return (
                 <div className="rounded-card-lg border border-line bg-white px-5 py-[14px] flex items-center gap-3">
-                  <div className="w-[55%] grid grid-cols-[auto_1fr] gap-x-3 gap-y-[9px] items-baseline">
+                  <div className="min-w-0 flex-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-[9px] items-baseline">
                     <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
                     <span className="font-inter text-md font-bold text-ink text-right tabular-nums whitespace-nowrap">
-                      {formatWon(hub.monthlyExpense)}
+                      {formatKrw(hub.monthlyExpense)}
                     </span>
                     <span className="text-sub text-ink-hint shrink-0">{month} 수입</span>
                     <span className="font-inter text-md font-bold text-primary text-right tabular-nums whitespace-nowrap">
-                      {formatWon(hub.monthlyIncome)}
+                      {formatKrw(hub.monthlyIncome)}
                     </span>
                   </div>
-                  <div className="flex-1 flex justify-end">
-                    <button
-                      onClick={() => navigate('/asset/monthly-report')}
-                      className="text-sub font-bold text-ink-sub px-[14px] py-[7px] rounded-badge bg-surface whitespace-nowrap"
-                    >
-                      {month} 월간리포트 보기
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => navigate('/asset/monthly-report')}
+                    className="shrink-0 text-sub font-bold text-ink-sub px-[14px] py-[7px] rounded-badge bg-surface whitespace-nowrap"
+                  >
+                    리포트 보기
+                  </button>
                 </div>
               )
             })()}
@@ -303,10 +301,10 @@ function HomePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-caption text-ink-hint">
-                      현재 {formatWon(stability.currentIncomeKrw)}
+                      현재 {formatKrw(stability.currentIncomeKrw)}
                     </span>
                     <span className="text-caption text-ink-hint">
-                      목표 {formatWon(stability.targetIncomeKrw)}
+                      목표 {formatKrw(stability.targetIncomeKrw)}
                     </span>
                   </div>
                 </div>
@@ -319,7 +317,7 @@ function HomePage() {
                     <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
                     <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
                       <span className="text-ink-sub">부족한 금액</span>
-                      <span className="text-ink tabular-nums">{formatWon(stability.shortfallKrw)}</span>
+                      <span className="font-inter tabular-nums text-ink">{formatKrw(stability.shortfallKrw)}</span>
                       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-ink-sub">
                         <path d="M9 18 L15 12 L9 6"/>
                       </svg>
@@ -342,11 +340,11 @@ function HomePage() {
             {/* 마이 SOL */}
             <section className="mt-1">
               <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory min-[475px]:grid min-[475px]:grid-cols-3 min-[475px]:gap-2 min-[475px]:overflow-visible">
                 {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
                   const caption = allMenus.find(m => m.key === card.key)?.caption
                   return (
-                    <div key={card.key} className="relative aspect-square">
+                    <div key={card.key} className="w-36 shrink-0 snap-start relative aspect-square min-[475px]:w-auto">
                       <button
                         onClick={() => navigate(card.path)}
                         className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
