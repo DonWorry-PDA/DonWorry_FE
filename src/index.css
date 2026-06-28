@@ -17,12 +17,24 @@
 
   /* ─── Status: Success (안정) ─── */
   --color-success: #069a53;
+  --color-success-vivid: #1ac76b;
   --color-success-bg: #e9f7f0;
 
   /* ─── Status: Warning (보완 필요) ─── */
   --color-warning: #dd7a06;
   --color-warning-text: #9a5a02;
   --color-warning-bg: #fdf3e5;
+
+  /* ─── Menu card palette ─── */
+  --color-card-blue: #3845ad;
+  --color-card-coral: #f65035;
+  --color-card-pink: #f9cdcc;
+  --color-card-yellow: #ffcd64;
+  --color-card-mint: #7fbfa2;
+
+  /* ─── Violet (legacy, 미사용 가능) ─── */
+  --color-violet: #7c3aed;
+  --color-violet-bg: #f0eaff;
 
   /* ─── Status: Danger (위험/오류) ─── */
   --color-danger: #c0566a;
@@ -94,6 +106,10 @@
 :root {
   --shadow-card: 0 2px 8px 0 rgb(0, 0, 0, 0.08);
   --shadow-float: 0 5px 20px 0 rgb(0, 0, 0, 0.1);
+}
+
+@utility shadow-lift {
+  box-shadow: 0 4px 0 0 rgb(0 0 0 / 0.08), 0 6px 16px 0 rgb(0 0 0 / 0.08);
 }
 
 /* 큰 글씨 모드 — html.large 클래스로 활성화 */

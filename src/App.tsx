@@ -30,7 +30,6 @@ import PaycheckExecutePage from './paycheckPlan/PaycheckExecutePage'
 import PaycheckConsultPage from './paycheckPlan/PaycheckConsultPage'
 import StabilityPage from './stability/StabilityPage'
 import HomePage from './home/HomePage'
-import AssetHubPage from './asset/AssetHubPage'
 import InvestmentCheckupPage from './asset/InvestmentCheckupPage'
 import MonthlyReportPage from './asset/MonthlyReportPage'
 import CalendarPage from './calendar/CalendarPage'
@@ -100,9 +99,8 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
   { path: '/home', element: <HomePage /> },
   { path: '/asset', element: <AssetPage /> },
-  { path: '/asset-management', element: <AssetHubPage /> },
-  { path: '/asset-management/investment-checkup', element: <InvestmentCheckupPage /> },
-  { path: '/asset-management/monthly-report', element: <MonthlyReportPage /> },
+  { path: '/asset/investment-checkup', element: <InvestmentCheckupPage /> },
+  { path: '/asset/monthly-report', element: <MonthlyReportPage /> },
   { path: '/stability', element: <StabilityPage /> },
   { path: '/calendar', element: <CalendarPage /> },
   { path: '/mypage/consult-history', element: <ConsultHistoryPage /> },

@@ -1,0 +1,25 @@
+<svg width="117" height="114" viewBox="0 0 117 114" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="117" height="114" fill="#F5F5F5"/>
+<g id="Group 24">
+<g id="Frame">
+<rect width="1920" height="1167.5" transform="translate(-1044.56 -527.5)" fill="white"/>
+<rect width="1920" height="1167.5" transform="translate(-1044.56 -527.5)" fill="#F5F7FA"/>
+<g id="Group 21">
+<g id="Group 17">
+<g id="Group 18">
+<rect id="Rectangle 16" x="37.5" y="60.5" width="15" height="31" rx="3" fill="#7AA0FF"/>
+<rect id="Rectangle 18" x="73.5" y="27.5" width="15" height="64" rx="3" fill="#7AA0FF"/>
+<rect id="Rectangle 17" x="55.5" y="51.5" width="15" height="40" rx="3" fill="#7AA0FF"/>
+<rect id="Rectangle 19" x="1.26172" y="71.5" width="15" height="20" rx="3" fill="#7AA0FF"/>
+<rect id="Rectangle 20" x="19.5" y="43.5" width="15" height="48" rx="3" fill="#7AA0FF"/>
+</g>
+</g>
+<g id="Group 22">
+<path id="Vector" d="M103.582 100.87L112.712 110" stroke="#CFD5DE" stroke-width="7" stroke-linecap="round"/>
+<path id="Vector_2" d="M86.4635 105.435C99.7003 105.435 110.431 94.7042 110.431 81.4674C110.431 68.2306 99.7003 57.5 86.4635 57.5C73.2267 57.5 62.4961 68.2306 62.4961 81.4674C62.4961 94.7042 73.2267 105.435 86.4635 105.435Z" fill="white" fill-opacity="0.5" stroke="#CFD5DE" stroke-width="5"/>
+</g>
+<path id="Vector 4" d="M2.5 48.5L33.2461 17.0743L53.7435 38.0248L88.5 2.5M88.5 10.2426V2.5H80.9249" stroke="#ED6E70" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+</svg>
