@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react'
-import { formatWon } from '@/common/utils/formatKrw'
+import { formatWon, formatKrw } from '@/common/utils/formatKrw'
 import type { AssetSegment } from '../types/home'
 
 type Props = {
@@ -108,9 +108,16 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
 function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, onAnalysisClick }: Props) {
   const sortedSegments = [...segments].sort((a, b) => b.pct - a.pct)
 
+  const amountStr = formatWon(totalAmountKrw)
+  // 360px 기준 좌측 가용폭 ~163px에서 폰트별 최대 글자 수 기준
+  const amountSizeClass =
+    amountStr.length <= 11 ? 'text-display' :      // ~999,999,999원 (24px)
+    amountStr.length <= 14 ? 'text-[1.25rem]' :    // ~9,999,999,999원 (20px)
+    'text-[1.0625rem]'                              // 100억+ (17px)
+
   const changeText =
     changeAmount != null && changeDirection !== 'FLAT'
-      ? `${formatWon(Math.abs(changeAmount))} ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
+      ? `${formatKrw(Math.abs(changeAmount))} ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
       : changeDirection === 'FLAT'
       ? '지난 달과 동일해요'
       : null
@@ -121,8 +128,8 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-[5px]">
           <p className="text-sub text-white/75">총자산</p>
-          <p className="font-inter text-[1.875rem] font-bold text-white leading-tight tracking-tight">
-            {formatWon(totalAmountKrw)}
+          <p className={`font-inter ${amountSizeClass} font-bold text-white whitespace-nowrap tracking-tight`}>
+            {amountStr}
           </p>
           {changeText && (
             <p className="text-sub text-white/65">{changeText}</p>
@@ -147,12 +154,12 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
         <div className="flex-1 grid grid-cols-[1fr_auto] gap-x-2 gap-y-[11px] items-center">
           {sortedSegments.map(({ label, pct }, i) => (
             <Fragment key={label}>
-              <div className="flex items-center gap-[7px]">
+              <div className="flex min-w-0 items-center gap-[7px]">
                 <span
-                  className="size-[8px] rounded-full shrink-0"
+                  className="size-[8px] shrink-0 rounded-full"
                   style={{ backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
                 />
-                <span className="text-sub text-white/90">{label}</span>
+                <span className="truncate text-sub text-white/90">{label}</span>
               </div>
               <span className="font-inter text-sub font-bold text-white text-right">{pct}%</span>
             </Fragment>
