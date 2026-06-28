@@ -20,6 +20,7 @@ const usePatchProfile = () => {
         .then((res) => res.data.data),
     onSuccess: (data) => {
       queryClient.setQueryData(['profile'], data)
+      queryClient.invalidateQueries({ queryKey: ['lifeStability'] })
     },
   })
 }
