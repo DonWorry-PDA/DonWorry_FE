@@ -1,19 +1,96 @@
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
 import useGetCashFlowDiagnosis from './hooks/useGetCashFlowDiagnosis'
+import client from '@/common/api/client'
+import type { ApiResponse } from '@/common/types/api'
+import type { RecommendationResponse } from './types/recommendation'
 
 const toMan = (won: number) => Math.round(won / 10_000)
 const formatShortfall = (won: number) => {
-  const man = toMan(won)
-  return man < 1 ? '1만원 미만' : `${man}만원`
+  if (won < 10_000) return '1만원 미만'
+  return `${toMan(won)}만원`
+}
+
+const LOADING_MESSAGES = [
+  '설계안을 만드는 중이에요',
+  '자산을 분석하고 있어요',
+  '최적의 플랜을 찾고 있어요',
+]
+
+function PlanLoadingScreen() {
+  const [msgIdx, setMsgIdx] = useState(0)
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMsgIdx((i) => (i + 1) % LOADING_MESSAGES.length)
+    }, 1200)
+    return () => clearInterval(id)
+  }, [])
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center h-full bg-white px-6"
+    >
+      <div className="relative flex size-24 items-center justify-center mb-8" aria-hidden="true">
+        <div className="absolute inset-0 animate-spin">
+          {[0, 60, 120, 180, 240, 300].map((deg) => (
+            <div
+              key={deg}
+              className="absolute size-2.5 rounded-full bg-primary/30"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: `rotate(${deg}deg) translateX(40px) translateY(-50%)`,
+              }}
+            />
+          ))}
+        </div>
+        <img src="/logos/sol-mark.svg" alt="" width={56} height={56} className="rounded-full" />
+      </div>
+      <p className="text-card font-bold text-ink text-center">
+        {LOADING_MESSAGES[msgIdx]}
+      </p>
+      <p className="mt-2 text-sub text-ink-hint text-center">잠시만 기다려주세요</p>
+    </div>
+  )
 }
 
 function PaycheckDiagnosisPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const [showPlanLoading, setShowPlanLoading] = useState(false)
+  const fetchedRef = useRef(false)
   const { data, isLoading, isError } = useGetCashFlowDiagnosis()
+
+  const handleGoToPlans = () => {
+    if (fetchedRef.current) return
+    fetchedRef.current = true
+    setShowPlanLoading(true)
+
+    const minDelay = new Promise<void>((res) => setTimeout(res, 2000))
+    const prefetch = queryClient.prefetchQuery({
+      queryKey: ['portfolio', 'recommendation'],
+      queryFn: () =>
+        client
+          .get<ApiResponse<RecommendationResponse>>('/api/user/portfolio/recommendation')
+          .then((res) => res.data.data),
+    })
+
+    Promise.all([minDelay, prefetch]).then(() => {
+      navigate('/paycheck-plan/plans')
+    })
+  }
+
+  if (showPlanLoading) {
+    return <PlanLoadingScreen />
+  }
 
   if (isLoading) {
     return (
@@ -104,12 +181,12 @@ function PaycheckDiagnosisPage() {
           )}
         </InfoBox>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate(-1)}>
+          <Button variant="outline" onClick={() => navigate('/stability')}>
             아니요,
             <br />
             안정도부터
           </Button>
-          <Button onClick={() => navigate('/paycheck-plan/plans')}>
+          <Button onClick={handleGoToPlans}>
             네,
             <br />
             설계안 보기

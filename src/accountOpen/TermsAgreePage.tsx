@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -77,6 +77,8 @@ function ChevronRight() {
 
 function TermsAgreePage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { returnTo, planId } = (location.state as { returnTo?: string; planId?: string } | null) ?? {}
   const [agreed, setAgreed] = useState<AgreedState>(INITIAL_STATE)
 
   const allChecked = TERMS_ITEMS.every((item) => agreed[item.id])
@@ -207,6 +209,8 @@ function TermsAgreePage() {
                   .toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
                   .replace(/\.\s?/g, '.')
                   .replace(/\.$/, ''),
+                returnTo,
+                planId,
               },
             })
           }

@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import Badge from '../common/components/Badge'
 import InfoBox from '../common/components/InfoBox'
+import BottomSheet from '../common/components/BottomSheet'
 import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from './utils/planMapper'
@@ -24,10 +26,47 @@ function ArrowDownIcon() {
   )
 }
 
+function useTapPhase() {
+  const [phase, setPhase] = useState<'visible' | 'out' | 'gone'>('visible')
+  useEffect(() => {
+    const hide = setTimeout(() => setPhase('out'), 2800)
+    const remove = setTimeout(() => setPhase('gone'), 3400)
+    return () => { clearTimeout(hide); clearTimeout(remove) }
+  }, [])
+  return phase
+}
+
+function TapBubble() {
+  const phase = useTapPhase()
+  if (phase === 'gone') return null
+  return (
+    <div className={`absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-opacity motion-reduce:transition-none duration-500 ${phase === 'visible' ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="relative bg-ink rounded-card px-3 py-1.5">
+        <p className="text-caption font-semibold text-white whitespace-nowrap">탭하면 상세를 볼 수 있어요</p>
+        <div className="absolute top-full right-3 border-x-[5px] border-t-[6px] border-x-transparent border-t-ink" />
+      </div>
+    </div>
+  )
+}
+
+function TapRipple() {
+  const phase = useTapPhase()
+  if (phase === 'gone') return null
+  return (
+    <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 transition-opacity motion-reduce:transition-none duration-500 ${phase === 'visible' ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="relative size-7">
+        <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping motion-reduce:animate-none" />
+        <div className="size-7 rounded-full bg-primary/15" />
+      </div>
+    </div>
+  )
+}
+
 function PaycheckExecutePage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const planId = state?.planId as string | undefined
+  const [showAccountSheet, setShowAccountSheet] = useState(false)
   const { data, isLoading } = useGetRecommendation()
 
   if (isLoading) {
@@ -87,10 +126,13 @@ function PaycheckExecutePage() {
           <span className="font-semibold">{summary.cashflowTo}만원</span>으로 늘어날 것으로 예상돼요.
         </InfoBox>
 
-        <p className="text-sub text-ink-hint mb-3">실행 내용 · {summary.items.length}가지</p>
+        <div className="relative mb-3">
+          <p className="text-sub text-ink-hint">실행 내용 · {summary.items.length}가지</p>
+          <TapBubble />
+        </div>
 
         <div className="flex flex-col gap-3 mb-4">
-          {summary.items.map((item) => (
+          {summary.items.map((item, idx) => (
             <button
               key={item.id}
               className="flex items-center gap-3 w-full text-left"
@@ -114,9 +156,12 @@ function PaycheckExecutePage() {
               </div>
               <p className="font-inter text-body font-bold text-ink shrink-0">{item.amount.toLocaleString()}만</p>
               {item.productId != null && (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-ink-hint shrink-0">
-                  <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <div className="relative shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-ink-hint">
+                    <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {idx === 0 && <TapRipple />}
+                </div>
               )}
             </button>
           ))}
@@ -133,9 +178,34 @@ function PaycheckExecutePage() {
       <StickyFooter>
         <div className="flex flex-col gap-2">
           <button onClick={() => navigate('/home')} className="text-body text-ink-hint text-center py-1">나중에하기</button>
-          <Button onClick={() => navigate('/order/pin', { state: { planId } })}>실행 시작하기</Button>
+          <Button onClick={() => setShowAccountSheet(true)}>실행 시작하기</Button>
         </div>
       </StickyFooter>
+
+      <BottomSheet open={showAccountSheet} onClose={() => setShowAccountSheet(false)}>
+        <div className="px-6 pb-8 pt-4">
+          <h3 className="text-card font-bold text-ink mb-2">설계안 실행에 계좌가 필요해요</h3>
+          <p className="text-body text-ink-sub mb-6">
+            신한 은퇴솔루션 계좌가 있어야<br />이 설계안을 바로 실행할 수 있어요.
+          </p>
+          <Button
+            onClick={() =>
+              navigate('/account-open', { state: { returnTo: 'execute', planId } })
+            }
+          >
+            계좌 만들기
+          </Button>
+          <button
+            className="w-full text-center text-body text-ink-hint py-3 mt-1"
+            onClick={() => {
+              setShowAccountSheet(false)
+              navigate('/order/pin', { state: { planId } })
+            }}
+          >
+            이미 있어요
+          </button>
+        </div>
+      </BottomSheet>
     </div>
   )
 }

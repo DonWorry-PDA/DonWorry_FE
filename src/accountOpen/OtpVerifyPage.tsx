@@ -18,7 +18,10 @@ function OtpVerifyPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const phone = (location.state as { phone?: string } | null)?.phone ?? ''
+  const locationState = location.state as { phone?: string; returnTo?: string; planId?: string } | null
+  const phone = locationState?.phone ?? ''
+  const returnTo = locationState?.returnTo
+  const planId = locationState?.planId
 
   const [otp, setOtp] = useState('')
   const [seconds, setSeconds] = useState(TIMER_SECONDS)
@@ -149,7 +152,10 @@ function OtpVerifyPage() {
       </main>
 
       <StickyFooter>
-        <Button disabled={!isComplete} onClick={() => navigate('/account-open/terms')}>
+        <Button
+          disabled={!isComplete}
+          onClick={() => navigate('/account-open/terms', { state: { returnTo, planId } })}
+        >
           인증 완료
         </Button>
       </StickyFooter>
