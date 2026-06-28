@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { formatKrw } from '@/common/utils/formatKrw'
+import { formatWon, formatKrw } from '@/common/utils/formatKrw'
 import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
@@ -234,11 +234,11 @@ function HomePage() {
                   <div className="min-w-0 flex-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-[9px] items-baseline">
                     <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
                     <span className="font-inter text-md font-bold text-ink text-right tabular-nums whitespace-nowrap">
-                      {formatKrw(hub.monthlyExpense)}
+                      {formatWon(hub.monthlyExpense)}
                     </span>
                     <span className="text-sub text-ink-hint shrink-0">{month} 수입</span>
                     <span className="font-inter text-md font-bold text-primary text-right tabular-nums whitespace-nowrap">
-                      {formatKrw(hub.monthlyIncome)}
+                      {formatWon(hub.monthlyIncome)}
                     </span>
                   </div>
                   <button
