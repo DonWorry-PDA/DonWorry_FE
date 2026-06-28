@@ -15,16 +15,6 @@ import useGetProfile from '../mypage/hooks/useGetProfile'
 
 const INCOME_EVENT_TYPES = new Set(['ETF_DIVIDEND', 'DEPOSIT_INTEREST'])
 
-const SOURCE_TYPE_LABELS: Record<string, string> = {
-  ETF_DIVIDEND: 'ETF 배당',
-  DEPOSIT_INTEREST: '예금 이자',
-}
-const SOURCE_TYPE_COLORS: Record<string, string> = {
-  ETF_DIVIDEND: 'bg-primary',
-  DEPOSIT_INTEREST: 'bg-primary-muted',
-}
-
-
 const ALLOCATION_COLORS = [
   'bg-primary',
   'bg-primary-muted',
@@ -62,7 +52,7 @@ function AssetPage() {
   const { data: schedule, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useGetAssetSchedule()
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
-  const { data: profile } = useGetProfile()
+  const { data: profile, isLoading: profileLoading } = useGetProfile()
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const toggleGroup = (category: string) =>
@@ -84,16 +74,18 @@ function AssetPage() {
     composition && composition.totalAsset > 0
       ? composition.totalAsset
       : sortedGroups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0)
+  // 레이아웃 폭 계산은 소수 그대로, 라벨 표시만 반올림
+  const toAllocationRatio = (amount: number) =>
+    allocationBase > 0 ? (amount / allocationBase) * 100 : 0
   const toAllocationPercent = (amount: number) =>
-    allocationBase > 0 ? Math.round((amount / allocationBase) * 100) : 0
-
+    Math.round(toAllocationRatio(amount))
 
   const getSegmentMidpoint = (idx: number): number => {
     let start = 0
     for (let i = 0; i < idx; i++) {
-      start += toAllocationPercent(sortedGroups[i].totalAmount)
+      start += toAllocationRatio(sortedGroups[i].totalAmount)
     }
-    const width = toAllocationPercent(sortedGroups[idx].totalAmount)
+    const width = toAllocationRatio(sortedGroups[idx].totalAmount)
     return Math.min(Math.max(start + width / 2, 8), 92)
   }
 
@@ -220,7 +212,7 @@ function AssetPage() {
                             className={`h-4 cursor-pointer transition-opacity duration-150 ${
                               activeCategory !== null && activeCategory !== seg.category ? 'opacity-40' : 'opacity-100'
                             } ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
-                            style={{ width: `${toAllocationPercent(seg.totalAmount)}%` }}
+                            style={{ width: `${toAllocationRatio(seg.totalAmount)}%` }}
                             aria-hidden="true"
                             onMouseEnter={() => setActiveCategory(seg.category)}
                             onMouseLeave={() => setActiveCategory(null)}
@@ -364,6 +356,14 @@ function AssetPage() {
                   )}
                 </div>
               </div>
+              {income.totalUnrealizedGainLoss !== 0 && (
+                <div className="flex items-baseline justify-between -mt-1">
+                  <p className="text-sub text-ink-sub">평가손익</p>
+                  <p className={`font-inter text-sub font-bold ${income.totalUnrealizedGainLoss > 0 ? 'text-success' : 'text-danger'}`}>
+                    {income.totalUnrealizedGainLoss > 0 ? '+' : '-'}{formatKrw(Math.abs(income.totalUnrealizedGainLoss))}
+                  </p>
+                </div>
+              )}
 
               <div className="border-t border-divider pt-[15px] flex flex-col">
                 {income.sources.length === 0 ? (
@@ -440,12 +440,14 @@ function AssetPage() {
           {/* ── 만기 예정 예금 카드 ── */}
           {(() => {
             if (!schedule) return null
-            const oneYearLater = new Date(today)
-            oneYearLater.setFullYear(today.getFullYear() + 1)
+            const todayStart = new Date(today)
+            todayStart.setHours(0, 0, 0, 0)
+            const oneYearLater = new Date(todayStart)
+            oneYearLater.setFullYear(todayStart.getFullYear() + 1)
             const maturities = schedule.events
               .filter((e) => e.type === 'DEPOSIT_MATURITY')
               .map((e) => ({ ...e, _date: parseLocalDate(e.date) }))
-              .filter((e) => e._date >= today && e._date <= oneYearLater)
+              .filter((e) => e._date >= todayStart && e._date <= oneYearLater)
               .sort((a, b) => a._date.getTime() - b._date.getTime())
             if (maturities.length === 0) return null
             return (
@@ -517,7 +519,7 @@ function AssetPage() {
                 ))
               )}
 
-              {pension.pensions.length > 0 && (() => {
+              {pension.pensions.length > 0 && !profileLoading && (() => {
                 const currentAge = profile?.age ?? null
                 const byAge = [...pension.pensions].sort((a, b) => a.startAge - b.startAge)
                 const receiving = currentAge != null ? byAge.filter((p) => p.startAge <= currentAge) : []

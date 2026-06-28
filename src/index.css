@@ -352,9 +352,10 @@ html.large {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-bar-reveal {
-    animation: none;
     clip-path: none !important;
+    animation: none;
   }
+
   .animate-bar-shimmer {
     display: none;
   }
@@ -362,8 +363,15 @@ html.large {
 
 /* ─── 자산 구성 바 세그먼트 칩 ─── */
 @keyframes chip-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(-75%) scale(0.82); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(-100%) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-75%) scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%) scale(1);
+  }
 }
 
 .animate-chip-in {
@@ -372,7 +380,7 @@ html.large {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-chip-in {
-    animation: none;
     transform: translateX(-50%) translateY(-100%);
+    animation: none;
   }
 }
