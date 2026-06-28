@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { formatWon } from '@/common/utils/formatKrw'
 import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
@@ -233,11 +234,11 @@ function HomePage() {
                   <div className="w-[55%] grid grid-cols-[auto_1fr] gap-x-3 gap-y-[9px] items-baseline">
                     <span className="text-sub text-ink-hint shrink-0">{month} 지출</span>
                     <span className="font-inter text-md font-bold text-ink text-right tabular-nums whitespace-nowrap">
-                      {hub.monthlyExpense.toLocaleString('ko-KR')}원
+                      {formatWon(hub.monthlyExpense)}
                     </span>
                     <span className="text-sub text-ink-hint shrink-0">{month} 수입</span>
                     <span className="font-inter text-md font-bold text-primary text-right tabular-nums whitespace-nowrap">
-                      {hub.monthlyIncome.toLocaleString('ko-KR')}원
+                      {formatWon(hub.monthlyIncome)}
                     </span>
                   </div>
                   <div className="flex-1 flex justify-end">
@@ -302,10 +303,10 @@ function HomePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-caption text-ink-hint">
-                      현재 {Math.round(stability.currentIncomeKrw).toLocaleString('ko-KR')}원
+                      현재 {formatWon(stability.currentIncomeKrw)}
                     </span>
                     <span className="text-caption text-ink-hint">
-                      목표 {Math.round(stability.targetIncomeKrw).toLocaleString('ko-KR')}원
+                      목표 {formatWon(stability.targetIncomeKrw)}
                     </span>
                   </div>
                 </div>
@@ -318,7 +319,7 @@ function HomePage() {
                     <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
                     <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
                       <span className="text-ink-sub">부족한 금액</span>
-                      <span className="text-ink tabular-nums">{stability.shortfallKrw.toLocaleString('ko-KR')}원</span>
+                      <span className="text-ink tabular-nums">{formatWon(stability.shortfallKrw)}</span>
                       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-ink-sub">
                         <path d="M9 18 L15 12 L9 6"/>
                       </svg>
