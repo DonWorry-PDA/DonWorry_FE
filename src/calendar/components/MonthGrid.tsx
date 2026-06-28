@@ -80,6 +80,8 @@ function MonthGrid({ year, month0, todayIso, selectedIso, events, onSelect }: Pr
                         }`}
                       >
                         {b.label}
+                        {/* 예정(점선)은 시각으로만 구분되므로 스크린리더용 상태 텍스트 제공("배당 예정") */}
+                        {estimated && <span className="sr-only"> 예정</span>}
                       </span>
                     )
                   })}
