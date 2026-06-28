@@ -268,3 +268,100 @@ describe('InvestmentCheckupPage 분배 데이터 공백 안내', () => {
     expect(screen.queryByText(/분배 데이터 공백 안내/)).not.toBeInTheDocument()
   })
 })
+
+describe('InvestmentCheckupPage 연금 카피·구성·라벨(#170)', () => {
+  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => cleanup())
+
+  // PENSION이 요약·역할 note 양쪽에서 나이 비의존 문구로 노출되는지 확인한다.
+  const rolesWithPension: InvestmentCheckResponse['roles'] = [
+    {
+      role: 'CASHFLOW',
+      label: '현금흐름',
+      amount: 30_000_000,
+      ratio: 67,
+      monthlyCashflow: 87_500,
+      note: '매달 배당·이자가 들어오는 돈',
+    },
+    {
+      role: 'PENSION',
+      label: '연금',
+      amount: 9_000_000,
+      ratio: 20,
+      monthlyCashflow: 0,
+      note: '55세까지 묶여 있는 돈', // BE가 나이 기준 문구를 내려도 FE에서 오버라이드됨
+    },
+    {
+      role: 'IDLE',
+      label: '잠자는 돈',
+      amount: 6_000_000,
+      ratio: 13,
+      monthlyCashflow: 0,
+      note: '아직 일하지 않고 쉬고 있는 현금',
+    },
+  ]
+
+  it('연금 요약 문구는 나이(55세)를 언급하지 않는다', () => {
+    mockData({
+      cashflowAssetRatio: 67,
+      totalAsset: 45_000_000,
+      roles: rolesWithPension,
+      growthAsset: null,
+    })
+    render(<InvestmentCheckupPage />)
+
+    expect(screen.getByText(/노후를 위해 따로 묶여 있어요/)).toBeInTheDocument()
+    expect(screen.queryByText(/55세/)).not.toBeInTheDocument()
+  })
+
+  it('연금 역할 note는 BE 문구 대신 나이 비의존 오버라이드를 노출한다', () => {
+    mockData({
+      cashflowAssetRatio: 67,
+      totalAsset: 45_000_000,
+      roles: rolesWithPension,
+      growthAsset: null,
+    })
+    render(<InvestmentCheckupPage />)
+
+    // BE note('55세까지 묶여 있는 돈')가 아닌 FE 오버라이드가 렌더된다.
+    expect(screen.getByText('노후를 위해 묶인 돈')).toBeInTheDocument()
+  })
+
+  it('성장 블록 라벨이 "내가 담은 개별주"로 노출된다', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: {
+        amount: 20_000_000,
+        topStockName: '삼성전자',
+        concentrationRatio: 40,
+        concentrationLevel: '보통',
+        topSector: '전기·전자',
+        sectorConcentrationRatio: 100,
+        sectorConcentrationLevel: '높음',
+        currentMonthlyDividend: 41_600,
+        convertedMonthlyDividend: 58_300,
+        deltaMonthlyDividend: 16_700,
+        suggestion: '일부를 배당 중심 자산으로 옮기면 현금흐름을 더 만들 수 있어요.',
+      },
+    })
+    render(<InvestmentCheckupPage />)
+
+    expect(screen.getByText('내가 담은 개별주')).toBeInTheDocument()
+    expect(screen.queryByText('성장에 베팅한 자산')).not.toBeInTheDocument()
+  })
+
+  it('역할이 있으면 구성 막대 범례가 각 역할 라벨을 노출한다(역할 카드와 별개로)', () => {
+    mockData({
+      cashflowAssetRatio: 67,
+      totalAsset: 45_000_000,
+      roles: rolesWithPension,
+      growthAsset: null,
+    })
+    render(<InvestmentCheckupPage />)
+
+    // 범례 + 역할 카드 양쪽에서 라벨이 나오므로 최소 2회 노출.
+    expect(screen.getAllByText('현금흐름').length).toBeGreaterThanOrEqual(2)
+  })
+})
