@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { formatWon, formatKrw } from '@/common/utils/formatKrw'
+import { formatKrw } from '@/common/utils/formatKrw'
 import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
