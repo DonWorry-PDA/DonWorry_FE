@@ -10,6 +10,18 @@ import type { StabilityStatus } from '../stability/types/stability'
 import type { ManageMenu } from '@/asset/types/asset'
 
 
+// 생활 안정도 상태 배지 (StabilityCard와 동일 기준)
+const STABILITY_BADGE_LABEL: Record<StabilityStatus, string> = {
+  stable: '안정',
+  warning: '보완 필요',
+  danger: '개선 필요',
+}
+const STABILITY_BADGE_CLASS: Record<StabilityStatus, string> = {
+  stable: 'bg-success-bg text-success',
+  warning: 'bg-warning-bg text-warning',
+  danger: 'bg-danger-bg text-danger',
+}
+
 const SOL_CARDS = [
   {
     key: 'investmentCheck' as const,
@@ -227,21 +239,35 @@ function HomePage() {
             {/* 생활 안정도 + 월급 만들기 */}
             {stability ? (
               <div className="bg-white rounded-card-xl border border-line px-5 pt-5 pb-4 flex flex-col gap-4">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-btn text-ink-sub leading-snug flex-1">
-                    {stability.status === 'stable' ? (
-                      <>목표 생활비가 <span className="text-primary">채워졌어요</span></>
-                    ) : (
-                      <>목표 생활비의 <span className="text-primary font-bold">{stability.percentage}%</span>가 채워졌어요</>
-                    )}
-                  </p>
+                {/* 생활 안정도 제목 + 상태배지 + 이동 */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-card font-bold text-ink">생활 안정도</span>
+                    <span
+                      className={`shrink-0 text-caption font-bold px-2 py-[3px] rounded-badge ${STABILITY_BADGE_CLASS[stability.status]}`}
+                    >
+                      {STABILITY_BADGE_LABEL[stability.status]}
+                    </span>
+                  </div>
                   <button
                     onClick={() => navigate('/stability')}
-                    className="shrink-0 text-sub font-bold text-ink-sub px-[14px] py-[7px] rounded-badge bg-surface whitespace-nowrap"
+                    aria-label="생활 안정도 자세히 보기"
+                    className="shrink-0 text-sub font-bold text-ink-sub px-4 py-[7px] rounded-badge bg-surface whitespace-nowrap"
                   >
-                    분석
+                    자세히 보기
                   </button>
                 </div>
+
+                <p className="text-btn text-ink-sub leading-snug">
+                  {stability.status === 'stable' ? (
+                    <>목표 생활비가 <span className="text-primary">채워졌어요</span></>
+                  ) : (
+                    <>
+                      목표 생활비의{' '}
+                      <span className="text-primary font-bold">{stability.percentage}%</span>가 채워졌어요
+                    </>
+                  )}
+                </p>
 
                 <div className="flex flex-col gap-[7px]">
                   <div className="h-[9px] rounded-full bg-track overflow-hidden">
