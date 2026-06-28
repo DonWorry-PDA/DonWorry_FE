@@ -137,7 +137,17 @@ export const mapComparison = (response: RecommendationResponse): ComparisonTable
   }
 }
 
-const EXECUTE_NOTICE = '주문은 장중에 시장가로 체결돼요. 지금은 거래 시간이라 바로 진행됩니다.'
+const EXECUTE_NOTICE_OPEN = '주문은 장중에 시장가로 체결돼요. 지금은 거래 시간이라 바로 진행됩니다.'
+const EXECUTE_NOTICE_CLOSED = '주문은 장중에 시장가로 체결돼요. 지금은 장 외 시간이라 장이 열리면 자동으로 진행돼요.'
+
+/** 평일 09:00–15:30 KST 여부만 확인 (공휴일 제외). */
+const isMarketOpen = (): boolean => {
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }))
+  const day = now.getDay()
+  if (day === 0 || day === 6) return false
+  const minutes = now.getHours() * 60 + now.getMinutes()
+  return minutes >= 9 * 60 && minutes < 15 * 60 + 30
+}
 
 const HOLDING_ROLE_DESC: Record<string, string> = {
   SAFE: '이자·분배금으로 안정적 수입을 만들어요',
@@ -169,7 +179,7 @@ export const mapExecutionSummary = (
   cashflowFrom: toManwon(response.currentMonthlyCashFlow),
   cashflowTo: toManwon(plan.monthlyIncome),
   items: mapExecutionItems(plan),
-  notice: EXECUTE_NOTICE,
+  notice: isMarketOpen() ? EXECUTE_NOTICE_OPEN : EXECUTE_NOTICE_CLOSED,
 })
 
 /** Q3 소진비율 라벨 (안정안 기준 상속 vs 소비 트레이드오프). */

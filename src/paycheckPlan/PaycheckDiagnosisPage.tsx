@@ -5,6 +5,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
+import StepProgress from './components/StepProgress'
 import useGetCashFlowDiagnosis from './hooks/useGetCashFlowDiagnosis'
 import client from '@/common/api/client'
 import type { ApiResponse } from '@/common/types/api'
@@ -36,7 +37,7 @@ function PlanLoadingScreen() {
     <div
       role="status"
       aria-live="polite"
-      className="flex flex-col items-center justify-center h-full bg-white px-6"
+      className="flex flex-col items-center justify-center h-dvh bg-white px-6"
     >
       <div className="relative flex size-24 items-center justify-center mb-8" aria-hidden="true">
         <div className="absolute inset-0 animate-spin">
@@ -94,8 +95,9 @@ function PaycheckDiagnosisPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
-        <AppBar title="현금흐름 진단" onBack={() => navigate(-1)} />
+      <div className="flex flex-col h-dvh">
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <StepProgress current={2} total={2} />
         <div className="flex-1 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-5 w-28 animate-pulse rounded bg-surface-muted" />
           <div className="mb-6 h-10 w-36 animate-pulse rounded bg-surface-muted" />
@@ -110,8 +112,9 @@ function PaycheckDiagnosisPage() {
 
   if (isError || !data) {
     return (
-      <div className="flex flex-col h-full">
-        <AppBar title="현금흐름 진단" onBack={() => navigate(-1)} />
+      <div className="flex flex-col h-dvh">
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <StepProgress current={2} total={2} />
         <p className="text-body text-danger text-center pt-20">데이터를 불러오지 못했어요.</p>
       </div>
     )
@@ -124,8 +127,9 @@ function PaycheckDiagnosisPage() {
   const shortfallLabel = formatShortfall(data.monthlyShortfall)
 
   return (
-    <div className="flex flex-col h-full">
-      <AppBar title="현금흐름 진단" onBack={() => navigate(-1)} />
+    <div className="flex flex-col h-dvh">
+      <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+      <StepProgress current={2} total={2} />
 
       <div className="flex-1 overflow-y-auto px-6 pt-4">
         <p className="text-body text-ink-sub mb-1">지금의 월 현금흐름</p>
@@ -150,20 +154,18 @@ function PaycheckDiagnosisPage() {
         </div>
 
         {data.shortfallExists ? (
-          <InfoBox tone="danger" className="mb-6">
+          <InfoBox tone="danger" className="mb-4">
             <p className="text-sub text-danger-text mb-1">매달 부족한 돈</p>
             <p className="font-inter text-display font-bold text-danger">{shortfallLabel}</p>
           </InfoBox>
         ) : (
-          <InfoBox tone="success" className="mb-6">
+          <InfoBox tone="success" className="mb-4">
             <p className="text-sub mb-1">현재 현금흐름으로</p>
             <p className="font-inter text-display font-bold">생활비가 충당돼요</p>
           </InfoBox>
         )}
-      </div>
 
-      <StickyFooter>
-        <InfoBox className="mb-4">
+        <InfoBox className="mb-6">
           {data.shortfallExists ? (
             <>
               <p className="text-body font-semibold text-ink mb-0.5">
@@ -180,6 +182,9 @@ function PaycheckDiagnosisPage() {
             </>
           )}
         </InfoBox>
+      </div>
+
+      <StickyFooter>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/stability')}>
             아니요,
