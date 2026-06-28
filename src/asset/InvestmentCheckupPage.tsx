@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -56,6 +57,8 @@ function buildSummaryLines(roles: RoleContribution[]): string[] {
 function InvestmentCheckupPage() {
   const navigate = useNavigate()
   const { data, isLoading, isFetching, refetch } = useGetInvestmentCheck()
+  // "지금 월 배당" 계산 기준(보유 개별주 평가액 × 시가배당률, 세후) 펼침 여부.
+  const [showDividendBasis, setShowDividendBasis] = useState(false)
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -191,11 +194,27 @@ function InvestmentCheckupPage() {
                     {/* 현재 배당 → 배당ETF 전환 시 배당 (before/after, 실배당 기반) */}
                     <div className="bg-surface-muted rounded-card mt-3 px-3 py-2.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-caption text-ink-hint">지금 월 배당</span>
+                        <span className="text-caption text-ink-hint flex items-center">
+                          지금 월 배당
+                          <button
+                            type="button"
+                            onClick={() => setShowDividendBasis((v) => !v)}
+                            aria-expanded={showDividendBasis}
+                            className="border-line text-ink-hint ml-1.5 rounded-full border px-2 py-0.5 text-[11px] leading-none"
+                          >
+                            자세히
+                          </button>
+                        </span>
                         <span className="text-md text-ink font-bold">
                           {formatWon(g.currentMonthlyDividend)}
                         </span>
                       </div>
+                      {showDividendBasis && (
+                        <p className="text-caption text-ink-hint mt-1.5 leading-[1.5]">
+                          보유 개별주의 평가액 × 시가배당률로 계산한 월 배당이에요. 세금(15.4%)을 뗀 실수령
+                          기준이에요.
+                        </p>
+                      )}
                       <div className="mt-1.5 flex items-center justify-between">
                         <span className="text-caption text-ink-hint">배당ETF로 옮기면</span>
                         <span className="text-md text-ink font-bold">

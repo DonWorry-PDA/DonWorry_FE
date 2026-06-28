@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest'
-import { render, screen, cleanup } from '@testing-library/react'
+import { render, screen, cleanup, fireEvent } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import InvestmentCheckupPage from '../InvestmentCheckupPage'
 import type { InvestmentCheckResponse } from '../types/investmentCheck'
@@ -350,6 +350,34 @@ describe('InvestmentCheckupPage 연금 카피·구성·라벨(#170)', () => {
 
     expect(screen.getByText('내가 담은 개별주')).toBeInTheDocument()
     expect(screen.queryByText('성장에 베팅한 자산')).not.toBeInTheDocument()
+  })
+
+  it('"자세히"를 누르면 지금 월 배당 계산 기준을 펼쳐 보여준다', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: {
+        amount: 20_000_000,
+        topStockName: '삼성전자',
+        concentrationRatio: 40,
+        concentrationLevel: '보통',
+        topSector: '전기·전자',
+        sectorConcentrationRatio: 100,
+        sectorConcentrationLevel: '높음',
+        currentMonthlyDividend: 41_600,
+        convertedMonthlyDividend: 58_300,
+        deltaMonthlyDividend: 16_700,
+        suggestion: '일부를 배당 중심 자산으로 옮기면 현금흐름을 더 만들 수 있어요.',
+      },
+    })
+    render(<InvestmentCheckupPage />)
+
+    // 펼치기 전엔 계산 기준 문구가 없다.
+    expect(screen.queryByText(/평가액 × 시가배당률/)).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '자세히' }))
+    expect(screen.getByText(/평가액 × 시가배당률/)).toBeInTheDocument()
+    expect(screen.getByText(/세금\(15\.4%\)/)).toBeInTheDocument()
   })
 
   it('역할이 있으면 구성 막대 범례가 각 역할 라벨을 노출한다(역할 카드와 별개로)', () => {
