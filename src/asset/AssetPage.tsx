@@ -4,12 +4,14 @@ import { NotificationIc, BackArrowIc } from '../common/assets/icons'
 import BottomNav from '../common/components/BottomNav'
 import { formatKrw, formatKrwShort } from '../common/utils/formatKrw'
 import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
+import pxr from '../common/utils/pxr'
 import useGetAssetHub from './hooks/useGetAssetHub'
 import useGetAssetComposition from './hooks/useGetAssetComposition'
 import useGetAssetIncome from './hooks/useGetAssetIncome'
 import useGetAssetSchedule from './hooks/useGetAssetSchedule'
 import useGetAssetPension from './hooks/useGetAssetPension'
 import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
+import useGetProfile from '../mypage/hooks/useGetProfile'
 
 const INCOME_EVENT_TYPES = new Set(['ETF_DIVIDEND', 'DEPOSIT_INTEREST'])
 
@@ -50,9 +52,9 @@ function AssetPage() {
   const { data: schedule, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useGetAssetSchedule()
   const { data: pension, isLoading: pensionLoading, isError: pensionError, refetch: refetchPension } = useGetAssetPension()
   const { data: investmentCheck } = useGetInvestmentCheck()
+  const { data: profile, isLoading: profileLoading } = useGetProfile()
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
-
   const toggleGroup = (category: string) =>
     setExpandedGroups((prev) => {
       const next = new Set(prev)
@@ -64,14 +66,28 @@ function AssetPage() {
       return next
     })
 
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+
   const sortedGroups = [...(composition?.groups ?? [])].sort((a, b) => b.totalAmount - a.totalAmount)
 
   const allocationBase =
     composition && composition.totalAsset > 0
       ? composition.totalAsset
       : sortedGroups.reduce((sum, g) => sum + Math.max(g.totalAmount, 0), 0)
+  // 레이아웃 폭 계산은 소수 그대로, 라벨 표시만 반올림
+  const toAllocationRatio = (amount: number) =>
+    allocationBase > 0 ? (amount / allocationBase) * 100 : 0
   const toAllocationPercent = (amount: number) =>
-    allocationBase > 0 ? Math.round((amount / allocationBase) * 100) : 0
+    Math.round(toAllocationRatio(amount))
+
+  const getSegmentMidpoint = (idx: number): number => {
+    let start = 0
+    for (let i = 0; i < idx; i++) {
+      start += toAllocationRatio(sortedGroups[i].totalAmount)
+    }
+    const width = toAllocationRatio(sortedGroups[idx].totalAmount)
+    return Math.min(Math.max(start + width / 2, 8), 92)
+  }
 
   const today = new Date()
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
@@ -136,26 +152,6 @@ function AssetPage() {
                   </span>
                 </div>
               )}
-              <div className="border-t border-divider flex items-start pt-[17px] mt-2">
-                <div className="flex-1 flex flex-col gap-1">
-                  <p className="text-caption text-ink-hint">평가손익</p>
-                  {incomeLoading ? (
-                    <div className="h-5 w-20 bg-track rounded animate-pulse" />
-                  ) : income ? (
-                    <p className={`text-md font-bold ${income.totalUnrealizedGainLoss >= 0 ? 'text-success' : 'text-danger'}`}>
-                      {income.totalUnrealizedGainLoss >= 0 ? '+' : ''}{formatKrw(income.totalUnrealizedGainLoss)}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="border-l border-divider flex-1 flex flex-col gap-1 pl-[17px]">
-                  <p className="text-caption text-ink-hint">배당·이자 수입</p>
-                  {incomeLoading ? (
-                    <div className="h-5 w-20 bg-track rounded animate-pulse" />
-                  ) : income ? (
-                    <p className="text-md font-bold text-success">+{formatKrw(income.totalMonthlyIncome)}</p>
-                  ) : null}
-                </div>
-              </div>
             </div>
           ) : null}
 
@@ -175,20 +171,65 @@ function AssetPage() {
                 <p className="text-body text-ink-hint py-6 text-center">자산 정보가 없습니다</p>
               ) : (
                 <>
-                  {/* 비율 바 — 비율 높은 순 */}
-                  <div
-                    className="flex overflow-hidden rounded-badge pt-1.5"
-                    role="img"
-                    aria-label={`자산 구성: ${sortedGroups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
-                  >
-                    {sortedGroups.map((seg, i) => (
-                      <div
-                        key={seg.category}
-                        className={`h-4 ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
-                        style={{ width: `${toAllocationPercent(seg.totalAmount)}%` }}
-                        aria-hidden="true"
-                      />
-                    ))}
+                  {/* 비율 바 — 좌→우 스윕 채움 후 shimmer, 탭/hover 시 세그먼트 칩 표시 */}
+                  <div className="pt-1.5">
+                    <div
+                      className="relative"
+                      role="img"
+                      aria-label={`자산 구성: ${sortedGroups.map((seg) => `${seg.label} ${toAllocationPercent(seg.totalAmount)}%`).join(', ')}`}
+                    >
+                      {activeCategory !== null && (() => {
+                        const idx = sortedGroups.findIndex((s) => s.category === activeCategory)
+                        if (idx === -1) return null
+                        const seg = sortedGroups[idx]
+                        return (
+                          <div
+                            key={activeCategory}
+                            className="absolute top-0 z-10 pointer-events-none animate-chip-in"
+                            style={{ left: `${getSegmentMidpoint(idx)}%` }}
+                            aria-hidden="true"
+                          >
+                            <div className="relative bg-ink text-white text-caption font-semibold rounded-btn px-2.5 py-1 whitespace-nowrap select-none">
+                              {seg.label} · {toAllocationPercent(seg.totalAmount)}%
+                              <div
+                                className="absolute left-1/2 top-full w-0 h-0"
+                                style={{
+                                  transform: 'translateX(-50%)',
+                                  borderLeft: `${pxr(4)} solid transparent`,
+                                  borderRight: `${pxr(4)} solid transparent`,
+                                  borderTop: `${pxr(4)} solid var(--color-ink)`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })()}
+
+                      <div className="animate-bar-reveal relative flex overflow-hidden rounded-badge">
+                        {sortedGroups.map((seg, i) => (
+                          <div
+                            key={seg.category}
+                            className={`h-4 cursor-pointer transition-opacity duration-150 ${
+                              activeCategory !== null && activeCategory !== seg.category ? 'opacity-40' : 'opacity-100'
+                            } ${ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]}`}
+                            style={{ width: `${toAllocationRatio(seg.totalAmount)}%` }}
+                            aria-hidden="true"
+                            onMouseEnter={() => setActiveCategory(seg.category)}
+                            onMouseLeave={() => setActiveCategory(null)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveCategory((prev) => (prev === seg.category ? null : seg.category))
+                            }}
+                          />
+                        ))}
+                        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+                          <div
+                            className="animate-bar-shimmer absolute inset-y-0 w-[30%]"
+                            style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* 그룹 목록 — 비율 높은 순, 탭 토글로 계좌·보유종목 상세 표시 */}
@@ -315,6 +356,14 @@ function AssetPage() {
                   )}
                 </div>
               </div>
+              {income.totalUnrealizedGainLoss !== 0 && (
+                <div className="flex items-baseline justify-between -mt-1">
+                  <p className="text-sub text-ink-sub">평가손익</p>
+                  <p className={`font-inter text-sub font-bold ${income.totalUnrealizedGainLoss > 0 ? 'text-success' : 'text-danger'}`}>
+                    {income.totalUnrealizedGainLoss > 0 ? '+' : '-'}{formatKrw(Math.abs(income.totalUnrealizedGainLoss))}
+                  </p>
+                </div>
+              )}
 
               <div className="border-t border-divider pt-[15px] flex flex-col">
                 {income.sources.length === 0 ? (
@@ -388,6 +437,45 @@ function AssetPage() {
             </div>
           ) : null}
 
+          {/* ── 만기 예정 예금 카드 ── */}
+          {(() => {
+            if (!schedule) return null
+            const todayStart = new Date(today)
+            todayStart.setHours(0, 0, 0, 0)
+            const oneYearLater = new Date(todayStart)
+            oneYearLater.setFullYear(todayStart.getFullYear() + 1)
+            const maturities = schedule.events
+              .filter((e) => e.type === 'DEPOSIT_MATURITY')
+              .map((e) => ({ ...e, _date: parseLocalDate(e.date) }))
+              .filter((e) => e._date >= todayStart && e._date <= oneYearLater)
+              .sort((a, b) => a._date.getTime() - b._date.getTime())
+            if (maturities.length === 0) return null
+            return (
+              <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
+                <p className="text-sub font-semibold text-ink-sub">만기 예정 예금</p>
+                {maturities.map((event, i) => (
+                  <div
+                    key={`${event.date}-${event.label}`}
+                    className={`flex items-center gap-3 py-4 ${i < maturities.length - 1 ? 'border-b border-divider' : ''}`}
+                  >
+                    <div className="bg-warning-bg rounded-icon size-10 shrink-0 flex items-center justify-center">
+                      <span className="font-inter text-card font-bold leading-none text-warning" aria-hidden="true">D</span>
+                    </div>
+                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                      <p className="text-md font-semibold text-ink">{event.label}</p>
+                      <p className="text-sub text-ink-sub">{formatYM(event._date)} · {calcDday(event._date)}</p>
+                    </div>
+                    {event.amount != null && (
+                      <span className="bg-warning-bg text-warning-text text-sub font-bold rounded-badge px-[9px] py-1 shrink-0">
+                        {formatKrwShort(event.amount)} 인출 가능
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
+
           {/* ── 연금으로 받을 재원 카드 ── */}
           {pensionLoading ? (
             <div className="bg-white rounded-card-xl border border-line p-5 h-36 animate-pulse" aria-busy="true" aria-label="연금 재원 로딩 중" />
@@ -398,7 +486,10 @@ function AssetPage() {
             </div>
           ) : pension ? (
             <div className="bg-white rounded-card-xl border border-line p-5 flex flex-col">
-              <p className="text-sub font-semibold text-ink-sub">연금으로 받을 재원</p>
+              <div className="flex items-baseline justify-between">
+                <p className="text-sub font-semibold text-ink-sub">연금으로 받을 재원</p>
+                <p className="text-caption text-ink-hint">세후 실수령액 기준</p>
+              </div>
 
               {pension.pensions.length === 0 ? (
                 <p className="text-body text-ink-hint text-center py-8">연금 재원 정보가 없습니다</p>
@@ -415,22 +506,98 @@ function AssetPage() {
                       <p className="text-sub text-ink-hint">
                         {item.institutionName ?? `${item.startAge}세부터 수령`}
                       </p>
+                      {item.currentBalance != null && (
+                        <p className="font-inter text-sub text-ink-hint">
+                          잔액 {formatKrwShort(item.currentBalance)}
+                        </p>
+                      )}
                     </div>
-                    {item.currentBalance != null ? (
-                      <p className="font-inter text-md font-semibold text-ink">{formatKrw(item.currentBalance)}</p>
-                    ) : (
-                      <p className="font-inter text-md font-semibold text-ink">
-                        {formatKrw(item.expectedMonthly)}<span className="text-sub text-ink-hint font-normal">/월</span>
-                      </p>
-                    )}
+                    <p className="font-inter text-md font-semibold text-ink shrink-0">
+                      월 {formatKrwShort(item.expectedMonthlyNet)}{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
+                    </p>
                   </div>
                 ))
               )}
 
+              {pension.pensions.length > 0 && !profileLoading && (() => {
+                const currentAge = profile?.age ?? null
+                const byAge = [...pension.pensions].sort((a, b) => a.startAge - b.startAge)
+                const receiving = currentAge != null ? byAge.filter((p) => p.startAge <= currentAge) : []
+                const upcoming = currentAge != null ? byAge.filter((p) => p.startAge > currentAge) : byAge
+
+                // 전부 수령 중이면 타임라인 없이 요약만
+                if (currentAge != null && upcoming.length === 0) {
+                  return (
+                    <div className="border-t border-divider mt-1 pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="size-5 rounded-full bg-success-bg flex items-center justify-center shrink-0">
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                              <path d="M2 5l2 2 4-4" stroke="#069A53" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </div>
+                          <p className="text-sub text-ink-sub">모든 연금 수령 중</p>
+                        </div>
+                        <p className="font-inter text-sub font-bold text-primary">
+                          월 {formatKrwShort(pension.totalMonthlyPensionNet)}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                }
+
+                return (
+                  <div className="border-t border-divider mt-1 pt-4 flex flex-col gap-[14px]">
+                    <p className="text-caption text-ink-hint">연금 개시 타임라인</p>
+
+                    {receiving.map((item) => (
+                      <div key={`${item.type}-${item.startAge}`} className="flex items-center gap-3">
+                        <div className="bg-success-bg rounded-btn px-2.5 py-1 shrink-0 flex items-center gap-1">
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                            <path d="M2 5l2 2 4-4" stroke="#069A53" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          <p className="font-inter text-caption font-bold text-success">수령 중</p>
+                        </div>
+                        <p className="flex-1 text-sub text-ink-sub min-w-0 truncate">{item.label}</p>
+                        <p className="font-inter text-sub font-semibold text-success shrink-0">
+                          +{formatKrwShort(item.expectedMonthlyNet)}/월{item.estimated ? <span className="text-success/60 font-normal"> *</span> : null}
+                        </p>
+                      </div>
+                    ))}
+
+                    {upcoming.map((item) => (
+                      <div key={`${item.type}-${item.startAge}`} className="flex items-center gap-3">
+                        <div className="bg-primary-tint rounded-btn px-2.5 py-1 shrink-0">
+                          <p className="font-inter text-caption font-bold text-primary">{item.startAge}세</p>
+                        </div>
+                        <p className="flex-1 text-sub text-ink-sub min-w-0 truncate">{item.label}</p>
+                        <p className="font-inter text-sub font-semibold text-ink shrink-0">
+                          +{formatKrwShort(item.expectedMonthlyNet)}/월{item.estimated ? <span className="text-ink-hint font-normal"> *</span> : null}
+                        </p>
+                      </div>
+                    ))}
+
+                    <div className="flex items-center justify-between pt-3 border-t border-divider">
+                      <p className="text-sub text-ink-hint">
+                        {receiving.length > 0 ? '모든 연금 개시 후' : '전체 개시 후'}
+                      </p>
+                      <p className="font-inter text-sub font-bold text-primary">
+                        월 {formatKrwShort(pension.totalMonthlyPensionNet)}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })()}
+
               {pension.pensions.length > 0 && (
-                <div className="bg-surface rounded-card px-4 py-[14px] mt-2">
-                  <p className="text-sub text-ink-sub leading-relaxed">
-                    <span className="font-bold text-ink">55세 이후</span> 연금으로 수령 가능 · 수령 시 세율 3.3–5.5% 우대
+                <div className="bg-surface rounded-card px-4 py-[14px] mt-2 flex flex-col gap-1">
+                  {pension.pensions.some((p) => p.estimated) && (
+                    <p className="text-sub text-ink-hint">
+                      * IRP·연금저축 예상액은 연 3% 수익률, 83세까지 수령 기준 추정치
+                    </p>
+                  )}
+                  <p className="text-sub text-ink-sub">
+                    <span className="font-semibold text-ink">55세 이후</span> 수령 가능 · 세율 3.3–5.5% 우대
                   </p>
                 </div>
               )}

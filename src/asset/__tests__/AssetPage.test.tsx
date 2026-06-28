@@ -7,11 +7,18 @@ import type { AssetHubResponse } from '../types/assetHub'
 import type { AssetIncomeResponse, AssetCompositionResponse, AssetScheduleResponse, AssetPensionResponse } from '../types/assetAnalysis'
 import type { InvestmentCheckResponse } from '../types/investmentCheck'
 
-vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }))
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn(),
+  useLocation: () => ({ state: null, pathname: '/asset' }),
+}))
 vi.mock('../../common/components/AppBar', () => ({ default: () => null }))
 vi.mock('../../common/assets/icons', () => ({
   BackArrowIc: () => null,
   NotificationIc: () => null,
+  NavHomeIc: () => null,
+  NavAssetIc: () => null,
+  NavCalendarIc: () => null,
+  NavMypageIc: () => null,
 }))
 
 const hubMock = vi.fn()
@@ -20,6 +27,7 @@ const incomeMock = vi.fn()
 const scheduleMock = vi.fn()
 const pensionMock = vi.fn()
 const investmentCheckMock = vi.fn()
+const profileMock = vi.fn()
 
 vi.mock('../hooks/useGetAssetHub', () => ({ default: () => hubMock() }))
 vi.mock('../hooks/useGetAssetComposition', () => ({ default: () => compositionMock() }))
@@ -27,6 +35,7 @@ vi.mock('../hooks/useGetAssetIncome', () => ({ default: () => incomeMock() }))
 vi.mock('../hooks/useGetAssetSchedule', () => ({ default: () => scheduleMock() }))
 vi.mock('../hooks/useGetAssetPension', () => ({ default: () => pensionMock() }))
 vi.mock('../hooks/useGetInvestmentCheck', () => ({ default: () => investmentCheckMock() }))
+vi.mock('../../mypage/hooks/useGetProfile', () => ({ default: () => profileMock() }))
 
 const defaultHub: AssetHubResponse = {
   totalAsset: 250_000_000,
@@ -100,10 +109,26 @@ const defaultSchedule: AssetScheduleResponse = {
 
 const defaultPension: AssetPensionResponse = {
   totalMonthlyPension: 1_200_000,
+  totalMonthlyPensionNet: 1_140_000,
   pensions: [
-    { type: 'NATIONAL', label: '국민연금', institutionName: null, startAge: 65, currentBalance: null, expectedMonthly: 500_000, taxBenefitLimit: null, estimated: false },
-    { type: 'IRP', label: 'IRP', institutionName: 'KB', startAge: 55, currentBalance: 100_000_000, expectedMonthly: 700_000, taxBenefitLimit: 9_000_000, estimated: false },
-    { type: 'PENSION_SAVING', label: '연금저축', institutionName: '신한', startAge: 55, currentBalance: 50_000_000, expectedMonthly: 500_000, taxBenefitLimit: 6_000_000, estimated: true },
+    {
+      type: 'NATIONAL', label: '국민연금', institutionName: null, startAge: 65,
+      currentBalance: null, retirementAmount: null, personalAmount: null,
+      expectedMonthlyGross: 500_000, expectedMonthlyNet: 500_000, effectiveTaxRate: 0,
+      taxBenefitLimit: null, estimated: false, payoutMonths: null, yearsEnrolled: null,
+    },
+    {
+      type: 'IRP', label: 'IRP', institutionName: 'KB', startAge: 55,
+      currentBalance: 100_000_000, retirementAmount: 60_000_000, personalAmount: 40_000_000,
+      expectedMonthlyGross: 440_000, expectedMonthlyNet: 418_000, effectiveTaxRate: 0.05,
+      taxBenefitLimit: 9_000_000, estimated: true, payoutMonths: 336, yearsEnrolled: 15,
+    },
+    {
+      type: 'PENSION_SAVING', label: '연금저축', institutionName: '신한', startAge: 55,
+      currentBalance: 50_000_000, retirementAmount: null, personalAmount: null,
+      expectedMonthlyGross: 220_000, expectedMonthlyNet: 207_900, effectiveTaxRate: 0.055,
+      taxBenefitLimit: 6_000_000, estimated: true, payoutMonths: 336, yearsEnrolled: null,
+    },
   ],
 }
 
@@ -128,6 +153,7 @@ function mockAll(overrides: {
   scheduleMock.mockReturnValue({ data: defaultSchedule, isLoading: false, isError: false, refetch: vi.fn(), ...overrides.schedule })
   pensionMock.mockReturnValue({ data: defaultPension, isLoading: false, isError: false, refetch: vi.fn(), ...overrides.pension })
   investmentCheckMock.mockReturnValue({ data: defaultInvestmentCheck, isLoading: false, isError: false, refetch: vi.fn(), ...overrides.investmentCheck })
+  profileMock.mockReturnValue({ data: { name: '홍길동', age: 45, status: 'ACTIVE', pensionStatus: 'NONE', monthlyTargetKrw: 3_000_000 }, isLoading: false, isError: false })
 }
 
 describe('AssetPage 총자산 카드', () => {
@@ -242,7 +268,7 @@ describe('AssetPage 현금 일정 카드', () => {
     render(<AssetPage />)
     expect(screen.getByText('KODEX 배당 예상 분배금')).toBeInTheDocument()
     expect(screen.getByText('KB 예금 이자')).toBeInTheDocument()
-    expect(screen.getByText('신한 정기예금 만기')).toBeInTheDocument()
+    expect(screen.getAllByText('신한 정기예금 만기').length).toBeGreaterThanOrEqual(1)
   })
 
   it('estimated 이벤트에 "예정" 뱃지를 표시한다', () => {
@@ -271,15 +297,15 @@ describe('AssetPage 연금 재원 카드', () => {
     expect(screen.getAllByText('연금저축').length).toBeGreaterThanOrEqual(1)
   })
 
-  it('현재 잔액을 표시한다', () => {
+  it('현재 잔액을 보조 텍스트로 표시한다', () => {
     mockAll()
     render(<AssetPage />)
-    expect(screen.getByText('1억원')).toBeInTheDocument()
-    expect(screen.getByText('5,000만원')).toBeInTheDocument()
+    expect(screen.getByText('잔액 1억')).toBeInTheDocument()
+    expect(screen.getByText('잔액 5,000만')).toBeInTheDocument()
   })
 
   it('pensions 빈 배열이면 안내 메시지를 표시한다', () => {
-    mockAll({ pension: { data: { totalMonthlyPension: 0, pensions: [] } } })
+    mockAll({ pension: { data: { totalMonthlyPension: 0, totalMonthlyPensionNet: 0, pensions: [] } } })
     render(<AssetPage />)
     expect(screen.getByText('연금 재원 정보가 없습니다')).toBeInTheDocument()
   })
