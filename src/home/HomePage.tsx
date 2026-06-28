@@ -184,7 +184,7 @@ function HomePage() {
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto pt-4 pb-6">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-4 pb-6">
         {isLoading ? (
           <div role="status" aria-live="polite" className="flex flex-col gap-5 px-5 pt-1">
             <span className="sr-only">홈 화면 정보를 불러오는 중입니다.</span>
