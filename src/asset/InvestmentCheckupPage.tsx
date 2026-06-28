@@ -121,7 +121,7 @@ function InvestmentCheckupPage() {
               const summaryLines = buildSummaryLines(data.roles)
               if (summaryLines.length === 0) return null
               return (
-                <div className="rounded-card-lg bg-primary-tint mt-4 p-4">
+                <div className="rounded-card-lg bg-primary-tint mt-6 p-4">
                   <p className="text-body text-primary mb-2 font-bold">✦ 세 줄 요약</p>
                   <ul className="flex flex-col gap-1.5">
                     {summaryLines.map((line) => (
