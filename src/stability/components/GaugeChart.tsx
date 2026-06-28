@@ -49,26 +49,15 @@ function GaugeChart({ percentage, status }: Props) {
         strokeLinecap="round"
       />
       {fillPath && (
-        <>
-          {/* 채움 호: 0→값으로 그려지는 reveal */}
-          <path
-            d={fillPath}
-            stroke={fillColor}
-            strokeWidth={STROKE_WIDTH}
-            strokeLinecap="round"
-            pathLength={100}
-            className="animate-gauge-reveal"
-          />
-          {/* 호를 따라 1회 흐르는 하이라이트 shimmer */}
-          <path
-            d={fillPath}
-            stroke="rgba(255,255,255,0.7)"
-            strokeWidth={STROKE_WIDTH}
-            strokeLinecap="round"
-            pathLength={100}
-            className="animate-gauge-shimmer"
-          />
-        </>
+        /* 채움 호: 0→값으로 그려지는 reveal */
+        <path
+          d={fillPath}
+          stroke={fillColor}
+          strokeWidth={STROKE_WIDTH}
+          strokeLinecap="round"
+          pathLength={100}
+          className="animate-gauge-reveal"
+        />
       )}
       <text
         x={CX}

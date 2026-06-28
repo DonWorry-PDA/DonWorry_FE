@@ -362,13 +362,8 @@ html.large {
 }
 
 /* ─── 생활안정도 게이지(SVG arc) 애니메이션 ─── */
-/* pathLength=100 기준: reveal는 호를 0→값으로 그리고, shimmer는 짧은 하이라이트가 호를 따라 1회 흐른다. */
+/* pathLength=100 기준: 채움 호를 0→값으로 그리는 reveal. */
 @keyframes gauge-reveal {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
-}
-
-@keyframes gauge-shimmer {
   from { stroke-dashoffset: 100; }
   to   { stroke-dashoffset: 0; }
 }
@@ -379,21 +374,11 @@ html.large {
   animation: gauge-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.animate-gauge-shimmer {
-  stroke-dasharray: 12 88;
-  stroke-dashoffset: 0;
-  animation: gauge-shimmer 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .animate-gauge-reveal {
     stroke-dasharray: none;
     stroke-dashoffset: 0;
     animation: none;
-  }
-
-  .animate-gauge-shimmer {
-    display: none;
   }
 }
 
