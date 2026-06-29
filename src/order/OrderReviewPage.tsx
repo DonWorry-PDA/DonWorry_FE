@@ -23,6 +23,7 @@ function OrderReviewPage() {
 
   const { data, isLoading } = useGetRecommendation()
   const [confirmed, setConfirmed] = useState(false)
+  const [reminderError, setReminderError] = useState(false)
   const { mutate: subscribeMarketOpenReminder } = usePostMarketOpenReminder()
 
   if (isLoading) {
@@ -69,8 +70,11 @@ function OrderReviewPage() {
 
   function handleOrderStart() {
     if (!isMarketOpen()) {
-      subscribeMarketOpenReminder()
-      navigate('/order/reserved')
+      setReminderError(false)
+      subscribeMarketOpenReminder(undefined, {
+        onSuccess: () => navigate('/order/reserved'),
+        onError: () => setReminderError(true),
+      })
       return
     }
     const totalAmountWon = buyModalItems.reduce((sum, item) => sum + (item.amountWon ?? 0), 0)
@@ -144,6 +148,9 @@ function OrderReviewPage() {
           <span className="text-body text-ink">위 주문 내용을 확인했어요</span>
         </button>
 
+        {reminderError && (
+          <p className="text-sub text-danger mb-3">알림 등록에 실패했어요. 다시 시도해 주세요.</p>
+        )}
         <Button disabled={!confirmed} onClick={handleOrderStart}>
           주문 실행
         </Button>

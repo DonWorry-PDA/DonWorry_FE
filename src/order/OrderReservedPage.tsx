@@ -32,7 +32,7 @@ function OrderReservedPage() {
           <div className="h-px bg-divider" />
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">다음 장 개시</p>
-            <p className="text-body font-medium text-ink">내일 09:00</p>
+            <p className="text-body font-medium text-ink">다음 영업일 09:00</p>
           </div>
         </div>
 
