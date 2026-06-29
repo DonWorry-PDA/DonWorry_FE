@@ -142,7 +142,8 @@ function ConsultModifyPage() {
   }
 
   // 예약(RESERVED) 상태만 변경/취소 가능 — 완료/취소 건 직접 진입 방어
-  if (record.status !== 'RESERVED') {
+  // cancel-done 상태에서는 리패치로 status가 바뀌어도 취소 완료 알림창을 유지
+  if (record.status !== 'RESERVED' && alertState !== 'cancel-done') {
     return (
       <div className="flex h-dvh flex-col bg-white">
         <AppBar title="예약 변경·취소" onBack={() => navigate(-1)} />
