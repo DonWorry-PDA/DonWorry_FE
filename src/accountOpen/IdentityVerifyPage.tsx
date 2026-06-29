@@ -4,6 +4,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import useCurrentUser from '../common/hooks/useCurrentUser'
+import usePostOtpSend from './hooks/usePostOtpSend'
 
 const STEPS = [
   { step: 1, label: '인증' },
@@ -29,6 +30,7 @@ function IdentityVerifyPage() {
   const [ssnBack, setSsnBack] = useState('')
   const [phone, setPhone] = useState('')
   const [ssnBackFocused, setSsnBackFocused] = useState(false)
+  const { mutate: sendOtp, isPending: isSendingOtp, error: sendOtpError } = usePostOtpSend()
 
   const ssnBackRef = useRef<HTMLInputElement>(null)
 
@@ -52,6 +54,13 @@ function IdentityVerifyPage() {
     /^\d{10,11}$/.test(phone.replace(/\D/g, ''))
 
   const ssnBackActive = ssnBackFocused || ssnBack.length > 0
+
+  const handleSendOtp = () => {
+    if (!isValid) return
+    sendOtp(phone, {
+      onSuccess: () => navigate('/account-open/otp', { state: { phone, returnTo, planId } }),
+    })
+  }
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -181,11 +190,16 @@ function IdentityVerifyPage() {
 
       <StickyFooter>
         <Button
-          disabled={!isValid}
-          onClick={() => navigate('/account-open/otp', { state: { phone, returnTo, planId } })}
+          disabled={!isValid || isSendingOtp}
+          onClick={handleSendOtp}
         >
           인증번호 받기
         </Button>
+        {sendOtpError && (
+          <p className="mt-2 text-center text-caption text-danger">
+            인증번호 발송에 실패했어요. 잠시 후 다시 시도해주세요.
+          </p>
+        )}
       </StickyFooter>
     </div>
   )
