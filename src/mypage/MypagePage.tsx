@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import queryClient from '../common/api/queryClient'
 import { clearTokens } from '../common/api/token'
@@ -28,27 +28,17 @@ function MypagePage() {
     document.documentElement.classList.toggle('large', enabled)
   }
   const [logoutStep, setLogoutStep] = useState<LogoutStep>('idle')
-  const [copyToast, setCopyToast] = useState(false)
-  const copyToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const showCopyToast = useCallback(() => {
-    if (copyToastTimer.current) clearTimeout(copyToastTimer.current)
-    setCopyToast(true)
-    copyToastTimer.current = setTimeout(() => setCopyToast(false), 2000)
-  }, [])
 
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
   const { data: consultations } = useGetConsultations()
-  const { data: institutions, isPending: isInstitutionsPending, isError: isInstitutionsError } = useGetMydataInstitutions()
+  const {
+    data: institutions,
+    isPending: isInstitutionsPending,
+    isError: isInstitutionsError,
+  } = useGetMydataInstitutions()
   const connectedInstitutions = (institutions ?? []).filter((i) => i.connected)
-  const [accountsExpanded, setAccountsExpanded] = useState(false)
-  const ACCOUNTS_PREVIEW = 3
-  const visibleInstitutions = accountsExpanded
-    ? connectedInstitutions
-    : connectedInstitutions.slice(0, ACCOUNTS_PREVIEW)
 
-  // 가장 가까운 예약(RESERVED)을 상담 내역 메뉴 부제로
   const nextReserved = (consultations ?? [])
     .filter((c) => c.status === 'RESERVED')
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0]
@@ -56,7 +46,6 @@ function MypagePage() {
     ? `${formatScheduledAt(nextReserved.scheduledAt)} 상담 예약됨`
     : '예약·지난 상담 확인'
 
-  // 로그아웃: API 호출 후 성공·실패 모두 클라이언트 토큰·캐시를 정리한다
   const handleLogout = () => {
     logout(undefined, {
       onSettled: () => {
@@ -123,48 +112,28 @@ function MypagePage() {
         </div>
 
         {isInstitutionsPending ? (
-          <>
+          <div className="flex gap-4 pb-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center gap-3 border-b border-divider py-[13px]">
-                <div className="size-10 shrink-0 animate-pulse rounded-icon bg-surface-muted" />
-                <div className="flex flex-1 flex-col gap-1.5">
-                  <div className="h-4 w-24 animate-pulse rounded bg-surface-muted" />
-                  <div className="h-3 w-36 animate-pulse rounded bg-surface-muted" />
-                </div>
+              <div key={i} className="flex flex-col items-center gap-[7px]">
+                <div className="size-10 rounded-icon animate-pulse bg-surface-muted" />
+                <div className="h-3 w-12 rounded animate-pulse bg-surface-muted" />
               </div>
             ))}
-          </>
+          </div>
         ) : isInstitutionsError ? (
-          <p className="py-4 text-sub text-ink-hint">계좌 정보를 불러오지 못했어요</p>
+          <p className="pb-4 text-sub text-ink-hint">계좌 정보를 불러오지 못했어요</p>
+        ) : connectedInstitutions.length === 0 ? (
+          <p className="pb-4 text-sub text-ink-hint">연결된 계좌가 없어요</p>
         ) : (
-          <>
-            {connectedInstitutions.length === 0 ? (
-              <p className="py-4 text-sub text-ink-hint">연결된 계좌가 없어요</p>
-            ) : (
-              visibleInstitutions.map((institution) => (
-                <AccountRow
-                  key={institution.id}
-                  institution={institution}
-                  onCopy={showCopyToast}
-                />
-              ))
-            )}
-
-            {connectedInstitutions.length > ACCOUNTS_PREVIEW && (
-              <button
-                className="flex w-full items-center justify-center gap-1 py-3 text-sub font-semibold text-ink-hint"
-                onClick={() => setAccountsExpanded((v) => !v)}
-              >
-                {accountsExpanded ? '접기' : `${connectedInstitutions.length - ACCOUNTS_PREVIEW}개 더 보기`}
-                <svg
-                  width="14" height="14" viewBox="0 0 14 14" fill="none"
-                  className={`transition-transform duration-200 ${accountsExpanded ? 'rotate-180' : ''}`}
-                >
-                  <path d="M3 5L7 9L11 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-            )}
-          </>
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 [&::-webkit-scrollbar]:hidden">
+            {connectedInstitutions.map((institution) => (
+              <InstitutionChip
+                key={institution.id}
+                institution={institution}
+                onPress={() => navigate('/asset')}
+              />
+            ))}
+          </div>
         )}
 
         {/* 구분선 */}
@@ -273,90 +242,33 @@ function MypagePage() {
           </div>
         </Modal>
       )}
-
-      {/* 계좌번호 복사 토스트 */}
-      <div
-        role="status"
-        aria-live="polite"
-        className={`fixed bottom-[80px] left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-btn bg-[#23282f] px-4 py-3 shadow-float transition-all duration-300 whitespace-nowrap ${
-          copyToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0 pointer-events-none'
-        }`}
-      >
-        {copyToast && (
-          <>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8L6.5 11.5L13 5" stroke="#4ADE80" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="text-sub font-semibold text-white">계좌번호가 복사됐어요</span>
-          </>
-        )}
-      </div>
     </div>
   )
 }
 
-function CopyButton({ text, onCopy }: { text: string; onCopy: () => void }) {
-  const [copied, setCopied] = useState(false)
-  const [failed, setFailed] = useState(false)
-
-  const handleCopy = useCallback(async () => {
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable')
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      onCopy()
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      setFailed(true)
-      setTimeout(() => setFailed(false), 1500)
-    }
-  }, [text, onCopy])
-
-  return (
-    <button
-      onClick={handleCopy}
-      className={`ml-1.5 shrink-0 transition-colors active:text-primary ${failed ? 'text-danger' : 'text-ink-hint'}`}
-      aria-label="계좌번호 복사"
-    >
-      {copied ? (
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ) : failed ? (
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      ) : (
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <rect x="5" y="1" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-          <path d="M1 5v7a1 1 0 001 1h7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        </svg>
-      )}
-    </button>
-  )
-}
-
-function AccountRow({
+function InstitutionChip({
   institution,
-  onCopy,
+  onPress,
 }: {
   institution: MydataInstitution
-  onCopy: () => void
+  onPress: () => void
 }) {
   const [imgFailed, setImgFailed] = useState(false)
   const handleError = useCallback(() => setImgFailed(true), [])
   const logo = LOGO_MAP[institution.id]
-  const accountNumbers = institution.accountNumbers ?? []
 
   return (
-    <div className="flex items-start gap-3 border-b border-divider py-[13px]">
+    <button
+      onClick={onPress}
+      className="flex flex-col items-center gap-[7px] shrink-0 active:opacity-60 transition-opacity"
+    >
       {logo && !imgFailed ? (
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-icon bg-white overflow-hidden">
+        <div className="flex size-10 items-center justify-center rounded-icon bg-white overflow-hidden shadow-card">
           <img src={logo} alt={institution.name} className="size-8 object-contain" onError={handleError} />
         </div>
       ) : (
         <div
-          className="flex size-10 shrink-0 items-center justify-center rounded-icon"
+          className="flex size-10 items-center justify-center rounded-icon shadow-card"
           style={{ background: institution.brandColor }}
         >
           <span className="text-caption font-extrabold" style={{ color: institution.labelColor }}>
@@ -364,16 +276,10 @@ function AccountRow({
           </span>
         </div>
       )}
-      <div className="flex flex-1 min-w-0 flex-col gap-0.5">
-        <p className="text-md font-semibold text-ink">{institution.name}</p>
-        {accountNumbers.map((num) => (
-          <div key={num} className="flex items-center">
-            <p className="text-sub text-ink-sub">{num}</p>
-            <CopyButton text={num} onCopy={onCopy} />
-          </div>
-        ))}
-      </div>
-    </div>
+      <p className="text-caption text-ink-sub w-14 text-center leading-tight line-clamp-2">
+        {institution.name}
+      </p>
+    </button>
   )
 }
 

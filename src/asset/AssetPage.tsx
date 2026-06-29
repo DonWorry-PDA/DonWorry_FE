@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { NotificationIc, BackArrowIc } from '../common/assets/icons'
 import BottomNav from '../common/components/BottomNav'
-import { formatKrw, formatWon } from '../common/utils/formatKrw'
+import { formatKrw, formatWon, formatKrwShort } from '../common/utils/formatKrw'
 import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import pxr from '../common/utils/pxr'
 import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
@@ -76,10 +76,8 @@ function AssetPage() {
       })
 
       const totalAmount = accounts.reduce((sum, acc) => {
-        if (acc.holdings.length > 0) {
-          return sum + acc.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
-        }
-        return sum + acc.balance
+        const holdingsSum = acc.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
+        return sum + acc.balance + holdingsSum
       }, 0)
 
       return { ...group, accounts, totalAmount }
@@ -123,9 +121,23 @@ function AssetPage() {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  const sortedGroups = [...(realtimeComposition?.groups ?? [])].sort(
-    (a, b) => b.totalAmount - a.totalAmount
-  )
+  const baseGroups = [...(realtimeComposition?.groups ?? [])]
+  const cmaGroup = baseGroups.find((g) => g.category === 'CMA')
+  const sortedGroups =
+    cmaGroup && baseGroups.some((g) => g.category === 'STOCK')
+      ? baseGroups
+          .filter((g) => g.category !== 'CMA')
+          .map((g) =>
+            g.category === 'STOCK'
+              ? {
+                  ...g,
+                  totalAmount: g.totalAmount + cmaGroup.totalAmount,
+                  accounts: [...g.accounts, ...cmaGroup.accounts],
+                }
+              : g
+          )
+          .sort((a, b) => b.totalAmount - a.totalAmount)
+      : baseGroups.sort((a, b) => b.totalAmount - a.totalAmount)
 
   const allocationBase =
     realtimeComposition && realtimeComposition.totalAsset > 0
@@ -372,46 +384,79 @@ function AssetPage() {
                             </div>
                           </button>
 
-                          {/* 계좌별 상세 — 토글 시 표시 */}
+                          {/* 계좌별 상세 — 계좌 단위 중분류로 표시 */}
                           {isExpanded && (
                             <div
                               id={`group-detail-${seg.category}`}
                               className="ml-[21px] flex flex-col gap-1 pb-3"
                             >
-                              {seg.accounts.map((account) => (
-                                <div key={account.accountId} className="flex flex-col gap-1">
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5">
-                                      <p className="text-sub text-ink-sub font-semibold">
-                                        {account.institutionName}
-                                      </p>
-                                      <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">
-                                        {accountTypeLabel(account.accountType)}
-                                      </span>
+                              {seg.accounts.map((account) => {
+                                const holdingsSum = account.holdings.reduce(
+                                  (s, h) => s + h.evaluationAmount,
+                                  0
+                                )
+                                const accountTotal = account.balance + holdingsSum
+                                return (
+                                  <div key={account.accountId} className="flex flex-col gap-1">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <div className="flex items-center gap-1.5 min-w-0">
+                                        <p className="text-sub text-ink-sub font-semibold">
+                                          {account.institutionName}
+                                        </p>
+                                        <span className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5">
+                                          {accountTypeLabel(account.accountType)}
+                                        </span>
+                                        {account.accountType === 'DEPOSIT' &&
+                                          account.interestRate != null && (
+                                            <span className="text-caption font-semibold text-primary bg-primary-tint rounded-badge px-1.5 py-0.5">
+                                              {account.interestRate}%
+                                            </span>
+                                          )}
+                                      </div>
+                                      {accountTotal > 0 && (
+                                        <p className="font-inter text-sub text-ink font-semibold shrink-0">
+                                          {formatKrwShort(accountTotal)}
+                                        </p>
+                                      )}
                                     </div>
-                                    {account.balance > 0 && account.holdings.length === 0 && (
-                                      <p className="font-inter text-sub text-ink font-semibold">
-                                        {formatWon(account.balance)}
-                                      </p>
-                                    )}
-                                  </div>
 
-                                  {/* 보유 종목/상품 */}
-                                  {account.holdings.map((holding) => (
-                                    <div
-                                      key={holding.productName}
-                                      className="flex items-center justify-between py-0.5 pl-1"
-                                    >
-                                      <p className="text-sub text-ink-hint mr-3 truncate">
-                                        {holding.productName}
-                                      </p>
-                                      <p className="font-inter text-sub text-ink-sub shrink-0">
-                                        {formatWon(holding.evaluationAmount)}
-                                      </p>
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
+                                    {account.accountType === 'DEPOSIT' &&
+                                      account.maturityDate != null && (
+                                        <p className="text-caption text-ink-hint pl-1 mt-0.5">
+                                          만기 {account.maturityDate.slice(0, 7).replace('-', '.')}
+                                        </p>
+                                      )}
+
+                                    {account.balance > 0 && account.holdings.length > 0 && (
+                                      <div className="flex flex-col gap-0.5 py-0.5 pl-1">
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-sub text-ink-sub mr-3 truncate">예수금</p>
+                                          <p className="font-inter text-sub text-ink-hint shrink-0">
+                                            {formatKrwShort(account.balance)}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {account.accountType !== 'DEPOSIT' &&
+                                      account.holdings.map((holding) => (
+                                        <div
+                                          key={`${account.accountId}-${holding.productName}`}
+                                          className="flex flex-col gap-0.5 py-0.5 pl-1"
+                                        >
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sub text-ink-sub mr-3 truncate">
+                                              {holding.productName}
+                                            </p>
+                                            <p className="font-inter text-sub text-ink-hint shrink-0">
+                                              {formatKrwShort(holding.evaluationAmount)}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      ))}
+                                  </div>
+                                )
+                              })}
                             </div>
                           )}
                         </div>
@@ -469,7 +514,7 @@ function AssetPage() {
 
           {/* ── 섹션 레이블 ── */}
           <div className="px-1">
-            <p className="text-sub text-ink-sub font-semibold">내 자산이 만드는 월 수입</p>
+            <h2 className="text-body font-bold text-ink">내 자산이 만드는 월 수입</h2>
           </div>
 
           {/* ── 월 수입 카드 ── */}
@@ -533,8 +578,11 @@ function AssetPage() {
                           <p className="text-body text-ink-sub">{source.label}</p>
                           {source.locked && (
                             <span
-                              className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5"
+                              className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5 cursor-help"
                               title="연금·장기 상품으로 현재 인출이 제한된 자산이에요"
+                              tabIndex={0}
+                              role="note"
+                              aria-label="비유동 — 연금·장기 상품으로 현재 인출이 제한된 자산이에요"
                             >
                               비유동
                             </span>
