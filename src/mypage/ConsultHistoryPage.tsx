@@ -117,14 +117,20 @@ function ConsultHistoryCard({ record, navigate }: { record: ConsultRecord; navig
         <span>{record.location}</span>
       </div>
 
-      {record.actionLabel && (
+      {record.actionLabel ? (
         <button
           className="bg-surface rounded-btn text-md text-primary w-full py-[0.875rem] text-center font-semibold"
           onClick={() => record.actionPath && navigate(record.actionPath)}
         >
           {record.actionLabel}
         </button>
-      )}
+      ) : record.status === 'completed' ? (
+        <p className="text-sub text-ink-hint py-1 text-center">
+          상담 요약이 아직 등록되지 않았어요.
+          <br />
+          잠시 기다려 주세요.
+        </p>
+      ) : null}
       {record.status === 'reserved' && (
         <button
           className="text-sub font-semibold text-ink-sub w-full min-h-11 text-center"
