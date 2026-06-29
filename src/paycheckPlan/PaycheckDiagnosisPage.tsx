@@ -41,17 +41,19 @@ function PlanLoadingScreen() {
     >
       <div className="relative flex size-24 items-center justify-center mb-8" aria-hidden="true">
         <div className="absolute inset-0 animate-spin">
-          {[0, 60, 120, 180, 240, 300].map((deg) => (
-            <div
-              key={deg}
-              className="absolute size-2.5 rounded-full bg-primary/30"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: `rotate(${deg}deg) translateX(40px) translateY(-50%)`,
-              }}
-            />
-          ))}
+          {[0, 60, 120, 180, 240, 300].map((deg) => {
+            const rad = (deg * Math.PI) / 180
+            return (
+              <div
+                key={deg}
+                className="absolute size-2.5 rounded-full bg-primary/30"
+                style={{
+                  top: `calc(50% + ${-40 * Math.cos(rad) - 5}px)`,
+                  left: `calc(50% + ${40 * Math.sin(rad) - 5}px)`,
+                }}
+              />
+            )
+          })}
         </div>
         <img src="/logos/sol-mark.svg" alt="" width={56} height={56} className="rounded-full" />
       </div>
