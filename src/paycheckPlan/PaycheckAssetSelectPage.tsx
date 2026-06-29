@@ -88,7 +88,7 @@ function PaycheckAssetSelectPage() {
   // 설문 확인 중·미완료(설문으로 리다이렉트 중)엔 자산 화면을 띄우지 않는다.
   if (isSurveyLoading || surveyMissing) {
     return (
-      <div role="status" aria-live="polite" className="flex flex-col h-full">
+      <div role="status" aria-live="polite" className="flex flex-col h-dvh">
         <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
         <span className="sr-only">투자성향 설문 확인 중입니다.</span>
         <div className="flex-1 px-6 pt-6 flex flex-col gap-3">
@@ -103,7 +103,7 @@ function PaycheckAssetSelectPage() {
   // 설문 상태 확인 실패(404 외 네트워크/서버 오류) — 게이트 우회 방지 위해 진행 차단·재시도 유도.
   if (surveyError) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
         <div className="flex-1 px-6 flex flex-col items-center justify-center gap-4">
           <p className="text-body text-ink-sub text-center">설문 상태를 확인하지 못했어요.</p>
@@ -120,11 +120,11 @@ function PaycheckAssetSelectPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
       <StepProgress current={1} total={2} />
 
-      <div className="flex-1 overflow-y-auto px-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6">
         <h2 className="text-heading font-bold text-ink mb-1">
           월급 재료로 쓰지 않을
           <br />

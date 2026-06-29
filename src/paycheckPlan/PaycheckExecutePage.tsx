@@ -71,7 +71,7 @@ function PaycheckExecutePage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="실행 요약" onBack={() => navigate(-1)} />
         <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
       </div>
@@ -81,7 +81,7 @@ function PaycheckExecutePage() {
   const plan = data && planId ? findPlan(data, planId) : undefined
   if (!data || !plan) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="실행 요약" onBack={() => navigate(-1)} />
         <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 설계안 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
       </div>
@@ -94,10 +94,10 @@ function PaycheckExecutePage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="실행 요약" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
         <Badge tone="primary" className="mb-3">{summary.planName}</Badge>
 
         <h2 className="text-heading font-bold text-ink mb-1 mt-3">

@@ -30,9 +30,9 @@ function PaycheckPlanDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="설계안" onBack={() => navigate(-1)} />
-        <div className="flex-1 overflow-y-auto px-6 pt-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-4 h-[56px] animate-pulse rounded-card bg-surface-muted" />
           <div className="flex flex-col gap-3">
             {[0, 1, 2, 3].map((i) => (
@@ -49,7 +49,7 @@ function PaycheckPlanDetailPage() {
   const plan = data && planId ? findPlan(data, planId) : undefined
   if (!data || !plan) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="설계안" onBack={() => navigate(-1)} />
         <CenterMessage variant="alert">설계안을 찾을 수 없어요</CenterMessage>
       </div>
@@ -59,10 +59,10 @@ function PaycheckPlanDetailPage() {
   const detail = mapPlanDetail(data, plan)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title={detail.planName} onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto">
         {/* 헤더 카드 */}
         <div className="bg-primary px-5 pt-4 pb-6 mx-6 mt-4 rounded-card-xl">
           <p className="text-sub text-white/70 mb-1">이 설계안의 예상 월급</p>

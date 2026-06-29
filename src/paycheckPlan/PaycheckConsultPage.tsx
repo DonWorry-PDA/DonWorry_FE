@@ -55,10 +55,10 @@ function PaycheckConsultPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="전문가와 같이 보기" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
         <h2 className="text-heading font-bold text-ink mb-1">
           진단 결과를 보니,
           <br />

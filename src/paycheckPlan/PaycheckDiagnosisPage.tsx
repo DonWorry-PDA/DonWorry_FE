@@ -98,7 +98,7 @@ function PaycheckDiagnosisPage() {
       <div className="flex flex-col h-dvh">
         <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
         <StepProgress current={2} total={2} />
-        <div className="flex-1 overflow-y-auto px-6 pt-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-5 w-28 animate-pulse rounded bg-surface-muted" />
           <div className="mb-6 h-10 w-36 animate-pulse rounded bg-surface-muted" />
           {[0, 1, 2].map((i) => (
@@ -131,7 +131,7 @@ function PaycheckDiagnosisPage() {
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
       <StepProgress current={2} total={2} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
         <p className="text-body text-ink-sub mb-1">지금의 월 현금흐름</p>
         <p className="font-inter text-display font-bold text-ink mb-6">
           {monthlyCashFlowMan}만원
