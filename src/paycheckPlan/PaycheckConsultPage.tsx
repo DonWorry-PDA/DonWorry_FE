@@ -5,7 +5,7 @@ import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import DateTimePickerSheet, { formatTime24 } from '../common/components/DateTimePickerSheet'
 import { buildScheduledAtIso } from '../mypage/utils/consultation'
-import { resolveConsultContext, type ConsultContext } from './constants/consultContext'
+import { type ConsultContext } from './constants/consultContext'
 import type { Branch, ConsultMethod } from './types/paycheckPlan'
 
 const METHODS: { key: ConsultMethod; label: string }[] = [
@@ -40,8 +40,6 @@ function PaycheckConsultPage() {
   const navigate = useNavigate()
   const { state } = useLocation() as { state: LocationState | null }
   const branch = state?.branch
-  const copy = resolveConsultContext(state?.context)
-  const planId = state?.planId != null ? Number(state.planId) : null
 
   const [method, setMethod] = useState<ConsultMethod>('face')
   const [pickedDate, setPickedDate] = useState<Date | null>(null)
