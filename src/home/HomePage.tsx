@@ -56,7 +56,8 @@ const MENU_BASE: ManageMenu[] = [
     key: 'salaryMaking',
     title: '월급 만들기',
     caption: '목표 대비 현재 현금흐름',
-    path: '/paycheck-plan/assets',
+    // 기이용자(ACTIVE plan)면 운용현황, 아니면 status 페이지가 /assets로 자체 리다이렉트.
+    path: '/paycheck-plan/status',
     iconTone: 'pink',
   },
   {
@@ -311,7 +312,7 @@ function HomePage() {
 
                 {stability.shortfallKrw != null && stability.shortfallKrw > 0 && (
                   <button
-                    onClick={() => navigate('/paycheck-plan/assets')}
+                    onClick={() => navigate('/paycheck-plan/status')}
                     className="animate-cta-enter relative overflow-hidden w-full bg-primary text-white rounded-btn py-[14px] px-5 flex items-center justify-between"
                   >
                     <div
@@ -332,7 +333,7 @@ function HomePage() {
               </div>
             ) : (
               <button
-                onClick={() => navigate('/paycheck-plan/assets')}
+                onClick={() => navigate('/paycheck-plan/status')}
                 className="w-full bg-primary-tint rounded-card-xl border border-primary-dim p-5 text-left flex items-center justify-between gap-3"
               >
                 <div className="flex flex-col gap-[6px] flex-1 min-w-0">
