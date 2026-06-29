@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { NotificationIc, BackArrowIc } from '../common/assets/icons'
 import BottomNav from '../common/components/BottomNav'
-import { formatWon } from '../common/utils/formatKrw'
+import { formatKrw, formatWon } from '../common/utils/formatKrw'
 import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import pxr from '../common/utils/pxr'
 import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
@@ -498,11 +498,11 @@ function AssetPage() {
                 <p className="text-sub text-ink-sub font-semibold">월 평균 들어오는 돈</p>
                 <div className="flex flex-col items-end gap-0.5">
                   <p className="font-inter text-md text-primary font-bold">
-                    {formatWon(income.accessibleIncome)}
+                    {formatKrw(income.accessibleIncome)}
                   </p>
                   {income.lockedIncome > 0 && (
                     <p className="text-caption text-ink-hint">
-                      +{formatWon(income.lockedIncome)} 비유동
+                      +{formatKrw(income.lockedIncome)} 비유동
                     </p>
                   )}
                 </div>
@@ -546,7 +546,7 @@ function AssetPage() {
                           )}
                         </div>
                         <p className="font-inter text-md text-ink font-semibold">
-                          월 {formatWon(source.amount)}
+                          월 {formatKrw(source.amount)}
                         </p>
                       </div>
                     ))}
@@ -622,7 +622,7 @@ function AssetPage() {
                     </div>
                     {INCOME_EVENT_TYPES.has(event.type) ? (
                       <p className="font-inter text-md text-primary shrink-0 font-bold">
-                        +{formatWon(event.amount ?? 0)}
+                        +{formatKrw(event.amount ?? 0)}
                       </p>
                     ) : event.amount != null ? (
                       <span className="bg-warning-bg text-warning-text text-sub rounded-badge shrink-0 px-[9px] py-1 font-bold">
@@ -732,7 +732,7 @@ function AssetPage() {
                       )}
                     </div>
                     <p className="font-inter text-md text-ink shrink-0 font-semibold">
-                      월 {formatWon(item.expectedMonthlyNet)}
+                      월 {formatKrw(item.expectedMonthlyNet)}
                       {item.estimated ? (
                         <span className="text-ink-hint font-normal"> *</span>
                       ) : null}
@@ -777,7 +777,7 @@ function AssetPage() {
                             <p className="text-sub text-ink-sub">모든 연금 수령 중</p>
                           </div>
                           <p className="font-inter text-sub text-primary font-bold">
-                            월 {formatWon(pension.totalMonthlyPensionNet)}
+                            월 {formatKrw(pension.totalMonthlyPensionNet)}
                           </p>
                         </div>
                       </div>
@@ -817,7 +817,7 @@ function AssetPage() {
                             {item.label}
                           </p>
                           <p className="font-inter text-sub text-success shrink-0 font-semibold">
-                            +{formatWon(item.expectedMonthlyNet)}/월
+                            +{formatKrw(item.expectedMonthlyNet)}/월
                             {item.estimated ? (
                               <span className="text-success/60 font-normal"> *</span>
                             ) : null}
@@ -839,7 +839,7 @@ function AssetPage() {
                             {item.label}
                           </p>
                           <p className="font-inter text-sub text-ink shrink-0 font-semibold">
-                            +{formatWon(item.expectedMonthlyNet)}/월
+                            +{formatKrw(item.expectedMonthlyNet)}/월
                             {item.estimated ? (
                               <span className="text-ink-hint font-normal"> *</span>
                             ) : null}
@@ -852,7 +852,7 @@ function AssetPage() {
                           {receiving.length > 0 ? '모든 연금 개시 후' : '전체 개시 후'}
                         </p>
                         <p className="font-inter text-sub text-primary font-bold">
-                          월 {formatWon(pension.totalMonthlyPensionNet)}
+                          월 {formatKrw(pension.totalMonthlyPensionNet)}
                         </p>
                       </div>
                     </div>
