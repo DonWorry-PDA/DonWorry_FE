@@ -165,6 +165,26 @@ export type SalaryPlanHolding = {
   productContribution: number // 종목별 월 기여액
 }
 
+// 월급 만들기 확정 요청 — POST /api/user/monthly-salary/plan.
+// 매수 완료 후 추천 응답의 plan/holdings를 그대로 스냅샷한다(BE는 재계산 없이 저장).
+// 금액류는 원 단위 정수(BE 컬럼 scale=0).
+export type SalaryPlanConfirmHolding = {
+  productId: number
+  productName: string
+  bucketRole: SalaryPlanBucketRole // 추천 holding.role 그대로
+  accountType: 'BROKERAGE' // 매수 실행 계좌(추천 holding은 BROKERAGE 범위)
+  weight: number // 버킷 내 비중
+  targetAmount: number // gross 목표 배분액(진행률 분모)
+  productContribution: number // 종목별 월기여(원/월)
+}
+
+export type SalaryPlanConfirmRequest = {
+  planType: string // STABLE | BALANCED | LIQUIDITY (추천 plan.type 그대로)
+  targetMonthlyLivingCost: number
+  expectedMonthlySalary: number
+  holdings: SalaryPlanConfirmHolding[]
+}
+
 // hasPlan=false면 본문 전부 null → 최초 진입(자산 선택)으로 라우팅.
 export type SalaryPlanStatusResponse = {
   hasPlan: boolean

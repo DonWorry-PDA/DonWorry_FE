@@ -23,6 +23,7 @@ export type Holding = {
   currency: CurrencyExposure
   weight: number // 버킷 내 비중 (각 버킷 합=1.0)
   amount: number // 원
+  monthlyContribution: number // 종목별 월기여 (원/월, net 실수령). 확정 시 productContribution으로 통과
 }
 
 export type AllocationView = {
