@@ -121,13 +121,11 @@ function AssetPage() {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  const rawGroups = [...(realtimeComposition?.groups ?? [])].sort(
-    (a, b) => b.totalAmount - a.totalAmount
-  )
-  const cmaGroup = rawGroups.find((g) => g.category === 'CMA')
+  const baseGroups = [...(realtimeComposition?.groups ?? [])]
+  const cmaGroup = baseGroups.find((g) => g.category === 'CMA')
   const sortedGroups =
-    cmaGroup && rawGroups.some((g) => g.category === 'STOCK')
-      ? rawGroups
+    cmaGroup && baseGroups.some((g) => g.category === 'STOCK')
+      ? baseGroups
           .filter((g) => g.category !== 'CMA')
           .map((g) =>
             g.category === 'STOCK'
@@ -138,7 +136,8 @@ function AssetPage() {
                 }
               : g
           )
-      : rawGroups
+          .sort((a, b) => b.totalAmount - a.totalAmount)
+      : baseGroups.sort((a, b) => b.totalAmount - a.totalAmount)
 
   const allocationBase =
     realtimeComposition && realtimeComposition.totalAsset > 0
@@ -415,6 +414,20 @@ function AssetPage() {
                                       )}
                                     </div>
 
+                                    {account.accountType === 'DEPOSIT' &&
+                                      (account.interestRate != null ||
+                                        account.maturityDate != null) && (
+                                        <p className="text-caption text-ink-hint pl-1">
+                                          {account.interestRate != null &&
+                                            `${account.interestRate}%`}
+                                          {account.interestRate != null &&
+                                            account.maturityDate != null &&
+                                            ' · '}
+                                          {account.maturityDate != null &&
+                                            `만기 ${account.maturityDate.replace(/-/g, '.')}`}
+                                        </p>
+                                      )}
+
                                     {account.balance > 0 && account.holdings.length > 0 && (
                                       <div className="flex flex-col gap-0.5 py-0.5 pl-1">
                                         <div className="flex items-center justify-between">
@@ -439,19 +452,6 @@ function AssetPage() {
                                             {formatKrwShort(holding.evaluationAmount)}
                                           </p>
                                         </div>
-                                        {account.accountType === 'DEPOSIT' &&
-                                          (account.interestRate != null ||
-                                            account.maturityDate != null) && (
-                                            <p className="text-caption text-ink-hint">
-                                              {account.interestRate != null &&
-                                                `${account.interestRate}%`}
-                                              {account.interestRate != null &&
-                                                account.maturityDate != null &&
-                                                ' · '}
-                                              {account.maturityDate != null &&
-                                                `만기 ${account.maturityDate}`}
-                                            </p>
-                                          )}
                                       </div>
                                     ))}
                                   </div>

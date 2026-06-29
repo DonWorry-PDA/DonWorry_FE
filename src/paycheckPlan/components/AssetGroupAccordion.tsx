@@ -23,14 +23,27 @@ function CheckMark() {
   )
 }
 
-function CheckBox({ checked }: { checked: boolean }) {
+function MinusMark() {
+  return (
+    <svg width="10" height="2" viewBox="0 0 10 2" fill="none">
+      <path d="M1 1H9" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function CheckBox({ checked, mixed = false }: { checked: boolean; mixed?: boolean }) {
   return (
     <span
       className={`shrink-0 size-6 rounded-[6px] flex items-center justify-center transition-colors ${
-        checked ? 'bg-primary' : 'bg-white border-2 border-line'
+        checked
+          ? 'bg-primary'
+          : mixed
+            ? 'bg-primary border-2 border-primary opacity-50'
+            : 'bg-white border-2 border-line'
       }`}
     >
       {checked && <CheckMark />}
+      {!checked && mixed && <MinusMark />}
     </span>
   )
 }
@@ -39,6 +52,7 @@ function AssetGroupAccordion({ group, checkedIds, onToggleItem, onToggleGroup }:
   const [open, setOpen] = useState(true)
 
   const allChecked = group.items.every((item) => checkedIds.has(item.assetKey))
+  const someChecked = !allChecked && group.items.some((item) => checkedIds.has(item.assetKey))
 
   return (
     <div className="border-b border-divider">
@@ -46,12 +60,12 @@ function AssetGroupAccordion({ group, checkedIds, onToggleItem, onToggleGroup }:
         <button
           type="button"
           role="checkbox"
-          aria-checked={allChecked}
+          aria-checked={allChecked ? true : someChecked ? 'mixed' : false}
           aria-label={group.categoryLabel}
           onClick={() => onToggleGroup(group.category)}
           className="flex items-center gap-3 text-left"
         >
-          <CheckBox checked={allChecked} />
+          <CheckBox checked={allChecked} mixed={someChecked} />
           <span className="text-md font-semibold text-ink">{group.categoryLabel}</span>
         </button>
         <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? '접기' : '펼치기'} className="p-1">
@@ -78,14 +92,16 @@ function AssetGroupAccordion({ group, checkedIds, onToggleItem, onToggleGroup }:
                 role="checkbox"
                 aria-checked={checked}
                 onClick={() => onToggleItem(item.assetKey)}
-                className={`flex items-center gap-3 text-left w-full py-2.5 transition-opacity ${
-                  checked ? 'opacity-100' : 'opacity-40'
-                }`}
+                className="flex items-center gap-3 text-left w-full py-2.5"
               >
                 <CheckBox checked={checked} />
                 <span className="flex flex-col gap-0.5">
-                  <span className="text-body font-medium text-ink">{item.name}</span>
-                  <span className="font-inter text-md font-semibold text-ink">{formatWon(item.amount)}</span>
+                  <span className={`text-body font-medium ${checked ? 'text-ink' : 'text-ink-sub'}`}>
+                    {item.name}
+                  </span>
+                  <span className={`font-inter text-md font-semibold ${checked ? 'text-ink' : 'text-ink-sub'}`}>
+                    {formatWon(item.amount)}
+                  </span>
                 </span>
               </button>
             )
