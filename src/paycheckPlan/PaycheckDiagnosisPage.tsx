@@ -129,7 +129,7 @@ function PaycheckDiagnosisPage() {
   const shortfallLabel = formatShortfall(data.monthlyShortfall)
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-dvh overflow-hidden">
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
       <StepProgress current={2} total={2} />
 
@@ -156,46 +156,36 @@ function PaycheckDiagnosisPage() {
         </div>
 
         {data.shortfallExists ? (
-          <InfoBox tone="danger" className="mb-4">
-            <p className="text-sub text-danger-text mb-1">매달 부족한 돈</p>
-            <p className="font-inter text-display font-bold text-danger">{shortfallLabel}</p>
+          <InfoBox tone="primary" className="mb-6">
+            <p className="text-sub mb-1">매달 부족한 돈</p>
+            <p className="font-inter text-display font-bold mb-3">{shortfallLabel}</p>
+            <div className="border-t border-current/20 pt-3">
+              <p className="text-body font-semibold text-ink mb-0.5">
+                부족한 {shortfallLabel}, 월급으로 만들어드릴까요?
+              </p>
+              <p className="text-sub text-ink-sub">원하실 때 언제든 시작할 수 있어요.</p>
+            </div>
           </InfoBox>
         ) : (
-          <InfoBox tone="success" className="mb-4">
+          <InfoBox tone="primary" className="mb-6">
             <p className="text-sub mb-1">현재 현금흐름으로</p>
-            <p className="font-inter text-display font-bold">생활비가 충당돼요</p>
+            <p className="font-inter text-display font-bold mb-3">생활비가 충당돼요</p>
+            <div className="border-t border-current/20 pt-3">
+              <p className="text-body font-semibold text-ink mb-0.5">
+                더 여유로운 월급 설계안도 볼까요?
+              </p>
+              <p className="text-sub text-ink-sub">맞춤 플랜을 보여드릴게요.</p>
+            </div>
           </InfoBox>
         )}
-
-        <InfoBox className="mb-6">
-          {data.shortfallExists ? (
-            <>
-              <p className="text-body font-semibold text-ink mb-0.5">
-                부족한 {shortfallLabel}, 월급으로 만들어볼까요?
-              </p>
-              <p className="text-sub text-ink-sub">선택은 자유예요. 원하실 때 언제든 만들 수 있어요.</p>
-            </>
-          ) : (
-            <>
-              <p className="text-body font-semibold text-ink mb-0.5">
-                월급 설계안도 한번 살펴볼까요?
-              </p>
-              <p className="text-sub text-ink-sub">더 여유로운 노후를 위한 플랜을 보여드려요.</p>
-            </>
-          )}
-        </InfoBox>
       </div>
 
       <StickyFooter>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/stability')}>
-            아니요,
-            <br />
-            안정도부터
+            안정도 먼저
           </Button>
           <Button onClick={handleGoToPlans}>
-            네,
-            <br />
             설계안 보기
           </Button>
         </div>

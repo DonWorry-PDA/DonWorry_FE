@@ -136,14 +136,46 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   const current = salaryMaking.currentAmount
   const target = salaryMaking.targetAmount
   const shortfall = target - current
+  const activePlanCoverageRate = salaryMaking.hasActivePlan ? salaryMaking.achievementRate : null
+  const coverageRate = activePlanCoverageRate ?? lifeStability.coverageRate ?? 0
 
   return {
     status: gradeToStatus(lifeStability.grade),
-    percentage: Math.round(lifeStability.coverageRate ?? 0),
+    percentage: Math.round(coverageRate),
     currentIncomeKrw: current,
     targetIncomeKrw: target,
     shortfallKrw: shortfall > 0 ? shortfall : null,
+    hasActivePlan: salaryMaking.hasActivePlan,
   }
+}
+
+function HomeStabilityCtaContent({ data }: { data: HomeStabilityData }) {
+  if (data.hasActivePlan) {
+    return (
+      <>
+        <span className="text-md font-bold whitespace-nowrap">내 월급 현황 보기</span>
+        <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
+          <span className="opacity-75">운용 현황</span>
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
+            <path d="M9 18 L15 12 L9 6"/>
+          </svg>
+        </span>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
+      <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
+        <span className="opacity-75">부족한 금액</span>
+        <span className="font-inter tabular-nums font-semibold">{formatKrw(data.shortfallKrw ?? 0)}</span>
+        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
+          <path d="M9 18 L15 12 L9 6"/>
+        </svg>
+      </span>
+    </>
+  )
 }
 
 function HomePage() {
@@ -310,7 +342,7 @@ function HomePage() {
                   </div>
                 </div>
 
-                {stability.shortfallKrw != null && stability.shortfallKrw > 0 && (
+                {(stability.hasActivePlan || (stability.shortfallKrw != null && stability.shortfallKrw > 0)) && (
                   <button
                     onClick={() => navigate('/paycheck-plan/status')}
                     className="animate-cta-enter relative overflow-hidden w-full bg-primary text-white rounded-btn py-[14px] px-5 flex items-center justify-between"
@@ -320,14 +352,7 @@ function HomePage() {
                       className="animate-cta-shimmer pointer-events-none absolute inset-y-0 w-1/2"
                       style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)' }}
                     />
-                    <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
-                    <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
-                      <span className="opacity-75">부족한 금액</span>
-                      <span className="font-inter tabular-nums font-semibold">{formatKrw(stability.shortfallKrw)}</span>
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
-                        <path d="M9 18 L15 12 L9 6"/>
-                      </svg>
-                    </span>
+                    <HomeStabilityCtaContent data={stability} />
                   </button>
                 )}
               </div>

@@ -21,6 +21,8 @@ const usePatchProfile = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(['profile'], data)
       queryClient.invalidateQueries({ queryKey: ['lifeStability'] })
+      queryClient.invalidateQueries({ queryKey: ['assetHub'] })
+      queryClient.invalidateQueries({ queryKey: ['monthly-salary'] })
     },
   })
 }

@@ -12,6 +12,7 @@ const usePostSalaryPlanConfirm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['monthly-salary', 'plan', 'status'] })
       queryClient.invalidateQueries({ queryKey: ['assetHub'] })
+      queryClient.invalidateQueries({ queryKey: ['lifeStability'] })
     },
   })
 }

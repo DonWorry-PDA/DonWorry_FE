@@ -9,6 +9,7 @@ import BottomSheet from '../common/components/BottomSheet'
 import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from './utils/planMapper'
+import useGetAccountCheck from '@/accountOpen/hooks/useGetAccountCheck'
 
 function ArrowUpIcon() {
   return (
@@ -68,6 +69,7 @@ function PaycheckExecutePage() {
   const planId = state?.planId as string | undefined
   const [showAccountSheet, setShowAccountSheet] = useState(false)
   const { data, isLoading } = useGetRecommendation()
+  const { data: accountCheck } = useGetAccountCheck()
 
   if (isLoading) {
     return (
@@ -178,7 +180,17 @@ function PaycheckExecutePage() {
       <StickyFooter>
         <div className="flex flex-col gap-2">
           <button onClick={() => navigate('/home')} className="text-body text-ink-hint text-center py-1">나중에하기</button>
-          <Button onClick={() => setShowAccountSheet(true)}>실행 시작하기</Button>
+          <Button
+            onClick={() => {
+              if (accountCheck && !accountCheck.needsAccount) {
+                navigate('/order/pin', { state: { planId } })
+              } else {
+                setShowAccountSheet(true)
+              }
+            }}
+          >
+            실행 시작하기
+          </Button>
         </div>
       </StickyFooter>
 

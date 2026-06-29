@@ -43,6 +43,28 @@ function BottomSheet({ open, onClose, children }: BottomSheetProps) {
     }
   }, [open])
 
+  // Body scroll lock while open
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
+
+  // Non-passive touchmove to block pull-to-refresh and page scroll while dragging.
+  // React registers onTouchMove as passive, so preventDefault() there is ignored by the browser.
+  useEffect(() => {
+    const el = sheetRef.current
+    if (!el) return
+    const handler = (e: TouchEvent) => {
+      if (isDragging.current) e.preventDefault()
+    }
+    el.addEventListener('touchmove', handler, { passive: false })
+    return () => el.removeEventListener('touchmove', handler)
+  }, [mounted])
+
   const handleTouchStart = (e: React.TouchEvent) => {
     startYRef.current = e.touches[0].clientY
     isDragging.current = true
@@ -84,12 +106,14 @@ function BottomSheet({ open, onClose, children }: BottomSheetProps) {
             : undefined
         }
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
-        onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 드래그 핸들 */}
-        <div className="flex justify-center pb-1 pt-3">
+        {/* 드래그 핸들 — 여기서 시작한 터치만 시트 닫기 드래그로 인식 */}
+        <div
+          className="flex justify-center pb-1 pt-3"
+          onTouchStart={handleTouchStart}
+        >
           <div className="h-1 w-10 rounded-full bg-[#e2e6eb]" />
         </div>
         {children}

@@ -6,6 +6,7 @@ import { type BuyItem } from './components/BuyConfirmModal'
 import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
 import CenterMessage from '../paycheckPlan/components/CenterMessage'
+import usePostMarketOpenReminder from '@/notification/hooks/usePostMarketOpenReminder'
 
 function ArrowUpIcon() {
   return (
@@ -22,6 +23,8 @@ function OrderReviewPage() {
 
   const { data, isLoading } = useGetRecommendation()
   const [confirmed, setConfirmed] = useState(false)
+  const [reminderError, setReminderError] = useState(false)
+  const { mutate: subscribeMarketOpenReminder } = usePostMarketOpenReminder()
 
   if (isLoading) {
     return (
@@ -67,7 +70,11 @@ function OrderReviewPage() {
 
   function handleOrderStart() {
     if (!isMarketOpen()) {
-      navigate('/order/reserved', { state: { itemCount: buyModalItems.length } })
+      setReminderError(false)
+      subscribeMarketOpenReminder(undefined, {
+        onSuccess: () => navigate('/order/reserved'),
+        onError: () => setReminderError(true),
+      })
       return
     }
     const totalAmountWon = buyModalItems.reduce((sum, item) => sum + (item.amountWon ?? 0), 0)
@@ -75,7 +82,7 @@ function OrderReviewPage() {
   }
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-dvh overflow-hidden">
       <AppBar title="주문 검토" onBack={() => navigate(-1)} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
@@ -140,6 +147,9 @@ function OrderReviewPage() {
           <span className="text-body text-ink">위 주문 내용을 확인했어요</span>
         </button>
 
+        {reminderError && (
+          <p className="text-sub text-danger mb-3">알림 등록에 실패했어요. 다시 시도해 주세요.</p>
+        )}
         <Button disabled={!confirmed} onClick={handleOrderStart}>
           주문 실행
         </Button>
