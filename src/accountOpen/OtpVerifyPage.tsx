@@ -1,9 +1,12 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { isAxiosError } from 'axios'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
+import type { ApiResponse } from '../common/types/api'
 import usePostOtpSend from './hooks/usePostOtpSend'
+import usePostOtpVerify from './hooks/usePostOtpVerify'
 
 const STEPS = [
   { step: 1, label: '인증' },
@@ -13,6 +16,18 @@ const STEPS = [
 
 const OTP_LENGTH = 6
 const TIMER_SECONDS = 3 * 60
+const OTP_USER_ERROR_CODES = new Set(['OTP_INVALID', 'OTP_EXPIRED', 'OTP_MAX_ATTEMPTS'])
+
+function getVerifyErrorMessage(error: unknown) {
+  if (isAxiosError<ApiResponse<unknown>>(error)) {
+    const code = error.response?.data?.code
+    if (code && OTP_USER_ERROR_CODES.has(code)) {
+      return '인증번호가 올바르지 않거나 만료되었어요. 다시 확인해주세요.'
+    }
+  }
+
+  return '인증 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.'
+}
 
 function OtpVerifyPage() {
   const navigate = useNavigate()
@@ -28,6 +43,8 @@ function OtpVerifyPage() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { mutate: sendOtp, isPending: isResending, error: resendError } = usePostOtpSend()
+  const { mutate: verifyOtp, isPending: isVerifying, error: verifyError } = usePostOtpVerify()
+  const verifyErrorMessage = verifyError ? getVerifyErrorMessage(verifyError) : null
 
   useEffect(() => {
     if (!phone) navigate('/account-open', { replace: true })
@@ -60,6 +77,14 @@ function OtpVerifyPage() {
   }
 
   const isComplete = otp.length === OTP_LENGTH && seconds > 0
+
+  const handleVerify = () => {
+    if (!isComplete) return
+    verifyOtp(
+      { phone, otp },
+      { onSuccess: () => navigate('/account-open/terms', { state: { phone, returnTo, planId } }) },
+    )
+  }
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -143,6 +168,12 @@ function OtpVerifyPage() {
           )}
 
           {/* 안내 박스 */}
+          {verifyErrorMessage && (
+            <p className="mt-2 text-caption text-danger">
+              {verifyErrorMessage}
+            </p>
+          )}
+
           <div className="mt-5 rounded-card-lg bg-[#f1f5fb] px-4 py-[1.125rem]">
             <p className="text-sub text-ink-sub leading-[1.66]">
               인증번호가 오지 않으면 휴대폰 번호를 확인하거나 '재전송'을 눌러주세요. 유효시간이 지나면 다시 받아야 해요.
@@ -153,8 +184,8 @@ function OtpVerifyPage() {
 
       <StickyFooter>
         <Button
-          disabled={!isComplete}
-          onClick={() => navigate('/account-open/terms', { state: { returnTo, planId } })}
+          disabled={!isComplete || isVerifying}
+          onClick={handleVerify}
         >
           인증 완료
         </Button>
