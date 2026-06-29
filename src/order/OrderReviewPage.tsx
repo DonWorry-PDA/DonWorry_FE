@@ -6,6 +6,7 @@ import { type BuyItem } from './components/BuyConfirmModal'
 import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
 import CenterMessage from '../paycheckPlan/components/CenterMessage'
+import usePostMarketOpenReminder from '@/notification/hooks/usePostMarketOpenReminder'
 
 function ArrowUpIcon() {
   return (
@@ -22,6 +23,7 @@ function OrderReviewPage() {
 
   const { data, isLoading } = useGetRecommendation()
   const [confirmed, setConfirmed] = useState(false)
+  const { mutate: subscribeMarketOpenReminder } = usePostMarketOpenReminder()
 
   if (isLoading) {
     return (
@@ -67,7 +69,8 @@ function OrderReviewPage() {
 
   function handleOrderStart() {
     if (!isMarketOpen()) {
-      navigate('/order/reserved', { state: { itemCount: buyModalItems.length } })
+      subscribeMarketOpenReminder()
+      navigate('/order/reserved')
       return
     }
     const totalAmountWon = buyModalItems.reduce((sum, item) => sum + (item.amountWon ?? 0), 0)
