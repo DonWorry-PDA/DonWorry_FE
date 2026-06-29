@@ -18,7 +18,7 @@ function NotFoundPage() {
           <Button onClick={() => navigate('/home', { replace: true })}>
             홈으로 이동
           </Button>
-          <Button variant="outline" onClick={() => navigate(-1)}>
+          <Button variant="outline" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/home', { replace: true })}>
             이전 페이지로
           </Button>
         </div>
