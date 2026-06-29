@@ -19,6 +19,8 @@ const useEtfPriceWebSocket = (ticker: string | undefined) => {
     let mounted = true
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
+    setPrice(null)
+
     const connect = () => {
       if (!mounted) return
 

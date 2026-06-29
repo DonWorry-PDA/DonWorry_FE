@@ -15,22 +15,17 @@ const useRealtimeAssetHub = () => {
   const tickers = hub?.etfHoldings.map((h) => h.ticker) ?? []
   const { priceMap, isLive } = useEtfPriceMap(tickers)
 
-  const hasSomePrices = tickers.length > 0 && Object.keys(priceMap).length > 0
+  const allPricesReceived =
+    tickers.length > 0 && tickers.every((t) => t in priceMap)
 
   let realtimeTotalAsset = hub?.totalAsset
   let realtimeAllocation: AssetHubAllocationItem[] | undefined = hub?.allocation
 
-  if (hub && hasSomePrices) {
-    const totalQuantity = hub.etfHoldings.reduce((s, h) => s + h.quantity, 0)
-    const realtimeEtfAmount = hub.etfHoldings.reduce((sum, h) => {
-      if (h.ticker in priceMap) {
-        return sum + h.quantity * priceMap[h.ticker]
-      }
-      // 아직 실시간 가격이 없는 ticker는 수량 비율로 스냅샷 분배
-      const snapshotShare =
-        totalQuantity > 0 ? (h.quantity / totalQuantity) * hub.etfSnapshotAmount : 0
-      return sum + snapshotShare
-    }, 0)
+  if (hub && allPricesReceived) {
+    const realtimeEtfAmount = hub.etfHoldings.reduce(
+      (sum, h) => sum + h.quantity * priceMap[h.ticker],
+      0,
+    )
     const nonEtfAmount = hub.totalAsset - hub.etfSnapshotAmount
     const newTotal = nonEtfAmount + realtimeEtfAmount
 
