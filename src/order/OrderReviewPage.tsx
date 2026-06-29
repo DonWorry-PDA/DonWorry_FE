@@ -81,8 +81,6 @@ function OrderReviewPage() {
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-6">이렇게 주문할게요</h2>
 
-        {/* 살 자산 */}
-        <p className="text-sub text-ink-hint mb-3">살 자산</p>
         <div className="flex flex-col gap-4">
           {buyItems.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
