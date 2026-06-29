@@ -398,33 +398,32 @@ function AssetPage() {
                                 const accountTotal = account.balance + holdingsSum
                                 return (
                                   <div key={account.accountId} className="flex flex-col gap-1">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <div className="flex items-center gap-1.5 min-w-0">
                                         <p className="text-sub text-ink-sub font-semibold">
                                           {account.institutionName}
                                         </p>
                                         <span className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5">
                                           {accountTypeLabel(account.accountType)}
                                         </span>
+                                        {account.accountType === 'DEPOSIT' &&
+                                          account.interestRate != null && (
+                                            <span className="text-caption font-semibold text-primary bg-primary-tint rounded-badge px-1.5 py-0.5">
+                                              {account.interestRate}%
+                                            </span>
+                                          )}
                                       </div>
                                       {accountTotal > 0 && (
-                                        <p className="font-inter text-sub text-ink font-semibold">
+                                        <p className="font-inter text-sub text-ink font-semibold shrink-0">
                                           {formatKrwShort(accountTotal)}
                                         </p>
                                       )}
                                     </div>
 
                                     {account.accountType === 'DEPOSIT' &&
-                                      (account.interestRate != null ||
-                                        account.maturityDate != null) && (
-                                        <p className="text-caption text-ink-hint pl-1">
-                                          {account.interestRate != null &&
-                                            `${account.interestRate}%`}
-                                          {account.interestRate != null &&
-                                            account.maturityDate != null &&
-                                            ' · '}
-                                          {account.maturityDate != null &&
-                                            `만기 ${account.maturityDate.replace(/-/g, '.')}`}
+                                      account.maturityDate != null && (
+                                        <p className="text-caption text-ink-hint pl-1 mt-0.5">
+                                          만기 {account.maturityDate.slice(0, 7).replace('-', '.')}
                                         </p>
                                       )}
 
@@ -439,21 +438,22 @@ function AssetPage() {
                                       </div>
                                     )}
 
-                                    {account.holdings.map((holding) => (
-                                      <div
-                                        key={`${account.accountId}-${holding.productName}`}
-                                        className="flex flex-col gap-0.5 py-0.5 pl-1"
-                                      >
-                                        <div className="flex items-center justify-between">
-                                          <p className="text-sub text-ink-sub mr-3 truncate">
-                                            {holding.productName}
-                                          </p>
-                                          <p className="font-inter text-sub text-ink-hint shrink-0">
-                                            {formatKrwShort(holding.evaluationAmount)}
-                                          </p>
+                                    {account.accountType !== 'DEPOSIT' &&
+                                      account.holdings.map((holding) => (
+                                        <div
+                                          key={`${account.accountId}-${holding.productName}`}
+                                          className="flex flex-col gap-0.5 py-0.5 pl-1"
+                                        >
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sub text-ink-sub mr-3 truncate">
+                                              {holding.productName}
+                                            </p>
+                                            <p className="font-inter text-sub text-ink-hint shrink-0">
+                                              {formatKrwShort(holding.evaluationAmount)}
+                                            </p>
+                                          </div>
                                         </div>
-                                      </div>
-                                    ))}
+                                      ))}
                                   </div>
                                 )
                               })}
