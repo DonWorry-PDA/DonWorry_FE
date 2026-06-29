@@ -91,7 +91,7 @@ function ShinhanCertPage() {
 
         </div>
         {verifyError && (
-          <p className="mt-4 text-caption text-danger">
+          <p className="mt-4 text-caption text-danger" role="alert">
             신한인증서 인증 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.
           </p>
         )}
