@@ -63,7 +63,7 @@ function OrderProductPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="상품 설명" onBack={() => navigate(-1)} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-body text-ink-hint">불러오는 중...</p>
@@ -74,7 +74,7 @@ function OrderProductPage() {
 
   if (!data) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="상품 설명" onBack={() => navigate(-1)} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-body text-ink-hint">상품 정보를 불러올 수 없어요.</p>
@@ -96,10 +96,10 @@ function OrderProductPage() {
   const riskInfo = etf ? (RISK_LABEL[etf.riskGrade] ?? { label: `${etf.riskGrade}등급`, tone: 'text-ink-sub' }) : null
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="상품 설명" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-1">
           사기 전에
           <br />
@@ -257,7 +257,8 @@ function OrderProductPage() {
         )}
       </div>
 
-      <div className="px-5 pb-4 shrink-0">
+      <div className="relative px-5 pb-4 shrink-0">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <Button onClick={() => navigate(-1)}>이해했어요</Button>
       </div>
     </div>

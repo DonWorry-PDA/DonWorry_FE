@@ -122,7 +122,7 @@ function OrderTransferPage() {
 
   if (isTransferring) {
     return (
-      <div className="flex flex-col h-full bg-white items-center justify-center px-8 gap-5">
+      <div className="flex flex-col h-dvh bg-white items-center justify-center px-8 gap-5">
         <svg className="animate-spin text-primary" width="48" height="48" viewBox="0 0 48 48" fill="none">
           <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="4" strokeOpacity="0.15" />
           <path d="M44 24a20 20 0 0 0-20-20" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
@@ -137,7 +137,7 @@ function OrderTransferPage() {
 
   if (isComplete) {
     return (
-      <div className="flex flex-col h-full bg-white items-center justify-center px-8 gap-5">
+      <div className="flex flex-col h-dvh bg-white items-center justify-center px-8 gap-5">
         <div className="size-16 rounded-full bg-success flex items-center justify-center">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <path d="M6 16.5L13 23.5L26 10" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -153,7 +153,7 @@ function OrderTransferPage() {
 
   if (transfer.isError) {
     return (
-      <div className="flex flex-col h-full bg-white">
+      <div className="flex flex-col h-dvh bg-white">
         <AppBar title="이체" onBack={() => navigate(-1)} />
         <div className="flex-1 flex flex-col items-center justify-center px-8 gap-5">
           <div className="size-16 rounded-full bg-danger-bg flex items-center justify-center">
@@ -166,7 +166,8 @@ function OrderTransferPage() {
             <p className="text-body text-ink-sub">잠시 후 다시 시도해주세요</p>
           </div>
         </div>
-        <div className="px-5 pb-4 shrink-0">
+        <div className="relative px-5 pb-4 shrink-0">
+          <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
           <Button onClick={() => { transfer.reset(); handleProceed() }}>다시 시도</Button>
         </div>
       </div>
@@ -174,10 +175,10 @@ function OrderTransferPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-dvh bg-white">
       <AppBar title="이체" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-1">
           {isEnough ? '잔고를 확인해요' : '이체가 필요해요'}
         </h2>
@@ -312,7 +313,8 @@ function OrderTransferPage() {
         )}
       </div>
 
-      <div className="px-5 pb-4 shrink-0">
+      <div className="relative px-5 pb-4 shrink-0">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <Button
           disabled={!canTransfer || transfer.isPending}
           onClick={handleProceed}

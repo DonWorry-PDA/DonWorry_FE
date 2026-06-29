@@ -78,7 +78,7 @@ function OrderReviewPage() {
     <div className="flex flex-col h-dvh">
       <AppBar title="주문 검토" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-6">이렇게 주문할게요</h2>
 
         {/* 살 자산 */}
@@ -101,7 +101,8 @@ function OrderReviewPage() {
         </div>
       </div>
 
-      <div className="shrink-0 px-6 pb-6 pt-3 border-t border-line">
+      <div className="relative shrink-0 px-6 pb-6 pt-3">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         {/* 합계 */}
         <div className="border border-line rounded-card px-4 py-3 flex flex-col gap-2.5 mb-2">
           <div className="flex justify-between items-center">

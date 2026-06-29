@@ -14,10 +14,10 @@ function OrderModifyPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="주문 정정·취소" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-1">
           주문을 바꾸거나
           <br />
@@ -74,7 +74,8 @@ function OrderModifyPage() {
         </div>
       </div>
 
-      <div className="px-6 pb-4 shrink-0">
+      <div className="relative px-6 pb-4 shrink-0">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button className="w-full text-body text-primary font-semibold text-center py-2">
           상담원과 함께 처리하기
         </button>

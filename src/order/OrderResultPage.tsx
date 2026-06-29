@@ -47,10 +47,10 @@ function OrderResultPage() {
   const doneCount = items.filter((i) => i.status === 'done').length
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="실행 결과" onBack={() => navigate('/home')} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
         {/* 부분 실패 경고 */}
         {failedCount > 0 && (
           <div className="rounded-btn bg-warning-bg border border-warning/20 px-4 py-3 flex gap-2 mb-5">
@@ -142,7 +142,8 @@ function OrderResultPage() {
 
       </div>
 
-      <div className="px-5 pb-4 shrink-0">
+      <div className="relative px-5 pb-4 shrink-0">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <Button onClick={() => navigate('/home')}>홈으로</Button>
       </div>
     </div>
