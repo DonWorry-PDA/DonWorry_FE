@@ -76,10 +76,8 @@ function AssetPage() {
       })
 
       const totalAmount = accounts.reduce((sum, acc) => {
-        if (acc.holdings.length > 0) {
-          return sum + acc.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
-        }
-        return sum + acc.balance
+        const holdingsSum = acc.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
+        return sum + acc.balance + holdingsSum
       }, 0)
 
       return { ...group, accounts, totalAmount }
@@ -372,46 +370,98 @@ function AssetPage() {
                             </div>
                           </button>
 
-                          {/* 계좌별 상세 — 토글 시 표시 */}
+                          {/* 계좌별 상세 — 기관별 묶음으로 표시 */}
                           {isExpanded && (
                             <div
                               id={`group-detail-${seg.category}`}
                               className="ml-[21px] flex flex-col gap-1 pb-3"
                             >
-                              {seg.accounts.map((account) => (
-                                <div key={account.accountId} className="flex flex-col gap-1">
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5">
-                                      <p className="text-sub text-ink-sub font-semibold">
-                                        {account.institutionName}
-                                      </p>
-                                      <span className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5">
-                                        {accountTypeLabel(account.accountType)}
-                                      </span>
+                              {Object.entries(
+                                seg.accounts.reduce<Record<string, typeof seg.accounts>>(
+                                  (acc, account) => {
+                                    ;(acc[account.institutionName] ??= []).push(account)
+                                    return acc
+                                  },
+                                  {}
+                                )
+                              ).map(([institutionName, accounts]) => {
+                                const institutionTotal = accounts.reduce((sum, account) => {
+                                  const holdingsSum = account.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
+                                  return sum + account.balance + holdingsSum
+                                }, 0)
+                                const allHoldings = accounts.flatMap((account) =>
+                                  account.holdings.map((holding) => ({ holding, account }))
+                                )
+                                return (
+                                  <div key={institutionName} className="flex flex-col gap-1">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-1.5">
+                                        <p className="text-sub text-ink-sub font-semibold">
+                                          {institutionName}
+                                        </p>
+                                        {[...new Set(accounts.map((a) => accountTypeLabel(a.accountType)))].map((label) => (
+                                          <span
+                                            key={label}
+                                            className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5"
+                                          >
+                                            {label}
+                                          </span>
+                                        ))}
+                                      </div>
+                                      {institutionTotal > 0 && (
+                                        <p className="font-inter text-sub text-ink font-semibold">
+                                          {formatKrwShort(institutionTotal)}
+                                        </p>
+                                      )}
                                     </div>
-                                    {account.balance > 0 && account.holdings.length === 0 && (
-                                      <p className="font-inter text-sub text-ink font-semibold">
-                                        {formatKrwShort(account.balance)}
-                                      </p>
-                                    )}
-                                  </div>
 
-                                  {/* 보유 종목/상품 */}
-                                  {account.holdings.map((holding) => (
-                                    <div
-                                      key={holding.productName}
-                                      className="flex items-center justify-between py-0.5 pl-1"
-                                    >
-                                      <p className="text-sub text-ink-hint mr-3 truncate">
-                                        {holding.productName}
-                                      </p>
-                                      <p className="font-inter text-sub text-ink-sub shrink-0">
-                                        {formatKrwShort(holding.evaluationAmount)}
-                                      </p>
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
+                                    {accounts.map((account) =>
+                                      account.balance > 0 && account.holdings.length > 0 ? (
+                                        <div
+                                          key={`${account.accountId}-balance`}
+                                          className="flex flex-col gap-0.5 py-0.5 pl-1"
+                                        >
+                                          <div className="flex items-center justify-between">
+                                            <p className="text-sub text-ink-sub mr-3 truncate">예수금</p>
+                                            <p className="font-inter text-sub text-ink-hint shrink-0">
+                                              {formatKrwShort(account.balance)}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      ) : null
+                                    )}
+
+                                    {allHoldings.map(({ holding, account }) => (
+                                      <div
+                                        key={`${account.accountId}-${holding.productName}`}
+                                        className="flex flex-col gap-0.5 py-0.5 pl-1"
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-sub text-ink-sub mr-3 truncate">
+                                            {holding.productName}
+                                          </p>
+                                          <p className="font-inter text-sub text-ink-hint shrink-0">
+                                            {formatKrwShort(holding.evaluationAmount)}
+                                          </p>
+                                        </div>
+                                        {account.accountType === 'DEPOSIT' &&
+                                          (account.interestRate != null ||
+                                            account.maturityDate != null) && (
+                                            <p className="text-caption text-ink-hint">
+                                              {account.interestRate != null &&
+                                                `${account.interestRate}%`}
+                                              {account.interestRate != null &&
+                                                account.maturityDate != null &&
+                                                ' · '}
+                                              {account.maturityDate != null &&
+                                                `만기 ${account.maturityDate}`}
+                                            </p>
+                                          )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )
+                              })}
                             </div>
                           )}
                         </div>
@@ -469,7 +519,7 @@ function AssetPage() {
 
           {/* ── 섹션 레이블 ── */}
           <div className="px-1">
-            <p className="text-sub text-ink-sub font-semibold">내 자산이 만드는 월 수입</p>
+            <h2 className="text-body font-bold text-ink">내 자산이 만드는 월 수입</h2>
           </div>
 
           {/* ── 월 수입 카드 ── */}
@@ -533,8 +583,11 @@ function AssetPage() {
                           <p className="text-body text-ink-sub">{source.label}</p>
                           {source.locked && (
                             <span
-                              className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5"
+                              className="text-caption text-ink-hint bg-surface rounded-badge px-[6px] py-0.5 cursor-help"
                               title="연금·장기 상품으로 현재 인출이 제한된 자산이에요"
+                              tabIndex={0}
+                              role="note"
+                              aria-label="비유동 — 연금·장기 상품으로 현재 인출이 제한된 자산이에요"
                             >
                               비유동
                             </span>
