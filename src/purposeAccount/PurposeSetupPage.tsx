@@ -4,8 +4,6 @@ import Button from '@/common/components/Button'
 import StickyFooter from '@/common/components/StickyFooter'
 import { AccountType, ACCOUNT_META } from './types/purposeAccount'
 
-const DEFAULT_SELECTED: AccountType[] = ['medical', 'emergency']
-
 const GUIDE_COPY: Record<AccountType, { summary: string }> = {
   medical: {
     summary: '병원비처럼 갑자기 필요한 돈',
@@ -43,7 +41,32 @@ type LocationState = {
 export default function PurposeSetupPage() {
   const navigate = useNavigate()
   const { state } = useLocation() as { state: LocationState | null }
-  const selected = state?.selected?.length ? state.selected : DEFAULT_SELECTED
+  const selected = state?.selected ?? []
+
+  if (selected.length === 0) {
+    return (
+      <div className="flex h-dvh flex-col bg-white">
+        <AppBar title="상담 연결" onBack={() => navigate(-1)} />
+
+        <div className="flex flex-1 flex-col justify-center px-6">
+          <h1 className="text-heading font-bold leading-snug text-ink">
+            먼저 목적을
+            <br />
+            골라주세요
+          </h1>
+          <p className="mt-2 text-body text-ink-sub">
+            관심 있는 목적을 선택하면 상담에서 볼 내용을 정리해드릴게요.
+          </p>
+        </div>
+
+        <StickyFooter>
+          <Button onClick={() => navigate('/purpose-account/select')}>
+            목적 고르기
+          </Button>
+        </StickyFooter>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-dvh flex-col bg-white">

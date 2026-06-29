@@ -33,6 +33,7 @@ function nextWeekday(): Date {
 type LocationState = {
   context?: ConsultContext
   planId?: string | number | null
+  purposeAccountTypes?: string[]
   branch?: Branch
 }
 

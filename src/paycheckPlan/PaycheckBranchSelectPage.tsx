@@ -54,7 +54,11 @@ const BRANCHES: Branch[] = [
   },
 ]
 
-type LocationState = { context?: ConsultContext; planId?: string | number | null }
+type LocationState = {
+  context?: ConsultContext
+  planId?: string | number | null
+  purposeAccountTypes?: string[]
+}
 
 function PaycheckBranchSelectPage() {
   const navigate = useNavigate()

@@ -202,6 +202,9 @@ function HomePage() {
   const navigate = useNavigate()
   const { hub, realtimeTotalAsset, realtimeAllocation, isLoading, refetch } = useRealtimeAssetHub()
   const { data: unreadCount = 0 } = useGetNotificationUnreadCount()
+  const allMenus = hub ? buildMenus(hub) : []
+  const visibleSolCards = SOL_CARDS.filter((card) => allMenus.some((menu) => menu.key === card.key))
+  const visibleSolCardCount = visibleSolCards.length
 
   // 동시에 보이는 카드 수 = 2이므로 양쪽에 2장씩 클론
   // 배열: [...last2, c0, c1, c2, c3, ...first2]  시작 인덱스=2
@@ -210,11 +213,10 @@ function HomePage() {
   const [solTransition, setSolTransition] = useState(true)
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const isPausedRef = useRef(false)
-  const solCardCountRef = useRef(0)
   const touchStartXRef = useRef(0)
 
   useEffect(() => {
-    const count = solCardCountRef.current
+    const count = visibleSolCardCount
     if (!count) return
     if (solIndex >= SOL_CLONE + count) {
       const t = setTimeout(() => {
@@ -232,7 +234,7 @@ function HomePage() {
       }, 1100)
       return () => clearTimeout(t)
     }
-  }, [solIndex])
+  }, [solIndex, visibleSolCardCount])
 
   useEffect(() => {
     autoPlayRef.current = setInterval(() => {
@@ -257,7 +259,6 @@ function HomePage() {
       ? toAssetData(hub, realtimeTotalAsset, realtimeAllocation)
       : null
   const stability = hub ? toStabilityData(hub) : null
-  const allMenus = hub ? buildMenus(hub) : []
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -458,11 +459,9 @@ function HomePage() {
 
             {/* 마이 SOL */}
             {(() => {
-              const visibleCards = SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key))
-              solCardCountRef.current = visibleCards.length
-              const prefix = visibleCards.slice(-SOL_CLONE)
-              const suffix = visibleCards.slice(0, SOL_CLONE)
-              const extended = visibleCards.length > 0 ? [...prefix, ...visibleCards, ...suffix] : []
+              const prefix = visibleSolCards.slice(-SOL_CLONE)
+              const suffix = visibleSolCards.slice(0, SOL_CLONE)
+              const extended = visibleSolCardCount > 0 ? [...prefix, ...visibleSolCards, ...suffix] : []
               return (
                 <section className="mt-1">
                   <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
