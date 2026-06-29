@@ -61,6 +61,13 @@ const PATHS: Record<ManageMenuKey, React.ReactNode> = {
       <path d="M8.5 13h7M8.5 16.5h5" />
     </>
   ),
+  purposeAccount: (
+    <>
+      <path d="M5 7.5h14v10.5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7.5z" />
+      <path d="M8 7.5V5.8A1.8 1.8 0 0 1 9.8 4h4.4A1.8 1.8 0 0 1 16 5.8v1.7" />
+      <path d="M8.5 12h7M8.5 15.5h4" />
+    </>
+  ),
 }
 
 function MenuIcon({ menuKey, tone }: { menuKey: ManageMenuKey; tone: MenuIconTone }) {

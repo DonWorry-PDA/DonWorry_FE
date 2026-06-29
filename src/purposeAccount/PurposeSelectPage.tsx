@@ -65,11 +65,13 @@ export default function PurposeSelectPage() {
 
       <div className="flex-1 overflow-y-auto px-6 pt-4 pb-4">
         <h1 className="text-heading font-bold text-ink">
-          어떤 목적으로
+          어떤 돈을
           <br />
-          모을까요?
+          따로 구분해볼까요?
         </h1>
-        <p className="text-body text-ink-sub mt-2">여러 개 골라도 돼요. 나중에 더 만들 수 있어요.</p>
+        <p className="text-body text-ink-sub mt-2">
+          상담 전에 관심 있는 목적을 골라두면 안내를 더 쉽게 받을 수 있어요.
+        </p>
 
         <div className="grid grid-cols-2 gap-3 mt-6">
           {CATEGORY_ORDER.map((type) => {
@@ -109,7 +111,7 @@ export default function PurposeSelectPage() {
           onClick={() => navigate('/purpose-account/setup', { state: { selected: [...selected] } })}
           className="w-full bg-primary text-white rounded-btn text-btn font-bold py-4 disabled:opacity-40"
         >
-          {count > 0 ? `${count}개 선택 · 다음` : '선택해 주세요'}
+          {count > 0 ? `${count}개 선택 · 상담 안내 보기` : '선택해 주세요'}
         </button>
       </div>
     </div>

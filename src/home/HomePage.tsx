@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom'
+import { useRef, useEffect, useState } from 'react'
 import { formatWon, formatKrw } from '@/common/utils/formatKrw'
 import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
-import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc } from '../common/assets/icons'
+import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc, PurposeAccountIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
 import useRealtimeAssetHub from '@/asset/hooks/useRealtimeAssetHub'
 import useGetNotificationUnreadCount from '@/notification/hooks/useGetNotificationUnreadCount'
@@ -43,6 +44,12 @@ const SOL_CARDS = [
     path: '/retirement-simulation',
     icon: <RetirementSimIc width={44} height={44} />,
   },
+  {
+    key: 'purposeAccount' as const,
+    title: '목적별 통장',
+    path: '/purpose-account',
+    icon: <PurposeAccountIc width={44} height={44} />,
+  },
 ]
 
 const gradeToStatus = (grade: LifeStabilityGrade): StabilityStatus => {
@@ -80,6 +87,13 @@ const MENU_BASE: ManageMenu[] = [
     caption: '조건을 바꿔\n미리 볼 수 있어요',
     path: '/retirement-simulation',
     iconTone: 'mint',
+  },
+  {
+    key: 'purposeAccount',
+    title: '목적별 통장',
+    caption: '목표별로 자동\n모으고 나눠요',
+    path: '/purpose-account',
+    iconTone: 'blue',
   },
 ]
 
@@ -188,6 +202,55 @@ function HomePage() {
   const navigate = useNavigate()
   const { hub, realtimeTotalAsset, realtimeAllocation, isLoading, refetch } = useRealtimeAssetHub()
   const { data: unreadCount = 0 } = useGetNotificationUnreadCount()
+
+  // 동시에 보이는 카드 수 = 2이므로 양쪽에 2장씩 클론
+  // 배열: [...last2, c0, c1, c2, c3, ...first2]  시작 인덱스=2
+  const SOL_CLONE = 2
+  const [solIndex, setSolIndex] = useState(SOL_CLONE)
+  const [solTransition, setSolTransition] = useState(true)
+  const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const isPausedRef = useRef(false)
+  const solCardCountRef = useRef(0)
+  const touchStartXRef = useRef(0)
+
+  useEffect(() => {
+    const count = solCardCountRef.current
+    if (!count) return
+    if (solIndex >= SOL_CLONE + count) {
+      const t = setTimeout(() => {
+        setSolTransition(false)
+        setSolIndex(prev => prev - count)
+        requestAnimationFrame(() => requestAnimationFrame(() => setSolTransition(true)))
+      }, 1100)
+      return () => clearTimeout(t)
+    }
+    if (solIndex < SOL_CLONE) {
+      const t = setTimeout(() => {
+        setSolTransition(false)
+        setSolIndex(prev => prev + count)
+        requestAnimationFrame(() => requestAnimationFrame(() => setSolTransition(true)))
+      }, 1100)
+      return () => clearTimeout(t)
+    }
+  }, [solIndex])
+
+  useEffect(() => {
+    autoPlayRef.current = setInterval(() => {
+      if (isPausedRef.current) return
+      setSolIndex(prev => prev + 1)
+    }, 3000)
+    return () => { if (autoPlayRef.current) clearInterval(autoPlayRef.current) }
+  }, [])
+
+  const handleSolTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX
+    isPausedRef.current = true
+  }
+  const handleSolTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStartXRef.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 40) setSolIndex(prev => diff > 0 ? prev + 1 : prev - 1)
+    setTimeout(() => { isPausedRef.current = false }, 3000)
+  }
 
   const asset =
     hub && realtimeTotalAsset != null && realtimeAllocation != null
@@ -394,36 +457,57 @@ function HomePage() {
             )}
 
             {/* 마이 SOL */}
-            <section className="mt-1">
-              <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
-              <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory min-[475px]:grid min-[475px]:grid-cols-3 min-[475px]:gap-2 min-[475px]:overflow-visible">
-                {SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key)).map(card => {
-                  const caption = allMenus.find(m => m.key === card.key)?.caption
-                  return (
-                    <div key={card.key} className="w-36 shrink-0 snap-start relative aspect-square min-[475px]:w-auto">
-                      <button
-                        onClick={() => navigate(card.path)}
-                        className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
-                      >
-                        <div className="flex flex-col gap-1">
-                          <p className="text-md font-bold text-ink leading-snug break-keep">
-                            {card.title}
-                          </p>
-                          {caption && (
-                            <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
-                              {caption}
-                            </p>
-                          )}
-                        </div>
-                        <div className="self-end">
-                          {card.icon}
-                        </div>
-                      </button>
+            {(() => {
+              const visibleCards = SOL_CARDS.filter(c => allMenus.some(m => m.key === c.key))
+              solCardCountRef.current = visibleCards.length
+              const prefix = visibleCards.slice(-SOL_CLONE)
+              const suffix = visibleCards.slice(0, SOL_CLONE)
+              const extended = visibleCards.length > 0 ? [...prefix, ...visibleCards, ...suffix] : []
+              return (
+                <section className="mt-1">
+                  <p className="text-heading font-bold text-ink mb-5">마이 SOL</p>
+                  <div
+                    className="overflow-hidden"
+                    onTouchStart={handleSolTouchStart}
+                    onTouchEnd={handleSolTouchEnd}
+                  >
+                    <div
+                      className="flex gap-3"
+                      style={{
+                        transform: `translateX(calc(-${solIndex} * (9rem + 0.75rem)))`,
+                        transition: solTransition ? 'transform 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none',
+                      }}
+                    >
+                      {extended.map((card, i) => {
+                        const caption = allMenus.find(m => m.key === card.key)?.caption
+                        return (
+                          <div key={`${card.key}-${i}`} className="w-36 shrink-0 relative aspect-square">
+                            <button
+                              onClick={() => navigate(card.path)}
+                              className="absolute inset-0 bg-surface rounded-card-lg flex flex-col justify-between p-[14px] text-left"
+                            >
+                              <div className="flex flex-col gap-1">
+                                <p className="text-md font-bold text-ink leading-snug break-keep">
+                                  {card.title}
+                                </p>
+                                {caption && (
+                                  <p className="text-caption text-ink-hint leading-snug whitespace-pre-line">
+                                    {caption}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="self-end">
+                                {card.icon}
+                              </div>
+                            </button>
+                          </div>
+                        )
+                      })}
                     </div>
-                  )
-                })}
-              </div>
-            </section>
+                  </div>
+                </section>
+              )
+            })()}
           </div>
         )}
       </main>
