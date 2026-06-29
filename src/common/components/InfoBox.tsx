@@ -1,4 +1,4 @@
-type InfoBoxTone = 'muted' | 'success' | 'warning' | 'danger'
+type InfoBoxTone = 'muted' | 'primary' | 'success' | 'warning' | 'danger'
 
 type InfoBoxProps = {
   tone?: InfoBoxTone
@@ -9,6 +9,7 @@ type InfoBoxProps = {
 
 const toneStyles: Record<InfoBoxTone, string> = {
   muted: 'bg-surface-muted text-ink-sub',
+  primary: 'bg-primary-tint text-primary-dark',
   success: 'bg-success-bg text-success',
   warning: 'bg-warning-bg text-warning-text',
   danger: 'bg-danger-bg text-danger-text',
