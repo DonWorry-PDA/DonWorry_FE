@@ -106,12 +106,14 @@ function BottomSheet({ open, onClose, children }: BottomSheetProps) {
             : undefined
         }
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
-        onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 드래그 핸들 */}
-        <div className="flex justify-center pb-1 pt-3">
+        {/* 드래그 핸들 — 여기서 시작한 터치만 시트 닫기 드래그로 인식 */}
+        <div
+          className="flex justify-center pb-1 pt-3"
+          onTouchStart={handleTouchStart}
+        >
           <div className="h-1 w-10 rounded-full bg-[#e2e6eb]" />
         </div>
         {children}
