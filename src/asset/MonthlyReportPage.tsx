@@ -45,7 +45,7 @@ function MonthlyReportPage() {
           <button
             aria-label="이전 달"
             onClick={() => setMonth(prevMonth(month))}
-            className="text-ink-sub text-md px-2"
+            className="text-ink-sub text-heading px-2 leading-none"
           >
             ‹
           </button>
@@ -54,7 +54,7 @@ function MonthlyReportPage() {
             aria-label="다음 달"
             onClick={() => setMonth(nextMonth(month))}
             disabled={isCurrentMonth}
-            className="text-md px-2 disabled:text-disabled"
+            className="text-heading px-2 leading-none disabled:text-disabled"
           >
             ›
           </button>
