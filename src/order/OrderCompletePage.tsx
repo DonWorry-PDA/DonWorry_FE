@@ -22,7 +22,13 @@ function OrderCompletePage() {
   useEffect(() => {
     if (confirmedRef.current || !data || !plan) return
     confirmedRef.current = true
-    confirmPlan(buildSalaryPlanConfirm(data, plan))
+    confirmPlan(buildSalaryPlanConfirm(data, plan), {
+      // 일시 장애로 실패하면 플래그를 되돌려 같은 mount 안에서 재시도가 가능하게 한다.
+      // (이 페이지가 확정을 수행하는 유일한 지점이라, 한 번 놓치면 기이용자 전환이 누락된다.)
+      onError: () => {
+        confirmedRef.current = false
+      },
+    })
   }, [data, plan, confirmPlan])
 
   const summaryUnavailable = isLoading || isError || !planId || (data && !plan)
