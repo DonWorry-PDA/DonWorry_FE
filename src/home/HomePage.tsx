@@ -136,7 +136,8 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   const current = salaryMaking.currentAmount
   const target = salaryMaking.targetAmount
   const shortfall = target - current
-  const coverageRate = salaryMaking.achievementRate ?? lifeStability.coverageRate ?? 0
+  const activePlanCoverageRate = salaryMaking.hasActivePlan ? salaryMaking.achievementRate : null
+  const coverageRate = activePlanCoverageRate ?? lifeStability.coverageRate ?? 0
 
   return {
     status: gradeToStatus(lifeStability.grade),
