@@ -607,7 +607,7 @@ function AssetPage() {
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <div className="flex items-start gap-2">
-                        <p className="text-md text-ink flex-1 font-semibold">{event.label}</p>
+                        <p className="text-md text-ink min-w-0 flex-1 font-semibold">{event.label}</p>
                         {event.estimated && (
                           <span className="text-caption text-ink-hint bg-surface rounded-badge mt-0.5 shrink-0 px-[6px] py-0.5">
                             예정
