@@ -10,7 +10,22 @@ export default function PurposeDetailPage() {
   const { accountType } = useParams<{ accountType: string }>()
 
   const account = MOCK_ACCOUNTS.find((a) => a.type === accountType)
-  if (!account) return null
+  if (!account) {
+    return (
+      <div className="flex flex-col h-dvh bg-white">
+        <AppBar title="목적별 통장" onBack={() => navigate('/purpose-account/dashboard')} />
+        <div className="flex-1 flex flex-col items-center justify-center px-6 gap-4">
+          <p className="text-body text-ink-sub text-center">통장 정보를 찾을 수 없어요.</p>
+          <button
+            onClick={() => navigate('/purpose-account/dashboard')}
+            className="text-body font-semibold text-primary"
+          >
+            목록으로 돌아가기
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const meta = ACCOUNT_META[account.type as AccountType]
   const pct = Math.round((account.current / account.goal) * 100)

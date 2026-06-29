@@ -122,10 +122,10 @@ export default function PurposeDistributionPage() {
 
       <div className="shrink-0 bg-white px-6 pb-10 pt-3 border-t border-divider">
         <button
-          onClick={() => navigate('/purpose-account/dashboard')}
+          onClick={() => navigate('/purpose-account/dashboard', { state: { autoDistribute } })}
           className="w-full bg-primary text-white rounded-btn text-btn font-bold py-4"
         >
-          자동 배분 켜기
+          {autoDistribute ? '자동 배분 켜기' : '설정 완료'}
         </button>
       </div>
     </div>

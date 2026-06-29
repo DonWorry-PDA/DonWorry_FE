@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '@/common/components/AppBar'
 import { AccountType, ACCOUNT_META } from './types/purposeAccount'
+import { TOTAL_DISTRIBUTION } from './mock/purposeAccountData'
 import { formatKrw } from '@/common/utils/formatKrw'
 
 const PRESET_GOALS: Record<AccountType, number> = {
@@ -100,10 +101,20 @@ export default function PurposeSetupPage() {
                         const input = prompt('매달 금액 (만원)')
                         if (!input) return
                         const val = Number(input) * 10_000
-                        if (val > 0)
-                          setSetups((prev) =>
-                            prev.map((s) => (s.type === setup.type ? { ...s, monthly: val } : s))
+                        if (val <= 0) return
+                        const newTotal = setups.reduce(
+                          (sum, s) => sum + (s.type === setup.type ? val : s.monthly),
+                          0,
+                        )
+                        if (newTotal > TOTAL_DISTRIBUTION) {
+                          alert(
+                            `매달 적립 합계가 분배금(${formatKrw(TOTAL_DISTRIBUTION)})을 초과할 수 없어요.`,
                           )
+                          return
+                        }
+                        setSetups((prev) =>
+                          prev.map((s) => (s.type === setup.type ? { ...s, monthly: val } : s))
+                        )
                       }}
                     >
                       매달 {formatKrw(setup.monthly)}

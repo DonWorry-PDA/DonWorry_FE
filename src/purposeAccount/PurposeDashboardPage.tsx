@@ -49,6 +49,21 @@ export default function PurposeDashboardPage() {
 
         {/* Account cards */}
         <div className="flex flex-col gap-3">
+          {MOCK_ACCOUNTS.length === 0 && (
+            <div className="flex flex-col items-center py-16 gap-4">
+              <p className="text-body text-ink-sub text-center">
+                아직 만든 통장이 없어요.
+                <br />
+                목적별 통장을 만들어 보세요.
+              </p>
+              <button
+                onClick={() => navigate('/purpose-account/select')}
+                className="bg-primary text-white rounded-btn text-btn font-bold px-8 py-3"
+              >
+                통장 만들기
+              </button>
+            </div>
+          )}
           {MOCK_ACCOUNTS.map((account) => {
             const meta = ACCOUNT_META[account.type]
             const pct = Math.round((account.current / account.goal) * 100)

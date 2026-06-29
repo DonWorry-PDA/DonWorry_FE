@@ -14,9 +14,10 @@ export default function CircularProgress({
   strokeWidth = 8,
   label,
 }: CircularProgressProps) {
+  const clamped = Math.max(0, Math.min(percentage, 100))
   const r = (size - strokeWidth) / 2
   const c = 2 * Math.PI * r
-  const offset = c - (Math.min(percentage, 100) / 100) * c
+  const offset = c - (clamped / 100) * c
   const cx = size / 2
   const cy = size / 2
 
@@ -59,7 +60,7 @@ export default function CircularProgress({
         fontSize={pctFontSize}
         fill={hexColor}
       >
-        {percentage}%
+        {clamped}%
       </text>
 
       {/* 보조 라벨 */}

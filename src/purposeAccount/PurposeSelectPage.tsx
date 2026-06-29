@@ -79,6 +79,7 @@ export default function PurposeSelectPage() {
               <button
                 key={type}
                 onClick={() => toggle(type)}
+                aria-pressed={isSelected}
                 className={[
                   'flex flex-col gap-2 p-4 rounded-card-lg border-2 text-left transition-colors',
                   isSelected ? 'border-primary bg-primary-tint' : 'border-line bg-white',
