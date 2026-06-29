@@ -130,7 +130,7 @@ export default function PurposeSetupPage() {
           <Button
             onClick={() =>
               navigate('/paycheck-plan/consult/branch', {
-                state: { purposeAccountTypes: selected },
+                state: { purposeAccountTypes: selected, institution: 'SHINHAN_BANK' },
               })
             }
           >

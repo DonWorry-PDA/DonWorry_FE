@@ -116,7 +116,9 @@ function PaycheckPlansPage() {
           <StickyFooter>
             <Button
               onClick={() =>
-                navigate('/paycheck-plan/consult/branch', { state: { context: 'SALARY_SHORTAGE' } })
+                navigate('/paycheck-plan/consult/branch', {
+                  state: { context: 'SALARY_SHORTAGE', institution: 'SHINHAN_SECURITIES' },
+                })
               }
             >
               전문가와 같이 보기

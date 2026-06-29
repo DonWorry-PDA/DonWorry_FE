@@ -6,22 +6,24 @@ import StickyFooter from '@/common/components/StickyFooter'
 import type { ConsultContext } from '@/paycheckPlan/constants/consultContext'
 import useGeolocation from './hooks/useGeolocation'
 import useGetNearbyBranches from './hooks/useGetNearbyBranches'
+import { formatBranchName } from './utils/formatBranchName'
 import { formatDistance } from './utils/formatDistance'
 import type { Institution, NearbyBranch } from './types/branch'
 
 // 탭 없이 두 기관을 한 리스트에 병합한다. 응답 본문엔 기관 구분이 없어 조회 시점의
-// institution을 함께 들고 다니며(배지·중복 id 구분용), 거리 오름차순으로 다시 정렬한다.
+// institution을 함께 들고 다니며(표시명 정규화·중복 id 구분용), 거리 오름차순으로 다시 정렬한다.
 type MergedBranch = NearbyBranch & { institution: Institution }
-
-const INSTITUTION_META: Record<Institution, { label: string; badgeClass: string }> = {
-  SHINHAN_SECURITIES: { label: '신한투자증권', badgeClass: 'bg-[#edf2ff] text-primary' },
-  SHINHAN_BANK: { label: '신한은행', badgeClass: 'bg-[#eef1f4] text-[#7e8893]' },
-}
 
 // 기관별 id가 겹칠 수 있어 병합 리스트의 키는 기관+id 조합으로 만든다.
 const branchKey = (b: MergedBranch) => `${b.institution}-${b.id}`
 
-type LocationState = { context?: ConsultContext; planId?: string | number | null }
+type LocationState = {
+  context?: ConsultContext
+  planId?: string | number | null
+  // 진입점별 분기: 목적별 통장→SHINHAN_BANK, 월급 만들기·연금→SHINHAN_SECURITIES.
+  // 없으면(직접 진입) 두 기관을 모두 보여준다.
+  institution?: Institution
+}
 
 function BranchFinderPage() {
   const navigate = useNavigate()
@@ -31,24 +33,31 @@ function BranchFinderPage() {
   const [query, setQuery] = useState('')
   const [pickedKey, setPickedKey] = useState<string | null>(null)
 
+  // 진입점이 기관을 지정하면 그 기관만, 아니면 둘 다 조회·표시한다.
+  const wantBank = state?.institution !== 'SHINHAN_SECURITIES'
+  const wantSecurities = state?.institution !== 'SHINHAN_BANK'
+
   const bank = useGetNearbyBranches({
     lat: coords?.lat,
     lng: coords?.lng,
     institution: 'SHINHAN_BANK',
+    enabled: wantBank,
   })
   const securities = useGetNearbyBranches({
     lat: coords?.lat,
     lng: coords?.lng,
     institution: 'SHINHAN_SECURITIES',
+    enabled: wantSecurities,
   })
 
   const merged = useMemo<MergedBranch[]>(() => {
     const tag = (list: NearbyBranch[] | undefined, institution: Institution) =>
       (list ?? []).map((b) => ({ ...b, institution }))
-    return [...tag(bank.data, 'SHINHAN_BANK'), ...tag(securities.data, 'SHINHAN_SECURITIES')].sort(
-      (a, b) => a.distanceMeters - b.distanceMeters,
-    )
-  }, [bank.data, securities.data])
+    return [
+      ...(wantBank ? tag(bank.data, 'SHINHAN_BANK') : []),
+      ...(wantSecurities ? tag(securities.data, 'SHINHAN_SECURITIES') : []),
+    ].sort((a, b) => a.distanceMeters - b.distanceMeters)
+  }, [bank.data, securities.data, wantBank, wantSecurities])
 
   const filtered = useMemo(() => {
     if (!query) return merged
@@ -58,10 +67,11 @@ function BranchFinderPage() {
     )
   }, [merged, query])
 
-  const isLoading = bank.isLoading || securities.isLoading
+  const isLoading = (wantBank && bank.isLoading) || (wantSecurities && securities.isLoading)
   // 한쪽만 성공하면 그 결과를 보여주되, 한쪽이라도 실패했는데 보여줄 데이터가 없으면
   // "지점 없음"이 아니라 오류(재시도)로 본다 — 부분 실패를 빈 결과로 오인하지 않도록.
-  const isError = (bank.isError || securities.isError) && merged.length === 0
+  const isError =
+    ((wantBank && bank.isError) || (wantSecurities && securities.isError)) && merged.length === 0
 
   // 사용자가 고른 항목이 현재 목록에 있으면 그걸, 없으면(초기·검색으로 사라짐) 가장 가까운
   // 첫 항목을 기본 선택으로 본다. effect 없이 렌더 시 파생해 동기화 비용을 없앤다.
@@ -75,15 +85,15 @@ function BranchFinderPage() {
   const handleConfirm = () => {
     const selected = filtered.find((b) => branchKey(b) === selectedKey)
     if (!selected) return
-    // 상담 화면이 읽는 필드(name·address·distance)에 더해, 기관 구분(institution)도
-    // 함께 넘긴다 — 상담/BE가 어느 기관 지점인지 알아야 할 때 id prefix 파싱 없이 쓰도록.
+    // 예약 POST가 쓸 실 DB id(branchId)와 표시 필드(name·address·distance), 기관 구분(institution)을
+    // 함께 넘긴다. 합성키(branchKey)는 목록 선택용일 뿐, 다음 화면엔 숫자 branchId만 전달한다.
     navigate('/paycheck-plan/consult', {
       state: {
         ...state,
         branch: {
-          id: branchKey(selected),
+          branchId: selected.id,
           institution: selected.institution,
-          name: selected.name,
+          name: formatBranchName(selected.name, selected.institution),
           address: selected.address,
           distance: formatDistance(selected.distanceMeters),
         },
@@ -197,7 +207,6 @@ function Body({
         {branches.map((branch) => {
           const key = branchKey(branch)
           const selected = selectedKey === key
-          const meta = INSTITUTION_META[branch.institution]
           return (
             <li key={key} className="border-t border-divider">
               <button
@@ -217,14 +226,11 @@ function Body({
                   </svg>
                 </div>
 
-                {/* 지점 정보 */}
+                {/* 지점 정보 — 뱃지 대신 표시명에 기관을 녹여 한 줄로 보여준다. */}
                 <div className="min-w-0 flex-1">
-                  <div className="mb-0.5 flex flex-wrap items-center gap-1.5">
-                    <span className="text-[14.5px] font-bold text-ink">{branch.name}</span>
-                    <span className={`shrink-0 rounded-[6px] px-2 py-0.5 text-[11px] font-bold ${meta.badgeClass}`}>
-                      {meta.label}
-                    </span>
-                  </div>
+                  <p className="mb-0.5 text-[14.5px] font-bold text-ink">
+                    {formatBranchName(branch.name, branch.institution)}
+                  </p>
                   <p className="mb-0.5 text-[12.2px] text-ink-sub">{branch.address}</p>
                   {branch.region && <span className="text-[11.7px] text-ink-hint">{branch.region}</span>}
                 </div>
