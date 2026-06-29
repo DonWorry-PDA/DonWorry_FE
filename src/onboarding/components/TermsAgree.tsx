@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import client from '@/common/api/client'
 import { BackArrowIc } from '../../common/assets/icons'
-import StickyFooter from '../../common/components/StickyFooter'
 
 interface Props {
   onNext: () => void
@@ -129,7 +128,7 @@ function TermsAgree({ onNext, onPrev }: Props) {
       </div>
 
       {/* 스크롤 영역 */}
-      <div className="flex flex-1 flex-col gap-2 overflow-auto px-5 pb-4">
+      <div className="flex flex-1 min-h-0 flex-col gap-2 overflow-auto px-5 pb-4">
         {/* 타이틀 */}
         <div className="pb-3 pt-7">
           <h1 className="text-heading font-extrabold leading-tight tracking-[-0.4px] text-ink">
@@ -205,16 +204,17 @@ function TermsAgree({ onNext, onPrev }: Props) {
       </div>
 
       {/* 하단 버튼 */}
-      <StickyFooter>
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={handleProceed}
           disabled={!allRequiredChecked || isPending}
-          className="h-[54px] w-full rounded-card bg-primary text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
+          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           동의하고 시작하기
         </button>
-      </StickyFooter>
+      </div>
     </div>
   )
 }

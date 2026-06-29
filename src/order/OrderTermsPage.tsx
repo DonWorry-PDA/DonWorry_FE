@@ -58,10 +58,10 @@ function OrderTermsPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="약관 동의" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">
         <h2 className="text-heading font-bold text-ink mb-6">약관에 동의해 주세요</h2>
 
         {/* 전체 동의 */}
@@ -117,7 +117,8 @@ function OrderTermsPage() {
         </div>
       </div>
 
-      <div className="px-6 pb-4 shrink-0">
+      <div className="relative px-6 pb-4 shrink-0">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <Button disabled={!requiredChecked} onClick={() => navigate('/order/review')}>
           동의하고 계속
         </Button>

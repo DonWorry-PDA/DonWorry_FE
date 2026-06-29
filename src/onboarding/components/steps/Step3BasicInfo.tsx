@@ -33,7 +33,7 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
 
       <OnboardingProgressBar current={3} total={6} />
 
-      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
+      <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">기본 정보를 알려주세요</h1>
         <p className="mt-2 text-body text-ink-sub">
           생활비를 감당할 수 있는지 계산하는 데 쓰여요.
@@ -72,7 +72,8 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         </div>
       </div>
 
-      <div className="shrink-0 px-6 pb-10">
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={handleNext}

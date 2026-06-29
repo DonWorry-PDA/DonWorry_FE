@@ -41,17 +41,19 @@ function PlanLoadingScreen() {
     >
       <div className="relative flex size-24 items-center justify-center mb-8" aria-hidden="true">
         <div className="absolute inset-0 animate-spin">
-          {[0, 60, 120, 180, 240, 300].map((deg) => (
-            <div
-              key={deg}
-              className="absolute size-2.5 rounded-full bg-primary/30"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: `rotate(${deg}deg) translateX(40px) translateY(-50%)`,
-              }}
-            />
-          ))}
+          {[0, 60, 120, 180, 240, 300].map((deg) => {
+            const rad = (deg * Math.PI) / 180
+            return (
+              <div
+                key={deg}
+                className="absolute size-2.5 rounded-full bg-primary/30"
+                style={{
+                  top: `calc(50% + ${-40 * Math.cos(rad) - 5}px)`,
+                  left: `calc(50% + ${40 * Math.sin(rad) - 5}px)`,
+                }}
+              />
+            )
+          })}
         </div>
         <img src="/logos/sol-mark.svg" alt="" width={56} height={56} className="rounded-full" />
       </div>
@@ -98,7 +100,7 @@ function PaycheckDiagnosisPage() {
       <div className="flex flex-col h-dvh">
         <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
         <StepProgress current={2} total={2} />
-        <div className="flex-1 overflow-y-auto px-6 pt-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-5 w-28 animate-pulse rounded bg-surface-muted" />
           <div className="mb-6 h-10 w-36 animate-pulse rounded bg-surface-muted" />
           {[0, 1, 2].map((i) => (
@@ -131,7 +133,7 @@ function PaycheckDiagnosisPage() {
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
       <StepProgress current={2} total={2} />
 
-      <div className="flex-1 overflow-y-auto px-6 pt-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
         <p className="text-body text-ink-sub mb-1">지금의 월 현금흐름</p>
         <p className="font-inter text-display font-bold text-ink mb-6">
           {monthlyCashFlowMan}만원

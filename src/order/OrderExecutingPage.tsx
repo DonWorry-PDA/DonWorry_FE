@@ -140,7 +140,7 @@ function OrderExecutingPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-dvh bg-white">
       <div className="flex-1 flex flex-col px-5 pt-16">
         <div className="flex flex-col items-center mb-10">
           {phase === 'executing' ? (

@@ -23,7 +23,7 @@ function AssetResult() {
 
   return (
     <div className="flex h-dvh flex-col bg-white">
-      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-[calc(5dvh+1.375rem)]">
+      <div className="flex flex-1 min-h-0 flex-col items-center overflow-y-auto px-6 pt-[calc(5dvh+1.375rem)]">
         <CheckBadge />
 
         <h1 className="mt-6 text-heading font-bold text-ink">자산 연결 결과</h1>
@@ -60,7 +60,8 @@ function AssetResult() {
         </p>
       </div>
 
-      <div className="shrink-0 px-6 pb-10">
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={() => navigate('/home', { replace: true })}

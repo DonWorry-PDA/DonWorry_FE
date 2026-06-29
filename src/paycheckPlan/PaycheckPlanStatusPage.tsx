@@ -24,9 +24,9 @@ function PaycheckPlanStatusPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
-        <div role="status" aria-live="polite" className="flex-1 overflow-y-auto px-6 pt-4">
+        <div role="status" aria-live="polite" className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <span className="sr-only">월급 현황을 불러오는 중입니다.</span>
           <div className="mb-4 h-[120px] animate-pulse rounded-card-xl bg-surface-muted" />
           <div className="flex flex-col gap-3">
@@ -42,7 +42,7 @@ function PaycheckPlanStatusPage() {
   // 캐시도 없고 응답도 없을 때만 에러. (백그라운드 재요청 실패는 캐시로 버틴다)
   if (!data) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
         <CenterMessage variant="alert">
           <div className="flex flex-col items-center gap-3">
@@ -71,10 +71,10 @@ function PaycheckPlanStatusPage() {
   const coverage = data.livingCostCoverageRate != null ? Math.round(data.livingCostCoverageRate) : null
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
 
-      <div className="flex-1 overflow-y-auto pb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto pb-6">
         {/* 헤드라인 — 매달 받는 월급 */}
         <div className="bg-primary px-5 pt-5 pb-6 mx-6 mt-4 rounded-card-xl">
           <div className="flex items-center justify-between mb-2">

@@ -15,7 +15,7 @@ function OrderConfirmPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-dvh bg-white">
       <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
         <ClockIcon />
 
@@ -43,7 +43,8 @@ function OrderConfirmPage() {
         </div>
       </div>
 
-      <div className="px-6 pb-4 shrink-0 flex flex-col gap-2">
+      <div className="relative px-6 pb-4 shrink-0 flex flex-col gap-2">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           onClick={() => navigate('/order/modify')}
           className="w-full h-[54px] rounded-btn border border-line text-btn font-semibold text-ink"
