@@ -7,6 +7,7 @@ import type {
   ComparisonTable,
   ExecutionSummary,
   ExecutionItem,
+  SalaryPlanConfirmRequest,
 } from '../types/paycheckPlan'
 import type {
   BackendPlanType,
@@ -180,6 +181,29 @@ export const mapExecutionSummary = (
   cashflowTo: toManwon(plan.monthlyIncome),
   items: mapExecutionItems(plan),
   notice: isMarketOpen() ? EXECUTE_NOTICE_OPEN : EXECUTE_NOTICE_CLOSED,
+})
+
+/**
+ * 매수 완료 후 확정(POST) 페이로드. 추천 plan/holdings를 그대로 스냅샷한다.
+ * 금액은 원 단위 정수로 반올림(BE 컬럼 scale=0, @Digits(fraction=0) 검증). bucketRole=holding.role,
+ * productContribution=종목별 월기여(BE #238). accountType은 추천 holding 범위인 BROKERAGE 고정.
+ */
+export const buildSalaryPlanConfirm = (
+  response: RecommendationResponse,
+  plan: RecommendationPlan,
+): SalaryPlanConfirmRequest => ({
+  planType: plan.type,
+  targetMonthlyLivingCost: Math.round(response.targetMonthlyLivingCost),
+  expectedMonthlySalary: Math.round(plan.monthlyIncome),
+  holdings: plan.holdings.map((h) => ({
+    productId: h.productId,
+    productName: h.productName,
+    bucketRole: h.role,
+    accountType: 'BROKERAGE',
+    weight: h.weight,
+    targetAmount: Math.round(h.amount),
+    productContribution: Math.round(h.monthlyContribution),
+  })),
 })
 
 /** Q3 소진비율 라벨 (안정안 기준 상속 vs 소비 트레이드오프). */

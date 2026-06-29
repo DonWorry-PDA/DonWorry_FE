@@ -1,8 +1,10 @@
+import { useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Button from '../common/components/Button'
 import CheckBadge from '../common/components/CheckBadge'
 import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
-import { findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
+import usePostSalaryPlanConfirm from '../paycheckPlan/hooks/usePostSalaryPlanConfirm'
+import { buildSalaryPlanConfirm, findPlan, mapExecutionSummary } from '../paycheckPlan/utils/planMapper'
 
 function OrderCompletePage() {
   const navigate = useNavigate()
@@ -12,6 +14,22 @@ function OrderCompletePage() {
   const { data, isLoading, isError } = useGetRecommendation()
   const plan = data && planId ? findPlan(data, planId) : undefined
   const summary = data && plan ? mapExecutionSummary(data, plan) : undefined
+
+  // 매수 완료 시점에 plan을 확정해 기이용자로 전환(운용현황 분기 활성화).
+  // planId가 있는 월급 만들기 실행에서만 동작하고, 추천 데이터가 준비되면 1회만 호출한다.
+  const { mutate: confirmPlan } = usePostSalaryPlanConfirm()
+  const confirmedRef = useRef(false)
+  useEffect(() => {
+    if (confirmedRef.current || !data || !plan) return
+    confirmedRef.current = true
+    confirmPlan(buildSalaryPlanConfirm(data, plan), {
+      // 일시 장애로 실패하면 플래그를 되돌려 같은 mount 안에서 재시도가 가능하게 한다.
+      // (이 페이지가 확정을 수행하는 유일한 지점이라, 한 번 놓치면 기이용자 전환이 누락된다.)
+      onError: () => {
+        confirmedRef.current = false
+      },
+    })
+  }, [data, plan, confirmPlan])
 
   const summaryUnavailable = isLoading || isError || !planId || (data && !plan)
 
