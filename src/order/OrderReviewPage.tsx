@@ -52,7 +52,7 @@ function OrderReviewPage() {
   const buyModalItems: BuyItem[] = buyItems.map((item) => ({
     name: item.productName ?? item.name,
     productType: 'ETF',
-    amount: `${item.amount.toLocaleString('ko-KR')}만`,
+    amount: `${(item.amount * 10000).toLocaleString('ko-KR')}`,
     amountWon: item.amount * 10000,
     ticker: item.ticker,
     productId: item.productId,
@@ -95,11 +95,10 @@ function OrderReviewPage() {
                 <ArrowUpIcon />
               </div>
               <div className="flex-1">
-                <p className="text-body font-semibold text-ink">{item.productName ?? item.name}</p>
-                <p className="text-sub text-ink-hint">{item.description}</p>
+                <p className="text-body font-semibold text-ink-hint">{item.productName ?? item.name}</p>
               </div>
               <p className="font-inter text-body font-bold text-ink shrink-0">
-                {item.amount.toLocaleString('ko-KR')}만
+                {(item.amount * 10000).toLocaleString('ko-KR')}원
               </p>
             </div>
           ))}
@@ -113,7 +112,7 @@ function OrderReviewPage() {
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">총 주문액</p>
             <p className="font-inter text-body font-semibold text-ink">
-              {totalAmount.toLocaleString('ko-KR')}만원
+              {(totalAmount * 10000).toLocaleString('ko-KR')}원
             </p>
           </div>
           <div className="flex justify-between items-center">
