@@ -16,7 +16,7 @@ const useGetNearbyBranches = ({ lat, lng, institution, limit = 20 }: Params) =>
     queryKey: ['branches', 'nearby', institution, lat, lng, limit],
     queryFn: () =>
       client
-        .get<ApiResponse<NearbyBranch[]>>('/api/branches/nearby', {
+        .get<ApiResponse<NearbyBranch[]>>('/api/user/branches/nearby', {
           params: { lat, lng, institution, limit },
         })
         .then((res) => res.data.data),
