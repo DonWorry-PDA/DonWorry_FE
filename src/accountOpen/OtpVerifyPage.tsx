@@ -1,8 +1,10 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { isAxiosError } from 'axios'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
+import type { ApiResponse } from '../common/types/api'
 import usePostOtpSend from './hooks/usePostOtpSend'
 import usePostOtpVerify from './hooks/usePostOtpVerify'
 
@@ -14,6 +16,18 @@ const STEPS = [
 
 const OTP_LENGTH = 6
 const TIMER_SECONDS = 3 * 60
+const OTP_USER_ERROR_CODES = new Set(['OTP_INVALID', 'OTP_EXPIRED', 'OTP_MAX_ATTEMPTS'])
+
+function getVerifyErrorMessage(error: unknown) {
+  if (isAxiosError<ApiResponse<unknown>>(error)) {
+    const code = error.response?.data?.code
+    if (code && OTP_USER_ERROR_CODES.has(code)) {
+      return '인증번호가 올바르지 않거나 만료되었어요. 다시 확인해주세요.'
+    }
+  }
+
+  return '인증 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.'
+}
 
 function OtpVerifyPage() {
   const navigate = useNavigate()
@@ -30,6 +44,7 @@ function OtpVerifyPage() {
 
   const { mutate: sendOtp, isPending: isResending, error: resendError } = usePostOtpSend()
   const { mutate: verifyOtp, isPending: isVerifying, error: verifyError } = usePostOtpVerify()
+  const verifyErrorMessage = verifyError ? getVerifyErrorMessage(verifyError) : null
 
   useEffect(() => {
     if (!phone) navigate('/account-open', { replace: true })
@@ -153,9 +168,9 @@ function OtpVerifyPage() {
           )}
 
           {/* 안내 박스 */}
-          {verifyError && (
+          {verifyErrorMessage && (
             <p className="mt-2 text-caption text-danger">
-              인증번호가 올바르지 않거나 만료되었어요. 다시 확인해주세요.
+              {verifyErrorMessage}
             </p>
           )}
 
