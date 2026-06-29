@@ -79,13 +79,19 @@ function ChevronRight() {
 function TermsAgreePage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { phone, returnTo, planId } =
-    (location.state as { phone?: string; returnTo?: string; planId?: string } | null) ?? {}
+  const { authMethod, phone, returnTo, planId } =
+    (location.state as {
+      authMethod?: 'shinhan'
+      phone?: string
+      returnTo?: string
+      planId?: string
+    } | null) ?? {}
   const [agreed, setAgreed] = useState<AgreedState>(INITIAL_STATE)
   const { mutate: openAccount, isPending: isOpening, error: openError } = usePostAccountOpen()
 
   const allChecked = TERMS_ITEMS.every((item) => agreed[item.id])
   const requiredChecked = TERMS_ITEMS.filter((item) => item.required).every((item) => agreed[item.id])
+  const isShinhanFlow = authMethod === 'shinhan'
 
   const toggleAll = () => {
     const next = !allChecked
@@ -97,7 +103,21 @@ function TermsAgreePage() {
   }
 
   const handleOpenAccount = () => {
-    if (!requiredChecked || !phone) return
+    if (!requiredChecked) return
+
+    if (isShinhanFlow) {
+      navigate('/account-open/complete', {
+        state: {
+          accountNumber: createTemporaryAccountNumber(),
+          openedAt: formatToday(),
+          returnTo,
+          planId,
+        },
+      })
+      return
+    }
+
+    if (!phone) return
 
     const agreedTermIds = TERMS_ITEMS
       .filter((item) => agreed[item.id])
@@ -226,12 +246,12 @@ function TermsAgreePage() {
 
       <StickyFooter>
         <Button
-          disabled={!requiredChecked || !phone || isOpening}
+          disabled={!requiredChecked || (!phone && !isShinhanFlow) || isOpening}
           onClick={handleOpenAccount}
         >
           동의하고 계속
         </Button>
-        {!phone && (
+        {!phone && !isShinhanFlow && (
           <p className="mt-2 text-center text-caption text-danger">
             휴대폰 인증을 다시 진행해주세요.
           </p>
@@ -244,6 +264,19 @@ function TermsAgreePage() {
       </StickyFooter>
     </div>
   )
+}
+
+function createTemporaryAccountNumber() {
+  const middle = Math.floor(100 + Math.random() * 900)
+  const last = Math.floor(100000 + Math.random() * 900000)
+  return `110-${middle}-${last}`
+}
+
+function formatToday() {
+  return new Date()
+    .toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    .replace(/\.\s?/g, '.')
+    .replace(/\.$/, '')
 }
 
 export default TermsAgreePage

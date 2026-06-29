@@ -82,7 +82,7 @@ function ShinhanCertPage() {
       <StickyFooter>
         <Button
           onClick={() =>
-            navigate('/account-open/terms', { state: { returnTo, planId } })
+            navigate('/account-open/terms', { state: { authMethod: 'shinhan', returnTo, planId } })
           }
         >
           인증하기
