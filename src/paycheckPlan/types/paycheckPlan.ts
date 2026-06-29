@@ -134,6 +134,18 @@ export type ExecutionSummary = {
   notice: string
 }
 
+export type Branch = {
+  id: string
+  name: string
+  type: 'PWM' | '영업점'
+  address: string
+  hours: string
+  available: boolean
+  distance: string
+}
+
+export type ConsultMethod = 'face' | 'video' | 'phone'
+
 export type ConsultType = 'pb'
 
 export type ConsultCard = {
