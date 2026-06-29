@@ -53,7 +53,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
         <span className="bg-surface-muted text-sub text-ink-sub rounded-full px-3 py-0.5">2/3</span>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
+      <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading text-ink font-bold">
           이용 중이신 금융상품
           <br />
@@ -116,7 +116,8 @@ function AssetAuth({ onNext, onPrev }: Props) {
         </button> */}
       </div>
 
-      <div className="shrink-0 px-6 pb-10">
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={onNext}

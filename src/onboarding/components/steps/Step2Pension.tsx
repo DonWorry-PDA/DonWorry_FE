@@ -29,7 +29,7 @@ function Step2Pension({ onNext, onPrev }: Props) {
 
       <OnboardingProgressBar current={2} total={6} />
 
-      <div className="flex flex-1 flex-col overflow-y-auto px-6 pt-8">
+      <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">
           국민연금은<br />받고 계신가요?
         </h1>
@@ -53,7 +53,8 @@ function Step2Pension({ onNext, onPrev }: Props) {
         </div>
       </div>
 
-      <div className="shrink-0 px-6 pb-10">
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={onNext}

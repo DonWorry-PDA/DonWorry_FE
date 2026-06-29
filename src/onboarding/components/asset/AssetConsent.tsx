@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackArrowIc } from '../../../common/assets/icons'
-import StickyFooter from '../../../common/components/StickyFooter'
 
 const CONSENT_ITEMS = [
   { id: 'collect', label: '개인(신용)정보 수집·이용 동의서' },
@@ -69,12 +68,14 @@ function AssetConsent({ onNext, onPrev }: Props) {
 
   return (
     <div className="relative flex h-dvh flex-col bg-white">
-      {/* 헤더 */}
-      <div className="relative flex h-[52px] shrink-0 items-center px-3">
-        <button type="button" onClick={onPrev} aria-label="뒤로 가기" className="flex size-8 items-center justify-center">
-          <BackArrowIc width={22} height={22} />
-        </button>
-        <span className="absolute left-1/2 -translate-x-1/2 text-md font-bold text-ink">자산연결</span>
+      {/* AppBar */}
+      <div className="flex items-center justify-between px-6 pt-12 pb-4">
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={onPrev} className="text-ink">
+            <BackArrowIc width={24} height={24} />
+          </button>
+          <span className="text-card text-ink font-bold">자산연결</span>
+        </div>
       </div>
 
       {/* 진행 표시 */}
@@ -84,7 +85,7 @@ function AssetConsent({ onNext, onPrev }: Props) {
       </div>
 
       {/* 스크롤 영역 */}
-      <div className="flex flex-1 flex-col gap-2 overflow-auto px-5 pb-4">
+      <div className="flex flex-1 min-h-0 flex-col gap-2 overflow-auto px-5 pb-4">
         <div className="pb-3 pt-7">
           <h1 className="text-heading font-extrabold leading-tight tracking-[-0.4px] text-ink">
             선택하신 금융기관의<br />자산정보를 확인할게요
@@ -152,16 +153,17 @@ function AssetConsent({ onNext, onPrev }: Props) {
       </div>
 
       {/* 하단 버튼 */}
-      <StickyFooter>
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={onNext}
           disabled={!allChecked}
-          className="h-[54px] w-full rounded-card bg-primary text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
+          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           [필수] 전체동의
         </button>
-      </StickyFooter>
+      </div>
     </div>
   )
 }

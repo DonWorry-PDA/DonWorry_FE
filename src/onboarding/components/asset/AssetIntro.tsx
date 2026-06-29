@@ -18,7 +18,7 @@ function AssetIntro({ onNext, onPrev }: Props) {
           <span className="text-card text-ink font-bold">자산연결</span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pt-8">
+      <div className="flex flex-1 min-h-0 flex-col items-center overflow-y-auto px-6 pt-8">
         <h1 className="text-heading text-ink w-full font-bold">
           내 자산, 한눈에
           <br />
@@ -41,7 +41,8 @@ function AssetIntro({ onNext, onPrev }: Props) {
         </p>
       </div>
 
-      <div className="shrink-0 px-6 pb-10">
+      <div className="relative shrink-0 px-6 pb-10">
+        <div className="pointer-events-none absolute -top-8 inset-x-0 h-8 bg-gradient-to-b from-white/0 to-white" />
         <button
           type="button"
           onClick={onNext}
