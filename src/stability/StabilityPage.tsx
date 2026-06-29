@@ -6,6 +6,7 @@ import BottomSheet from '../common/components/BottomSheet'
 import { BackArrowIc, NotificationIc } from '../common/assets/icons'
 import GaugeChart from './components/GaugeChart'
 import useGetLifeStability from './hooks/useGetLifeStability'
+import useGetProfile from '../mypage/hooks/useGetProfile'
 import type { StabilityItem, StabilityStatus } from './types/stability'
 
 const STATUS_LABEL: Record<StabilityStatus, string> = {
@@ -35,6 +36,10 @@ const ITEM_STATUS_CLASS: Record<StabilityStatus, string> = {
 function StabilityPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError, error, refetch } = useGetLifeStability()
+  const { data: profile } = useGetProfile()
+  const targetLabel = profile
+    ? `월 ${(profile.monthlyTargetKrw / 10_000).toLocaleString('ko-KR')}만원`
+    : undefined
   const isEmptyResult = isAxiosError(error) && error.response?.status === 404
 
   // 지표 행 탭 → 세부 정보 시트. 닫힘 애니메이션(약 300ms) 동안 내용이 먼저
@@ -100,7 +105,7 @@ function StabilityPage() {
 
             {/* 게이지 차트 */}
             <div className="flex flex-col items-center px-[22px] pt-[6px]">
-              <GaugeChart percentage={data.percentage} status={data.status} />
+              <GaugeChart percentage={data.percentage} status={data.status} targetLabel={targetLabel} />
             </div>
 
             {/* 항목별 현황 */}

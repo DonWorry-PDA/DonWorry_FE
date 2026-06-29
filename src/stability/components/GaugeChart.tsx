@@ -3,6 +3,7 @@ import type { StabilityStatus } from '../types/stability'
 type Props = {
   percentage: number
   status: StabilityStatus
+  targetLabel?: string
 }
 
 const CX = 122
@@ -27,7 +28,7 @@ function arcPath(percentage: number): string {
   return `M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${endX} ${endY}`
 }
 
-function GaugeChart({ percentage, status }: Props) {
+function GaugeChart({ percentage, status, targetLabel }: Props) {
   const safePct = Number.isFinite(percentage) ? percentage : 0
   const trackPath = `M ${CX - R} ${CY} A ${R} ${R} 0 1 1 ${CX + R} ${CY}`
   const fillPath = arcPath(safePct)
@@ -97,15 +98,20 @@ function GaugeChart({ percentage, status }: Props) {
       </text>
       <text
         x={CX + R}
-        y={148}
         textAnchor="middle"
-        dominantBaseline="central"
         fontFamily="'Noto Sans KR', sans-serif"
         fontWeight="400"
         fontSize="12"
         fill="#8B95A1"
       >
-        목표 100%
+        {targetLabel ? (
+          <>
+            <tspan x={CX + R} y={144} dominantBaseline="central">목표</tspan>
+            <tspan x={CX + R} y={159} dominantBaseline="central">{targetLabel}</tspan>
+          </>
+        ) : (
+          <tspan x={CX + R} y={148} dominantBaseline="central">목표 100%</tspan>
+        )}
       </text>
     </svg>
   )
