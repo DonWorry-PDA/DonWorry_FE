@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { formatKrw } from '../../../common/utils/formatKrw'
+import { formatWon } from '../../../common/utils/formatKrw'
 import { useOnboarding } from '../../contexts/OnboardingContext'
 import AssetConnectedDetail from './AssetConnectedDetail'
 import CheckBadge from '../../../common/components/CheckBadge'
@@ -50,7 +50,7 @@ function AssetResult() {
           <div className="mt-4 w-full rounded-card bg-surface p-4">
             <div className="flex items-center justify-between">
               <span className="text-body text-ink-sub">연결된 총자산</span>
-              <span className="font-inter text-card font-bold text-ink">{formatKrw(totalAsset)}</span>
+              <span className="font-inter text-card font-bold text-ink">{formatWon(totalAsset)}</span>
             </div>
           </div>
         )}
