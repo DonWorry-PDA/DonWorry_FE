@@ -19,6 +19,7 @@ export type HomeStabilityData = {
   targetIncomeKrw: number
   shortfallKrw: number | null
   hasActivePlan: boolean
+  hasPlanHistory: boolean
 }
 
 export type ReportItem = {

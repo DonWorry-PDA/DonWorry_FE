@@ -138,6 +138,7 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   const shortfall = target - current
   const activePlanCoverageRate = salaryMaking.hasActivePlan ? salaryMaking.achievementRate : null
   const coverageRate = activePlanCoverageRate ?? lifeStability.coverageRate ?? 0
+  const hasPlanHistory = salaryMaking.hasPlanHistory ?? salaryMaking.hasActivePlan
 
   return {
     status: gradeToStatus(lifeStability.grade),
@@ -146,11 +147,12 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
     targetIncomeKrw: target,
     shortfallKrw: shortfall > 0 ? shortfall : null,
     hasActivePlan: salaryMaking.hasActivePlan,
+    hasPlanHistory,
   }
 }
 
 function HomeStabilityCtaContent({ data }: { data: HomeStabilityData }) {
-  if (data.hasActivePlan) {
+  if (data.hasPlanHistory) {
     return (
       <>
         <span className="text-md font-bold whitespace-nowrap">내 월급 현황 보기</span>
@@ -360,7 +362,7 @@ function HomePage() {
                     />
                     <HomeStabilityCtaContent data={stability} />
                   </button>
-                  {stability.hasActivePlan && (
+                  {stability.hasPlanHistory && (
                     <button
                       onClick={() => navigate('/paycheck-plan/assets')}
                       className="w-full rounded-btn border border-primary-dim bg-primary-tint text-primary py-[13px] px-5 flex items-center justify-between"
