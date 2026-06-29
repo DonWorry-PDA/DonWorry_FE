@@ -63,6 +63,12 @@ import AssetPage from './asset/AssetPage'
 import RetirementSimulationPage from './retirement/RetirementSimulationPage'
 import NotFoundPage from './error/NotFoundPage'
 import ServerErrorPage from './error/ServerErrorPage'
+import PurposeAccountIntroPage from './purposeAccount/PurposeAccountIntroPage'
+import PurposeSelectPage from './purposeAccount/PurposeSelectPage'
+import PurposeSetupPage from './purposeAccount/PurposeSetupPage'
+import PurposeDistributionPage from './purposeAccount/PurposeDistributionPage'
+import PurposeDashboardPage from './purposeAccount/PurposeDashboardPage'
+import PurposeDetailPage from './purposeAccount/PurposeDetailPage'
 
 function AppLayout() {
   useNotificationSSE()
@@ -142,6 +148,12 @@ const router = createBrowserRouter([
   { path: '/order/transfer', element: <OrderTransferPage /> },
   { path: '/pension/defer', element: <PensionDeferPage /> },
   { path: '/retirement-simulation', element: <RetirementSimulationPage /> },
+  { path: '/purpose-account', element: <PurposeAccountIntroPage /> },
+  { path: '/purpose-account/select', element: <PurposeSelectPage /> },
+  { path: '/purpose-account/setup', element: <PurposeSetupPage /> },
+  { path: '/purpose-account/distribution', element: <PurposeDistributionPage /> },
+  { path: '/purpose-account/dashboard', element: <PurposeDashboardPage /> },
+  { path: '/purpose-account/detail/:accountType', element: <PurposeDetailPage /> },
   { path: '*', element: <NotFoundPage /> },
     ],
   },
