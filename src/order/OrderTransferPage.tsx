@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import CheckBadge from '../common/components/CheckBadge'
 import { type BuyItem } from './components/BuyConfirmModal'
 import useGetAccounts from './hooks/useGetAccounts'
 import usePostTransfer from './hooks/usePostTransfer'
@@ -138,11 +139,7 @@ function OrderTransferPage() {
   if (isComplete) {
     return (
       <div className="flex flex-col h-dvh bg-white items-center justify-center px-8 gap-5">
-        <div className="size-16 rounded-full bg-success flex items-center justify-center">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M6 16.5L13 23.5L26 10" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
+        <CheckBadge />
         <div className="text-center">
           <p className="text-heading font-bold text-ink mb-1">이체가 완료됐어요</p>
           <p className="text-body text-ink-sub">잠시 후 매수 화면으로 이동해요</p>
