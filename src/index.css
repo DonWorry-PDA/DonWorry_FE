@@ -382,6 +382,30 @@ html.large {
   }
 }
 
+/* ─── CTA 버튼 (월급 설계하기) 진입 애니메이션 — 화면 마운트 시 1회만 ─── */
+@keyframes cta-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cta-shimmer {
+  from { transform: translateX(-200%) skewX(-12deg); }
+  to   { transform: translateX(300%) skewX(-12deg); }
+}
+
+.animate-cta-enter {
+  animation: cta-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-cta-shimmer {
+  animation: cta-shimmer 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cta-enter  { animation: none; }
+  .animate-cta-shimmer { display: none; }
+}
+
 /* ─── 자산 구성 바 세그먼트 칩 ─── */
 @keyframes chip-in {
   from {

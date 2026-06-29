@@ -312,13 +312,18 @@ function HomePage() {
                 {stability.shortfallKrw != null && stability.shortfallKrw > 0 && (
                   <button
                     onClick={() => navigate('/paycheck-plan/assets')}
-                    className="w-full bg-surface text-ink rounded-btn py-[14px] px-5 flex items-center justify-between"
+                    className="animate-cta-enter relative overflow-hidden w-full bg-primary text-white rounded-btn py-[14px] px-5 flex items-center justify-between"
                   >
+                    <div
+                      aria-hidden="true"
+                      className="animate-cta-shimmer pointer-events-none absolute inset-y-0 w-1/2"
+                      style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)' }}
+                    />
                     <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
                     <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
-                      <span className="text-ink-sub">부족한 금액</span>
-                      <span className="font-inter tabular-nums text-ink">{formatKrw(stability.shortfallKrw)}</span>
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-ink-sub">
+                      <span className="opacity-75">부족한 금액</span>
+                      <span className="font-inter tabular-nums font-semibold">{formatKrw(stability.shortfallKrw)}</span>
+                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
                         <path d="M9 18 L15 12 L9 6"/>
                       </svg>
                     </span>
@@ -328,12 +333,17 @@ function HomePage() {
             ) : (
               <button
                 onClick={() => navigate('/paycheck-plan/assets')}
-                className="w-full bg-white rounded-card-xl border border-line p-5 text-left flex flex-col gap-2"
+                className="w-full bg-primary-tint rounded-card-xl border border-primary-dim p-5 text-left flex items-center justify-between gap-3"
               >
-                <span className="text-md font-bold text-ink">월급 만들기</span>
-                <p className="text-sub text-ink-sub leading-[1.62]">
-                  아직 생활 안정도 결과가 없어요. 자산을 연결하면 분석해 드려요.
-                </p>
+                <div className="flex flex-col gap-[6px] flex-1 min-w-0">
+                  <span className="text-md font-bold text-primary">월급 만들기</span>
+                  <p className="text-sub text-ink-sub leading-[1.62]">
+                    자산을 연결하면 생활 안정도를 분석해 드려요.
+                  </p>
+                </div>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="text-primary shrink-0">
+                  <path d="M9 18 L15 12 L9 6"/>
+                </svg>
               </button>
             )}
 
