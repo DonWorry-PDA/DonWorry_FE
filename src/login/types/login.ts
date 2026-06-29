@@ -10,6 +10,7 @@ export type LoginData = {
 
 export type UsePinInputReturn = {
   pin: string
+  isPending: boolean
   isError: boolean
   isServerError: boolean
   appendDigit: (digit: string) => void

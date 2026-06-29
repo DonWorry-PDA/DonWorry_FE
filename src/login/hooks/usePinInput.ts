@@ -29,7 +29,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
       return
     }
 
-    setPin('')
+    setPin(next)
     postLogin(
       { userId, pin: next },
       {
@@ -37,6 +37,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
           navigate(onboardingCompleted ? '/home' : '/onboarding')
         },
         onError: (error) => {
+          setPin('')
           if (isAxiosError(error) && error.response?.status === 401) {
             setIsError(true)
           } else {
@@ -64,6 +65,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
 
   return {
     pin,
+    isPending,
     isError,
     isServerError,
     appendDigit,

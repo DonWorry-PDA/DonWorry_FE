@@ -37,7 +37,7 @@ const useOrderPinInput = (planId: string | undefined) => {
       return
     }
 
-    setPin('')
+    setPin(next)
     postLogin(
       { userId, pin: next },
       {
@@ -46,6 +46,7 @@ const useOrderPinInput = (planId: string | undefined) => {
           navigate('/order/review', { state: { planId } })
         },
         onError: (error) => {
+          setPin('')
           if (isAxiosError(error) && error.response?.status === 401) {
             setIsError(true)
           } else {
