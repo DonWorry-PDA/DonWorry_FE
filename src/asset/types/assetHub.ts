@@ -31,7 +31,7 @@ export type AssetHubSalaryMaking = {
   targetAmount: number | null
   currentAmount: number | null
   hasActivePlan: boolean
-  hasPlanHistory: boolean
+  hasPlanHistory?: boolean
 }
 
 export type AssetHubLifeStability = {
