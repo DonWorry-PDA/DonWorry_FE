@@ -6,9 +6,11 @@ import BranchFinderPage from '../BranchFinderPage'
 import type { Institution, NearbyBranch } from '../types/branch'
 
 const navigate = vi.fn()
+// 예약 시 기존 location.state(context·planId)를 그대로 넘기는지 검증하려면 state가 가변이어야 한다.
+let locationState: unknown = null
 vi.mock('react-router-dom', () => ({
   useNavigate: () => navigate,
-  useLocation: () => ({ state: null }),
+  useLocation: () => ({ state: locationState }),
 }))
 vi.mock('../../common/components/AppBar', () => ({ default: () => null }))
 
@@ -29,19 +31,34 @@ const securitiesBranches: NearbyBranch[] = [
 ]
 
 const grantedGeo = { coords: { lat: 37.5, lng: 127 }, status: 'granted', request: vi.fn() }
-const ok = (data: NearbyBranch[], refetch = vi.fn()) => ({ data, isLoading: false, isError: false, refetch })
+// data는 성공(배열)·에러/로딩(undefined) 모두 표현할 수 있어야 한다.
+type Query = {
+  data: NearbyBranch[] | undefined
+  isLoading: boolean
+  isError: boolean
+  refetch: () => void
+}
+const ok = (data: NearbyBranch[], refetch: () => void = vi.fn()): Query => ({
+  data,
+  isLoading: false,
+  isError: false,
+  refetch,
+})
 
 // 기관별 결과 매핑. 테스트마다 override.
-let resultByInstitution: Record<Institution, ReturnType<typeof ok>>
+let resultByInstitution: Record<Institution, Query>
 
 beforeEach(() => {
   navigate.mockReset()
+  locationState = null
   geoMock.mockReturnValue(grantedGeo)
   resultByInstitution = {
     SHINHAN_BANK: ok(bankBranches),
     SHINHAN_SECURITIES: ok(securitiesBranches),
   }
-  branchesMock.mockImplementation(({ institution }) => resultByInstitution[institution])
+  branchesMock.mockImplementation(
+    ({ institution }: { institution: Institution }) => resultByInstitution[institution],
+  )
 })
 afterEach(cleanup)
 
@@ -135,5 +152,76 @@ describe('BranchFinderPage', () => {
     expect(screen.getByText(/위치 권한이 꺼져 있어요/)).toBeInTheDocument()
     fireEvent.click(screen.getByText('위치 다시 시도'))
     expect(request).toHaveBeenCalled()
+  })
+
+  it('위치 미지원이면 재시도 없이 안내만 보여준다', () => {
+    geoMock.mockReturnValue({ coords: null, status: 'unavailable', request: vi.fn() })
+    render(<BranchFinderPage />)
+
+    expect(screen.getByText(/이 기기에서는 위치 정보를 사용할 수 없어요/)).toBeInTheDocument()
+    expect(screen.queryByText('위치 다시 시도')).not.toBeInTheDocument()
+  })
+
+  it('조회 중이면 로딩 안내(스켈레톤)를 보여준다', () => {
+    resultByInstitution = {
+      SHINHAN_BANK: { data: undefined, isLoading: true, isError: false, refetch: vi.fn() },
+      SHINHAN_SECURITIES: { data: undefined, isLoading: true, isError: false, refetch: vi.fn() },
+    }
+    render(<BranchFinderPage />)
+
+    expect(screen.getByText('가까운 지점을 찾고 있어요')).toBeInTheDocument()
+  })
+
+  it('한쪽만 실패하고 결과가 비면 빈 상태 대신 오류·재시도를 보여준다', () => {
+    const secRefetch = vi.fn()
+    resultByInstitution = {
+      SHINHAN_BANK: ok([]),
+      SHINHAN_SECURITIES: { data: undefined, isLoading: false, isError: true, refetch: secRefetch },
+    }
+    render(<BranchFinderPage />)
+
+    expect(screen.queryByText('주변에 지점이 없어요.')).not.toBeInTheDocument()
+    expect(screen.getByText(/지점을 불러오지 못했어요/)).toBeInTheDocument()
+    fireEvent.click(screen.getByText('다시 시도'))
+    expect(secRefetch).toHaveBeenCalled()
+  })
+
+  it('한쪽만 실패해도 다른 쪽 결과가 있으면 그 결과를 보여준다', () => {
+    resultByInstitution = {
+      SHINHAN_BANK: ok(bankBranches),
+      SHINHAN_SECURITIES: { data: undefined, isLoading: false, isError: true, refetch: vi.fn() },
+    }
+    render(<BranchFinderPage />)
+
+    expect(screen.getByText('신한은행 광화문점')).toBeInTheDocument()
+    expect(screen.queryByText(/지점을 불러오지 못했어요/)).not.toBeInTheDocument()
+  })
+
+  it('지역명(region)으로도 검색된다', () => {
+    resultByInstitution = {
+      SHINHAN_BANK: ok([
+        { id: 9, name: '신한은행 본점', address: '서울 중구 세종대로 9', phone: '02-9', region: '강남구', distanceMeters: 500, distanceKm: 0.5 },
+      ]),
+      SHINHAN_SECURITIES: ok([]),
+    }
+    render(<BranchFinderPage />)
+
+    // 이름·주소엔 '강남구'가 없고 region에만 있는 항목이 검색돼야 한다.
+    fireEvent.change(screen.getByPlaceholderText(/지점명·지역 검색/), { target: { value: '강남구' } })
+    expect(screen.getByText('신한은행 본점')).toBeInTheDocument()
+    expect(screen.getByText('가까운 순 · 1곳')).toBeInTheDocument()
+  })
+
+  it('진입 시 받은 예약 컨텍스트(context·planId)를 예약 시 그대로 넘긴다', () => {
+    locationState = { context: 'SALARY_PLAN', planId: 42 }
+    render(<BranchFinderPage />)
+
+    fireEvent.click(screen.getByText('선택한 지점으로 예약'))
+    expect(navigate).toHaveBeenCalledWith(
+      '/paycheck-plan/consult',
+      expect.objectContaining({
+        state: expect.objectContaining({ context: 'SALARY_PLAN', planId: 42 }),
+      }),
+    )
   })
 })

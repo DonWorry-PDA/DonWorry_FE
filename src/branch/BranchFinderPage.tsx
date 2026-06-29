@@ -42,10 +42,6 @@ function BranchFinderPage() {
     institution: 'SHINHAN_SECURITIES',
   })
 
-  // 둘 다 로딩 중이면 로딩, 둘 다 실패해야 에러(한쪽만 성공하면 그 결과라도 보여준다).
-  const isLoading = bank.isLoading || securities.isLoading
-  const isError = bank.isError && securities.isError
-
   const merged = useMemo<MergedBranch[]>(() => {
     const tag = (list: NearbyBranch[] | undefined, institution: Institution) =>
       (list ?? []).map((b) => ({ ...b, institution }))
@@ -56,8 +52,16 @@ function BranchFinderPage() {
 
   const filtered = useMemo(() => {
     if (!query) return merged
-    return merged.filter((b) => b.name.includes(query) || b.address.includes(query))
+    // placeholder가 "지점명·지역 검색"을 안내하므로 region(지역명)도 매칭 대상에 포함한다.
+    return merged.filter(
+      (b) => b.name.includes(query) || b.address.includes(query) || !!b.region?.includes(query),
+    )
   }, [merged, query])
+
+  const isLoading = bank.isLoading || securities.isLoading
+  // 한쪽만 성공하면 그 결과를 보여주되, 한쪽이라도 실패했는데 보여줄 데이터가 없으면
+  // "지점 없음"이 아니라 오류(재시도)로 본다 — 부분 실패를 빈 결과로 오인하지 않도록.
+  const isError = (bank.isError || securities.isError) && merged.length === 0
 
   // 사용자가 고른 항목이 현재 목록에 있으면 그걸, 없으면(초기·검색으로 사라짐) 가장 가까운
   // 첫 항목을 기본 선택으로 본다. effect 없이 렌더 시 파생해 동기화 비용을 없앤다.
@@ -156,13 +160,15 @@ function Body({
   if (geoStatus === 'prompting') {
     return <SkeletonList caption="현재 위치를 확인하고 있어요" />
   }
+  // 미지원(unavailable)은 재시도해도 성공할 수 없으므로 안내만, 나머지(denied·일시 오류)는 재시도 동선 제공.
+  if (geoStatus === 'unavailable') {
+    return <Centered message="이 기기에서는 위치 정보를 사용할 수 없어요." />
+  }
   if (geoStatus !== 'granted') {
     const message =
       geoStatus === 'denied'
         ? '위치 권한이 꺼져 있어요. 권한을 허용하면 가까운 지점을 찾아드려요.'
-        : geoStatus === 'unavailable'
-          ? '이 기기에서는 위치 정보를 사용할 수 없어요.'
-          : '위치를 가져오지 못했어요. 잠시 후 다시 시도해 주세요.'
+        : '위치를 가져오지 못했어요. 잠시 후 다시 시도해 주세요.'
     return <Centered message={message} actionLabel="위치 다시 시도" onAction={onRetryLocation} />
   }
 
@@ -194,7 +200,11 @@ function Body({
           const meta = INSTITUTION_META[branch.institution]
           return (
             <li key={key} className="border-t border-divider">
-              <button className="flex w-full items-start gap-3 px-5 py-4 text-left" onClick={() => onSelect(key)}>
+              <button
+                className="flex w-full items-start gap-3 px-5 py-4 text-left"
+                onClick={() => onSelect(key)}
+                aria-pressed={selected}
+              >
                 {/* 지점 아이콘 */}
                 <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-[11px] bg-[#edf2ff]">
                   <svg width="18" height="18" fill="none" viewBox="0 0 18 18">

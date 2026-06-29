@@ -16,4 +16,9 @@ describe('formatDistance', () => {
   it('미터는 반올림 정수로 표시한다', () => {
     expect(formatDistance(319.6)).toBe('320m')
   })
+
+  it('반올림하면 1000m가 되는 경계값은 km로 넘긴다', () => {
+    expect(formatDistance(999.5)).toBe('1.0km')
+    expect(formatDistance(999.4)).toBe('999m')
+  })
 })
