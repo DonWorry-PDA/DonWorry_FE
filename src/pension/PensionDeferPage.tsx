@@ -76,7 +76,7 @@ function PensionDeferPage() {
 
       <StickyFooter>
         <Button
-          onClick={() => navigate('/paycheck-plan/consult', { state: { context: 'PENSION_DEFER' } })}
+          onClick={() => navigate('/paycheck-plan/consult/branch', { state: { context: 'PENSION_DEFER' } })}
         >
           이 비교 들고 상담 신청
         </Button>
