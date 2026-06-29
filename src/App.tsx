@@ -61,6 +61,8 @@ import OrderReservedPage from './order/OrderReservedPage'
 import OrderTransferPage from './order/OrderTransferPage'
 import AssetPage from './asset/AssetPage'
 import RetirementSimulationPage from './retirement/RetirementSimulationPage'
+import NotFoundPage from './error/NotFoundPage'
+import ServerErrorPage from './error/ServerErrorPage'
 
 function AppLayout() {
   useNotificationSSE()
@@ -70,6 +72,7 @@ function AppLayout() {
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
+    errorElement: <ServerErrorPage />,
     children: [
   { path: '/', element: <SplashPage /> },
   { path: '/login', element: <LoginPage /> },
@@ -139,6 +142,7 @@ const router = createBrowserRouter([
   { path: '/order/transfer', element: <OrderTransferPage /> },
   { path: '/pension/defer', element: <PensionDeferPage /> },
   { path: '/retirement-simulation', element: <RetirementSimulationPage /> },
+  { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])
