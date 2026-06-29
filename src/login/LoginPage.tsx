@@ -4,7 +4,7 @@ import { usePinInput } from './hooks/usePinInput'
 
 function LoginPage() {
   // TODO: userId는 앱 전역 인증 컨텍스트에서 가져오도록 교체
-  const { pin, isError, appendDigit, deleteDigit, reset } = usePinInput(1)
+  const { pin, isPending, isError, isServerError, appendDigit, deleteDigit, reset } = usePinInput(1)
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -21,10 +21,14 @@ function LoginPage() {
 
       {/* PIN 점 + 에러 메시지 — 남은 공간에서 세로 중앙 */}
       <div className="flex flex-1 flex-col items-center justify-center">
-        <PinDots count={pin.length} />
-        <div className="mt-3 h-5 text-center">
-          {isError ? (
+        <PinDots count={pin.length} isLoading={isPending} />
+        <div role="status" aria-live="polite" className="mt-3 h-5 text-center">
+          {isPending ? (
+            <p className="text-sub text-ink-sub">인증 중...</p>
+          ) : isError ? (
             <p className="text-sub text-danger">비밀번호가 일치하지 않아요</p>
+          ) : isServerError ? (
+            <p className="text-sub text-danger">오류가 발생했어요. 다시 시도해주세요</p>
           ) : null}
         </div>
       </div>

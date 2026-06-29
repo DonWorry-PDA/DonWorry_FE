@@ -35,11 +35,11 @@ function OrderPinPage() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center">
-        <PinDots count={isPending ? 6 : pin.length} />
+        <PinDots count={pin.length} isLoading={isPending} />
         <div role="status" aria-live="polite" className="mt-3 h-5 text-center">
+          {isPending && <p className="text-sub text-ink-sub">확인 중...</p>}
           {isError && <p className="text-sub text-danger">비밀번호가 일치하지 않아요</p>}
           {isServerError && <p className="text-sub text-danger">오류가 발생했어요. 다시 시도해주세요</p>}
-          {isPending && <p className="text-sub text-ink-hint">확인 중...</p>}
         </div>
       </div>
 
