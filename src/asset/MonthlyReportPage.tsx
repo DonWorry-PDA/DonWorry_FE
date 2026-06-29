@@ -2,15 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import useGetMonthlyReport from './hooks/useGetMonthlyReport'
+import { formatWon } from '../common/utils/formatKrw'
 
 function toYearMonth(ym: string) {
   const [y, m] = ym.split('-')
   return `${y}년 ${parseInt(m)}월`
 }
 
-function toMan(val: number) {
-  return Math.round(val / 10_000).toLocaleString('ko-KR')
-}
 
 function prevMonth(ym: string) {
   const [y, m] = ym.split('-').map(Number)
@@ -95,23 +93,23 @@ function MonthlyReportPage() {
             <section className="mt-6">
               <p className="text-body text-ink-hint">자산 변화</p>
               {data.assetChange.changeAmount !== null && data.assetChange.previousTotal !== null ? (
-                <div className="mt-1 flex items-end gap-2">
+                <div className="mt-1 flex flex-col gap-0.5">
                   <span
                     className={`text-card font-bold ${
                       data.assetChange.changeAmount >= 0 ? 'text-success' : 'text-danger'
                     }`}
                   >
                     {data.assetChange.changeAmount >= 0 ? '+' : ''}
-                    {toMan(data.assetChange.changeAmount)}만원
+                    {formatWon(data.assetChange.changeAmount)}
                   </span>
-                  <span className="text-caption text-ink-hint pb-0.5">
-                    {toMan(data.assetChange.previousTotal)}만 → {toMan(data.assetChange.currentTotal)}만
+                  <span className="text-caption text-ink-hint">
+                    {formatWon(data.assetChange.previousTotal)} → {formatWon(data.assetChange.currentTotal)}
                   </span>
                 </div>
               ) : (
                 <div className="mt-1 flex items-end gap-2">
                   <span className="text-card font-bold text-ink">
-                    {toMan(data.assetChange.currentTotal)}만원
+                    {formatWon(data.assetChange.currentTotal)}
                   </span>
                   <span className="text-caption text-ink-hint pb-0.5">전월 데이터 없음</span>
                 </div>
@@ -149,7 +147,7 @@ function MonthlyReportPage() {
                     >
                       <span className="text-body text-ink-sub">{label}</span>
                       <span className="text-md text-ink font-bold">
-                        {toMan(value)}만원
+                        {formatWon(value)}
                         {delta !== null && (
                           <span
                             className={`text-sub ml-1.5 font-bold ${
@@ -172,7 +170,7 @@ function MonthlyReportPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-body text-ink-sub">이번 달 소비</span>
                   <span className="text-md text-ink font-bold">
-                    {toMan(data.spending.expenseAmount)}만원 · {data.spending.judgment}
+                    {formatWon(data.spending.expenseAmount)} · {data.spending.judgment}
                   </span>
                 </div>
                 <div className="bg-track mt-3 h-2 overflow-hidden rounded-full">
@@ -200,10 +198,10 @@ function MonthlyReportPage() {
                   <span className="text-body text-ink-sub">들어올 돈</span>
                   <div className="text-right">
                     <span className="text-md text-ink font-bold">
-                      {toMan(data.nextMonthPreview.incomingTotal)}만원
+                      {formatWon(data.nextMonthPreview.incomingTotal)}
                     </span>
                     <span className="text-sub text-ink-hint ml-1.5">
-                      (연금 {toMan(data.nextMonthPreview.pensionAmount)} · 배당 {toMan(data.nextMonthPreview.dividendAmount)})
+                      (연금 {formatWon(data.nextMonthPreview.pensionAmount)} · 배당 {formatWon(data.nextMonthPreview.dividendAmount)})
                     </span>
                   </div>
                 </div>
@@ -211,7 +209,7 @@ function MonthlyReportPage() {
                   <span className="text-body text-ink-sub">나갈 돈</span>
                   <div className="text-right">
                     <span className="text-md text-ink font-bold">
-                      {toMan(data.nextMonthPreview.outgoingTotal)}만원
+                      {formatWon(data.nextMonthPreview.outgoingTotal)}
                     </span>
                     <span
                       className={`text-sub ml-1.5 font-bold ${

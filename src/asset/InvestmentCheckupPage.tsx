@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
-import { formatKrw, formatWon } from '../common/utils/formatKrw'
+import { formatWon } from '../common/utils/formatKrw'
 import useGetInvestmentCheck from './hooks/useGetInvestmentCheck'
 import type { AssetRole, RoleContribution } from './types/investmentCheck'
 
@@ -37,17 +37,17 @@ function buildSummaryLines(roles: RoleContribution[]): string[] {
 
   for (const role of rest) {
     if (role.role === 'IDLE') {
-      lines.push(`잠자는 돈 ${formatKrw(role.amount)}은 아직 일하지 않고 쉬고 있어요.`)
+      lines.push(`잠자는 돈 ${formatWon(role.amount)}은 아직 일하지 않고 쉬고 있어요.`)
     } else if (role.role === 'GROWTH') {
       // 개별주에서도 실배당이 나오면 함께 보여준다(0이면 자본차익 직무만).
       lines.push(
         role.monthlyCashflow > 0
-          ? `개별주 ${formatKrw(role.amount)}에서도 매달 ${formatWon(role.monthlyCashflow)} 배당이 나와요.`
-          : `개별주 ${formatKrw(role.amount)}은 자본차익을 노리는 돈이에요.`,
+          ? `개별주 ${formatWon(role.amount)}에서도 매달 ${formatWon(role.monthlyCashflow)} 배당이 나와요.`
+          : `개별주 ${formatWon(role.amount)}은 자본차익을 노리는 돈이에요.`,
       )
     } else if (role.role === 'PENSION') {
       // 나이 비의존 문구. 55세를 이미 지난 사용자에게도 틀리지 않게 한다(#170).
-      lines.push(`연금 ${formatKrw(role.amount)}은 노후를 위해 따로 묶여 있어요.`)
+      lines.push(`연금 ${formatWon(role.amount)}은 노후를 위해 따로 묶여 있어요.`)
     }
   }
 
@@ -155,7 +155,7 @@ function InvestmentCheckupPage() {
                         : (NOTE_OVERRIDE[role.role] ?? role.note)}
                     </p>
                   </div>
-                  <span className="text-md text-ink shrink-0 font-bold">{formatKrw(role.amount)}</span>
+                  <span className="text-md text-ink shrink-0 font-bold">{formatWon(role.amount)}</span>
                 </div>
               ))}
             </div>
@@ -170,7 +170,7 @@ function InvestmentCheckupPage() {
                   <div className="rounded-card-lg border-line mt-6 border bg-white p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-body text-ink font-bold">내가 담은 개별주</span>
-                      <span className="text-md text-ink font-bold">{formatKrw(g.amount)}</span>
+                      <span className="text-md text-ink font-bold">{formatWon(g.amount)}</span>
                     </div>
 
                     {/* 한 종목 쏠림 */}
@@ -250,7 +250,7 @@ function InvestmentCheckupPage() {
                 <div className="rounded-card-lg bg-surface-muted mt-6 p-4">
                   <p className="text-body text-ink-sub font-bold">분배 데이터 공백 안내</p>
                   <p className="text-caption text-ink-hint mt-1.5 leading-[1.6]">
-                    아래 자산 {formatKrw(data.uncoveredCashflow.amount)}은 분배 데이터가 없어 현금흐름에
+                    아래 자산 {formatWon(data.uncoveredCashflow.amount)}은 분배 데이터가 없어 현금흐름에
                     반영되지 않았어요.
                   </p>
                   <ul className="mt-2.5 flex flex-col gap-1">
