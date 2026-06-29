@@ -168,8 +168,14 @@ function HomeStabilityCtaContent({ data }: { data: HomeStabilityData }) {
     <>
       <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
       <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
-        <span className="opacity-75">부족한 금액</span>
-        <span className="font-inter tabular-nums font-semibold">{formatKrw(data.shortfallKrw ?? 0)}</span>
+        {data.shortfallKrw != null && data.shortfallKrw > 0 ? (
+          <>
+            <span className="opacity-75">부족한 금액</span>
+            <span className="font-inter tabular-nums font-semibold">{formatKrw(data.shortfallKrw)}</span>
+          </>
+        ) : (
+          <span className="opacity-75">새 설계</span>
+        )}
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
           <path d="M9 18 L15 12 L9 6"/>
         </svg>
@@ -342,7 +348,7 @@ function HomePage() {
                   </div>
                 </div>
 
-                {(stability.hasActivePlan || (stability.shortfallKrw != null && stability.shortfallKrw > 0)) && (
+                <div className="flex flex-col gap-2">
                   <button
                     onClick={() => navigate('/paycheck-plan/status')}
                     className="animate-cta-enter relative overflow-hidden w-full bg-primary text-white rounded-btn py-[14px] px-5 flex items-center justify-between"
@@ -354,7 +360,21 @@ function HomePage() {
                     />
                     <HomeStabilityCtaContent data={stability} />
                   </button>
-                )}
+                  {stability.hasActivePlan && (
+                    <button
+                      onClick={() => navigate('/paycheck-plan/assets')}
+                      className="w-full rounded-btn border border-primary-dim bg-primary-tint text-primary py-[13px] px-5 flex items-center justify-between"
+                    >
+                      <span className="text-md font-bold whitespace-nowrap">월급 다시 설계하기</span>
+                      <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
+                        <span className="opacity-75">새 설계</span>
+                        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
+                          <path d="M9 18 L15 12 L9 6"/>
+                        </svg>
+                      </span>
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <button

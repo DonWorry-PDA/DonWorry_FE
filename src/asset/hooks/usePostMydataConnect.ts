@@ -16,6 +16,7 @@ const usePostMydataConnect = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assetHub'] })
       queryClient.invalidateQueries({ queryKey: ['lifeStability'] })
+      queryClient.invalidateQueries({ queryKey: ['monthly-salary'] })
     },
   })
 }
