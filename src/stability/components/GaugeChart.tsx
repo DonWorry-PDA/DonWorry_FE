@@ -36,9 +36,9 @@ function GaugeChart({ percentage, status, targetLabel }: Props) {
 
   return (
     <svg
-      viewBox="0 0 244 166"
+      viewBox="0 0 244 174"
       width="244"
-      height="166"
+      height="174"
       overflow="visible"
       fill="none"
       aria-label={`생활 안정도 ${safePct}%, 목표 ${targetLabel ?? '100%'}`}
@@ -107,7 +107,7 @@ function GaugeChart({ percentage, status, targetLabel }: Props) {
         {targetLabel ? (
           <>
             <tspan x={CX + R} y={144} dominantBaseline="central">목표</tspan>
-            <tspan x={CX + R} y={159} dominantBaseline="central">{targetLabel}</tspan>
+            <tspan x={CX + R} y={163} dominantBaseline="central">{targetLabel}</tspan>
           </>
         ) : (
           <tspan x={CX + R} y={148} dominantBaseline="central">목표 100%</tspan>

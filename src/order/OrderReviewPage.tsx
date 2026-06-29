@@ -75,7 +75,7 @@ function OrderReviewPage() {
   }
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-dvh overflow-hidden">
       <AppBar title="주문 검토" onBack={() => navigate(-1)} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 pb-6">

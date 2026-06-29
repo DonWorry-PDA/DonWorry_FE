@@ -45,7 +45,7 @@ function MonthlyReportPage() {
           <button
             aria-label="이전 달"
             onClick={() => setMonth(prevMonth(month))}
-            className="text-ink-sub text-md px-2"
+            className="text-ink-sub text-heading px-2 leading-none"
           >
             ‹
           </button>
@@ -54,7 +54,7 @@ function MonthlyReportPage() {
             aria-label="다음 달"
             onClick={() => setMonth(nextMonth(month))}
             disabled={isCurrentMonth}
-            className="text-md px-2 disabled:text-disabled"
+            className="text-heading px-2 leading-none disabled:text-disabled"
           >
             ›
           </button>
@@ -195,13 +195,13 @@ function MonthlyReportPage() {
               <p className="text-body text-ink-hint mb-2">다음 달 미리 보기</p>
               <div className="rounded-card-lg border border-line flex flex-col bg-white">
                 <div className="flex items-center justify-between px-4 py-3.5">
-                  <span className="text-body text-ink-sub">들어올 돈</span>
-                  <div className="text-right">
+                  <span className="text-body text-ink-sub whitespace-nowrap">들어올 돈</span>
+                  <div className="text-right flex flex-col gap-0.5">
                     <span className="text-md text-ink font-bold">
                       {formatWon(data.nextMonthPreview.incomingTotal)}
                     </span>
-                    <span className="text-sub text-ink-hint ml-1.5">
-                      (연금 {formatWon(data.nextMonthPreview.pensionAmount)} · 배당 {formatWon(data.nextMonthPreview.dividendAmount)})
+                    <span className="text-sub text-ink-hint">
+                      (연금 {formatWon(data.nextMonthPreview.pensionAmount)} 배당 {formatWon(data.nextMonthPreview.dividendAmount)})
                     </span>
                   </div>
                 </div>
