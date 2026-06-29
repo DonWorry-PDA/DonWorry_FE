@@ -230,7 +230,9 @@ function MypagePage() {
             </div>
             <div className="flex flex-col items-center pb-3">
               <p className="text-sub text-ink-hint text-center leading-[1.65]">
-                이용해주셔서 감사해요. 홈에서 다시 만나요.
+                이용해주셔서 감사해요.
+                <br />
+                홈에서 다시 만나요.
               </p>
             </div>
             <button
