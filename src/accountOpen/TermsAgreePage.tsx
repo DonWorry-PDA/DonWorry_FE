@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
+import usePostAccountOpen from './hooks/usePostAccountOpen'
 
 type TermsItem = {
   id: string
@@ -78,8 +79,10 @@ function ChevronRight() {
 function TermsAgreePage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { returnTo, planId } = (location.state as { returnTo?: string; planId?: string } | null) ?? {}
+  const { phone, returnTo, planId } =
+    (location.state as { phone?: string; returnTo?: string; planId?: string } | null) ?? {}
   const [agreed, setAgreed] = useState<AgreedState>(INITIAL_STATE)
+  const { mutate: openAccount, isPending: isOpening, error: openError } = usePostAccountOpen()
 
   const allChecked = TERMS_ITEMS.every((item) => agreed[item.id])
   const requiredChecked = TERMS_ITEMS.filter((item) => item.required).every((item) => agreed[item.id])
@@ -91,6 +94,29 @@ function TermsAgreePage() {
 
   const toggle = (id: string) => {
     setAgreed((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const handleOpenAccount = () => {
+    if (!requiredChecked || !phone) return
+
+    const agreedTermIds = TERMS_ITEMS
+      .filter((item) => agreed[item.id])
+      .map((item) => item.termId)
+
+    openAccount(
+      { agreedTermIds, phone },
+      {
+        onSuccess: (result) =>
+          navigate('/account-open/complete', {
+            state: {
+              accountNumber: result.accountNumber,
+              openedAt: result.openedAt,
+              returnTo,
+              planId,
+            },
+          }),
+      },
+    )
   }
 
   return (
@@ -200,23 +226,21 @@ function TermsAgreePage() {
 
       <StickyFooter>
         <Button
-          disabled={!requiredChecked}
-          onClick={() =>
-            navigate('/account-open/complete', {
-              state: {
-                accountNumber: '123-456-789012',
-                openedAt: new Date()
-                  .toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
-                  .replace(/\.\s?/g, '.')
-                  .replace(/\.$/, ''),
-                returnTo,
-                planId,
-              },
-            })
-          }
+          disabled={!requiredChecked || !phone || isOpening}
+          onClick={handleOpenAccount}
         >
           동의하고 계속
         </Button>
+        {!phone && (
+          <p className="mt-2 text-center text-caption text-danger">
+            휴대폰 인증을 다시 진행해주세요.
+          </p>
+        )}
+        {openError && (
+          <p className="mt-2 text-center text-caption text-danger">
+            계좌 개설에 실패했어요. 잠시 후 다시 시도해주세요.
+          </p>
+        )}
       </StickyFooter>
     </div>
   )

@@ -67,7 +67,7 @@ function OtpVerifyPage() {
     if (!isComplete) return
     verifyOtp(
       { phone, otp },
-      { onSuccess: () => navigate('/account-open/terms', { state: { returnTo, planId } }) },
+      { onSuccess: () => navigate('/account-open/terms', { state: { phone, returnTo, planId } }) },
     )
   }
 
