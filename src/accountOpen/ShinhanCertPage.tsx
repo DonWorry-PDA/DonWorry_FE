@@ -4,6 +4,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import useCurrentUser from '../common/hooks/useCurrentUser'
+import usePostShinhanCertVerify from './hooks/usePostShinhanCertVerify'
 const STEPS = [
   { step: 1, label: '인증' },
   { step: 2, label: '약관' },
@@ -15,6 +16,18 @@ function ShinhanCertPage() {
   const location = useLocation()
   const { returnTo, planId } = (location.state as { returnTo?: string; planId?: string } | null) ?? {}
   const { data: currentUser } = useCurrentUser()
+  const {
+    mutate: verifyShinhanCert,
+    isPending: isVerifying,
+    error: verifyError,
+  } = usePostShinhanCertVerify()
+
+  const handleVerify = () => {
+    verifyShinhanCert(undefined, {
+      onSuccess: () =>
+        navigate('/account-open/terms', { state: { authMethod: 'shinhan', returnTo, planId } }),
+    })
+  }
 
   return (
     <div className="flex flex-col bg-white h-dvh">
@@ -77,15 +90,19 @@ function ShinhanCertPage() {
           </div>
 
         </div>
+        {verifyError && (
+          <p className="mt-4 text-caption text-danger" role="alert">
+            신한인증서 인증 처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.
+          </p>
+        )}
       </main>
 
       <StickyFooter>
         <Button
-          onClick={() =>
-            navigate('/account-open/terms', { state: { authMethod: 'shinhan', returnTo, planId } })
-          }
+          disabled={isVerifying}
+          onClick={handleVerify}
         >
-          인증하기
+          {isVerifying ? '인증 중' : '인증하기'}
         </Button>
       </StickyFooter>
     </div>
