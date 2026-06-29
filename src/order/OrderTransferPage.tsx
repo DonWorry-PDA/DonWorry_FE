@@ -9,7 +9,8 @@ import { MydataAccount } from './types/account'
 
 const EMPTY_ITEMS: BuyItem[] = []
 
-function maskNumber(accountNumber: string) {
+function maskNumber(accountNumber: string | null) {
+  if (!accountNumber) return '—'
   if (accountNumber.length <= 4) return accountNumber
   return accountNumber.slice(0, -4).replace(/\d/g, '*') + accountNumber.slice(-4)
 }

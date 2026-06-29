@@ -19,7 +19,7 @@ function PaycheckPlansPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
         <div className="flex-1 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-8 w-48 animate-pulse rounded bg-surface-muted" />
@@ -36,7 +36,7 @@ function PaycheckPlansPage() {
 
   if (isError || !data) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-dvh">
         <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
         <CenterMessage variant="alert">
           <div className="flex flex-col items-center gap-3">
@@ -59,7 +59,7 @@ function PaycheckPlansPage() {
   const plans = mapPlans(data)
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-dvh">
       <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
 
       {isStructuralShortage ? (
