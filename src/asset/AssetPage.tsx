@@ -121,9 +121,24 @@ function AssetPage() {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  const sortedGroups = [...(realtimeComposition?.groups ?? [])].sort(
+  const rawGroups = [...(realtimeComposition?.groups ?? [])].sort(
     (a, b) => b.totalAmount - a.totalAmount
   )
+  const cmaGroup = rawGroups.find((g) => g.category === 'CMA')
+  const sortedGroups =
+    cmaGroup && rawGroups.some((g) => g.category === 'STOCK')
+      ? rawGroups
+          .filter((g) => g.category !== 'CMA')
+          .map((g) =>
+            g.category === 'STOCK'
+              ? {
+                  ...g,
+                  totalAmount: g.totalAmount + cmaGroup.totalAmount,
+                  accounts: [...g.accounts, ...cmaGroup.accounts],
+                }
+              : g
+          )
+      : rawGroups
 
   const allocationBase =
     realtimeComposition && realtimeComposition.totalAsset > 0
@@ -370,68 +385,48 @@ function AssetPage() {
                             </div>
                           </button>
 
-                          {/* 계좌별 상세 — 기관별 묶음으로 표시 */}
+                          {/* 계좌별 상세 — 계좌 단위 중분류로 표시 */}
                           {isExpanded && (
                             <div
                               id={`group-detail-${seg.category}`}
                               className="ml-[21px] flex flex-col gap-1 pb-3"
                             >
-                              {Object.entries(
-                                seg.accounts.reduce<Record<string, typeof seg.accounts>>(
-                                  (acc, account) => {
-                                    ;(acc[account.institutionName] ??= []).push(account)
-                                    return acc
-                                  },
-                                  {}
+                              {seg.accounts.map((account) => {
+                                const holdingsSum = account.holdings.reduce(
+                                  (s, h) => s + h.evaluationAmount,
+                                  0
                                 )
-                              ).map(([institutionName, accounts]) => {
-                                const institutionTotal = accounts.reduce((sum, account) => {
-                                  const holdingsSum = account.holdings.reduce((s, h) => s + h.evaluationAmount, 0)
-                                  return sum + account.balance + holdingsSum
-                                }, 0)
-                                const allHoldings = accounts.flatMap((account) =>
-                                  account.holdings.map((holding) => ({ holding, account }))
-                                )
+                                const accountTotal = account.balance + holdingsSum
                                 return (
-                                  <div key={institutionName} className="flex flex-col gap-1">
+                                  <div key={account.accountId} className="flex flex-col gap-1">
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center gap-1.5">
                                         <p className="text-sub text-ink-sub font-semibold">
-                                          {institutionName}
+                                          {account.institutionName}
                                         </p>
-                                        {[...new Set(accounts.map((a) => accountTypeLabel(a.accountType)))].map((label) => (
-                                          <span
-                                            key={label}
-                                            className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5"
-                                          >
-                                            {label}
-                                          </span>
-                                        ))}
+                                        <span className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5">
+                                          {accountTypeLabel(account.accountType)}
+                                        </span>
                                       </div>
-                                      {institutionTotal > 0 && (
+                                      {accountTotal > 0 && (
                                         <p className="font-inter text-sub text-ink font-semibold">
-                                          {formatKrwShort(institutionTotal)}
+                                          {formatKrwShort(accountTotal)}
                                         </p>
                                       )}
                                     </div>
 
-                                    {accounts.map((account) =>
-                                      account.balance > 0 && account.holdings.length > 0 ? (
-                                        <div
-                                          key={`${account.accountId}-balance`}
-                                          className="flex flex-col gap-0.5 py-0.5 pl-1"
-                                        >
-                                          <div className="flex items-center justify-between">
-                                            <p className="text-sub text-ink-sub mr-3 truncate">예수금</p>
-                                            <p className="font-inter text-sub text-ink-hint shrink-0">
-                                              {formatKrwShort(account.balance)}
-                                            </p>
-                                          </div>
+                                    {account.balance > 0 && account.holdings.length > 0 && (
+                                      <div className="flex flex-col gap-0.5 py-0.5 pl-1">
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-sub text-ink-sub mr-3 truncate">예수금</p>
+                                          <p className="font-inter text-sub text-ink-hint shrink-0">
+                                            {formatKrwShort(account.balance)}
+                                          </p>
                                         </div>
-                                      ) : null
+                                      </div>
                                     )}
 
-                                    {allHoldings.map(({ holding, account }) => (
+                                    {account.holdings.map((holding) => (
                                       <div
                                         key={`${account.accountId}-${holding.productName}`}
                                         className="flex flex-col gap-0.5 py-0.5 pl-1"
