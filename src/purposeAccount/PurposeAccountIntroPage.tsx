@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import AppBar from '@/common/components/AppBar'
+import useGetAssetHub from '@/asset/hooks/useGetAssetHub'
+import { formatKrw } from '@/common/utils/formatKrw'
 
 const INTRO_ICONS = [
   {
@@ -59,6 +61,8 @@ const INTRO_ICONS = [
 
 export default function PurposeAccountIntroPage() {
   const navigate = useNavigate()
+  const { data: hub, isLoading } = useGetAssetHub()
+  const monthlyIncomeLabel = hub ? formatKrw(hub.monthlyIncome) : isLoading ? '불러오는 중' : '확인 필요'
 
   return (
     <div className="flex flex-col h-dvh bg-white">
@@ -66,20 +70,22 @@ export default function PurposeAccountIntroPage() {
 
       <div className="flex-1 flex flex-col px-6 pt-4 overflow-y-auto">
         <h1 className="text-heading font-bold text-ink leading-snug">
-          이제 들어오는 돈을
+          은퇴 후 쓸 돈을
           <br />
-          <span className="text-primary">목적별로 나눠</span> 모아요
+          <span className="text-primary">목적별로 나눠</span> 볼까요?
         </h1>
         <p className="text-body text-ink-sub mt-3">
-          설계안이 매달 만들어 주는 돈을, 의료비·여행처럼
+          의료비·비상금·여행 자금처럼 목적을 나누면
           <br />
-          목적별 통장에 자동으로 쌓을 수 있어요.
+          필요한 순간에 얼마가 준비됐는지 더 쉽게 볼 수 있어요.
         </p>
 
         {/* Distribution preview card */}
         <div className="mt-8 bg-surface rounded-card-lg p-5">
-          <p className="text-sub text-ink-hint text-center mb-3">매달 들어오는 분배금</p>
-          <p className="font-inter text-display font-bold text-ink text-center">55만원</p>
+          <p className="text-sub text-ink-hint text-center mb-3">예상 월 현금흐름</p>
+          <p className="font-inter text-display font-bold text-ink text-center">
+            {monthlyIncomeLabel}
+          </p>
 
           {/* Arrow down */}
           <div className="flex justify-center my-4">
@@ -113,7 +119,7 @@ export default function PurposeAccountIntroPage() {
         {/* Info box */}
         <div className="mt-4 bg-surface-muted rounded-card px-4 py-3">
           <p className="text-sub text-ink-sub">
-            통장은 새로 개설하지 않아도 돼요. 지금 계좌 안에 목적별 보관함으로 만들어져요.
+            실제 통장 구분이나 계좌 개설이 필요하면 상담을 통해 내 상황에 맞게 설계할 수 있어요.
           </p>
         </div>
       </div>
@@ -124,7 +130,7 @@ export default function PurposeAccountIntroPage() {
           onClick={() => navigate('/purpose-account/select')}
           className="w-full bg-primary text-white rounded-btn text-btn font-bold py-4"
         >
-          목적별 통장 만들기
+          목적별 통장 알아보기
         </button>
         <button
           onClick={() => navigate(-1)}

@@ -19,6 +19,7 @@ export type ManageMenuKey =
   | 'pensionDefer'
   | 'retirementSim'
   | 'monthlyReport'
+  | 'purposeAccount'
 
 export type MenuIconTone = 'primary' | 'blue' | 'coral' | 'pink' | 'yellow' | 'mint' | 'warning' | 'muted'
 
