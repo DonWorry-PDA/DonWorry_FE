@@ -3,11 +3,10 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import CheckBadge from '../common/components/CheckBadge'
-import type { Branch, ConsultMethod } from './types/paycheckPlan'
+import type { SelectedBranch, ConsultMethod } from './types/paycheckPlan'
 
 const METHOD_LABELS: Record<ConsultMethod, string> = {
   face: '영업점 대면 상담',
-  video: '화상 상담',
   phone: '전화 상담',
 }
 
@@ -34,7 +33,7 @@ function shortBranchName(name: string): string {
 }
 
 type LocationState = {
-  branch: Branch
+  branch: SelectedBranch
   scheduledAt: string
   method: ConsultMethod
 }

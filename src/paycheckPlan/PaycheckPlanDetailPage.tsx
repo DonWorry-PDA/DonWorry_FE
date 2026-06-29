@@ -108,7 +108,9 @@ function PaycheckPlanDetailPage() {
           </Button>
           <Button
             onClick={() =>
-              navigate('/paycheck-plan/consult/branch', { state: { context: 'SALARY_PLAN', planId } })
+              navigate('/paycheck-plan/consult/branch', {
+                state: { context: 'SALARY_PLAN', planId, institution: 'SHINHAN_SECURITIES' },
+              })
             }
           >
             전문가와 같이 보기

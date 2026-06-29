@@ -1,14 +1,13 @@
 import { useNavigate, type NavigateFunction } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import BottomNav from '../common/components/BottomNav'
-import { useGetConsultations, usePostConsultationSeed } from './hooks/consultation'
+import { useGetConsultations } from './hooks/consultation'
 import { toConsultRecord } from './utils/consultation'
 import type { ConsultRecord } from './types/mypage'
 
 function ConsultHistoryPage() {
   const navigate = useNavigate()
   const { data, isLoading, isError, refetch } = useGetConsultations()
-  const seed = usePostConsultationSeed()
 
   // CANCELLED는 목록에서 제외
   const records: ConsultRecord[] = (data ?? [])
@@ -79,13 +78,6 @@ function ConsultHistoryPage() {
             <div className="flex flex-col items-center gap-3 py-10">
               <p className="text-md font-medium text-ink">상담 내역이 없어요</p>
               <p className="text-sub text-ink-hint">예약하신 상담이 여기에 표시됩니다</p>
-              <button
-                onClick={() => seed.mutate()}
-                disabled={seed.isPending}
-                className="mt-1 rounded-btn border border-line px-5 py-2.5 text-body font-semibold text-primary disabled:opacity-50"
-              >
-                {seed.isPending ? '생성 중…' : '데모 상담 생성하기'}
-              </button>
             </div>
           ) : (
             records.map((record) => (

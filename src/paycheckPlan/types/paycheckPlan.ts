@@ -1,3 +1,5 @@
+import type { Institution } from '@/branch/types/branch'
+
 export type AssetCategory = {
   id: string
   name: string
@@ -134,17 +136,17 @@ export type ExecutionSummary = {
   notice: string
 }
 
-export type Branch = {
-  id: string
+/** 지점 선택 화면(BranchFinderPage)에서 고른 영업점 — 예약 POST에 쓸 실 DB branchId를 들고 다닌다. */
+export type SelectedBranch = {
+  branchId: number
+  institution: Institution
   name: string
-  type: 'PWM' | '영업점'
   address: string
-  hours: string
-  available: boolean
   distance: string
 }
 
-export type ConsultMethod = 'face' | 'video' | 'phone'
+// 상담 방식 — 대면/전화 2종(BE FACE_TO_FACE/PHONE와 매핑). 화상은 제거.
+export type ConsultMethod = 'face' | 'phone'
 
 export type ConsultType = 'pb'
 
