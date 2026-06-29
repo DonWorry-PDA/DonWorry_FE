@@ -149,6 +149,35 @@ const toStabilityData = (hub: AssetHubResponse): HomeStabilityData | null => {
   }
 }
 
+function HomeStabilityCtaContent({ data }: { data: HomeStabilityData }) {
+  if (data.hasActivePlan) {
+    return (
+      <>
+        <span className="text-md font-bold whitespace-nowrap">내 월급 현황 보기</span>
+        <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
+          <span className="opacity-75">운용 현황</span>
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
+            <path d="M9 18 L15 12 L9 6"/>
+          </svg>
+        </span>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
+      <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
+        <span className="opacity-75">부족한 금액</span>
+        <span className="font-inter tabular-nums font-semibold">{formatKrw(data.shortfallKrw ?? 0)}</span>
+        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
+          <path d="M9 18 L15 12 L9 6"/>
+        </svg>
+      </span>
+    </>
+  )
+}
+
 function HomePage() {
   const navigate = useNavigate()
   const { hub, realtimeTotalAsset, realtimeAllocation, isLoading, refetch } = useRealtimeAssetHub()
@@ -316,34 +345,14 @@ function HomePage() {
                 {(stability.hasActivePlan || (stability.shortfallKrw != null && stability.shortfallKrw > 0)) && (
                   <button
                     onClick={() => navigate('/paycheck-plan/status')}
-                    className={`animate-cta-enter relative overflow-hidden w-full bg-primary rounded-btn py-[14px] px-5 flex items-center justify-between ${
-                      stability.hasActivePlan ? 'text-transparent' : 'text-white'
-                    }`}
+                    className="animate-cta-enter relative overflow-hidden w-full bg-primary text-white rounded-btn py-[14px] px-5 flex items-center justify-between"
                   >
                     <div
                       aria-hidden="true"
                       className="animate-cta-shimmer pointer-events-none absolute inset-y-0 w-1/2"
                       style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)' }}
                     />
-                    {stability.hasActivePlan && (
-                      <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between px-5 text-white">
-                        <span className="text-md font-bold whitespace-nowrap">내 월급 현황 보기</span>
-                        <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
-                          <span className="opacity-75">운용 현황</span>
-                          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
-                            <path d="M9 18 L15 12 L9 6"/>
-                          </svg>
-                        </span>
-                      </span>
-                    )}
-                    <span className="text-md font-bold whitespace-nowrap">월급 설계하기</span>
-                    <span className="text-body flex items-center gap-[3px] whitespace-nowrap">
-                      <span className="opacity-75">부족한 금액</span>
-                      <span className="font-inter tabular-nums font-semibold">{formatKrw(stability.shortfallKrw ?? 0)}</span>
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" className="opacity-75">
-                        <path d="M9 18 L15 12 L9 6"/>
-                      </svg>
-                    </span>
+                    <HomeStabilityCtaContent data={stability} />
                   </button>
                 )}
               </div>
