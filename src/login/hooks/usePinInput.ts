@@ -49,11 +49,12 @@ export function usePinInput(userId: number): UsePinInputReturn {
   }
 
   function deleteDigit() {
-    if (isError || isServerError) return
+    if (isPending || isError || isServerError) return
     setPin((p) => p.slice(0, -1))
   }
 
   function reset() {
+    if (isPending) return
     setPin('')
   }
 

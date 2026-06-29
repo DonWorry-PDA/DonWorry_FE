@@ -10,7 +10,7 @@ function PinDots({ count, isLoading = false }: Props) {
         <div key={i} className="flex size-6 items-center justify-center">
           {i < count ? (
             <div
-              className={`rounded-full bg-primary transition-all duration-150 ${isLoading ? 'animate-bounce size-4' : 'size-3.5'}`}
+              className={`rounded-full bg-primary transition-all duration-150 ${isLoading ? 'motion-safe:animate-bounce size-4' : 'size-3.5'}`}
               style={isLoading ? { animationDelay: `${i * 60}ms`, animationDuration: '0.6s' } : undefined}
             />
           ) : (
