@@ -129,7 +129,7 @@ function PaycheckDiagnosisPage() {
   const shortfallLabel = formatShortfall(data.monthlyShortfall)
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-dvh overflow-hidden">
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
       <StepProgress current={2} total={2} />
 
