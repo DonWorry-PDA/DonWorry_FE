@@ -68,6 +68,7 @@ describe('BranchFinderPage', () => {
       state: {
         branch: {
           id: 'SHINHAN_BANK-1',
+          institution: 'SHINHAN_BANK',
           name: '신한은행 광화문점',
           address: '서울 종로구 새문안로 50',
           distance: '320m',
@@ -85,7 +86,11 @@ describe('BranchFinderPage', () => {
       '/paycheck-plan/consult',
       expect.objectContaining({
         state: expect.objectContaining({
-          branch: expect.objectContaining({ id: 'SHINHAN_SECURITIES-1', distance: '1.2km' }),
+          branch: expect.objectContaining({
+            id: 'SHINHAN_SECURITIES-1',
+            institution: 'SHINHAN_SECURITIES',
+            distance: '1.2km',
+          }),
         }),
       }),
     )

@@ -71,12 +71,14 @@ function BranchFinderPage() {
   const handleConfirm = () => {
     const selected = filtered.find((b) => branchKey(b) === selectedKey)
     if (!selected) return
-    // 상담 화면이 읽는 필드(name·address·distance)만 BE 값으로 채워 넘긴다.
+    // 상담 화면이 읽는 필드(name·address·distance)에 더해, 기관 구분(institution)도
+    // 함께 넘긴다 — 상담/BE가 어느 기관 지점인지 알아야 할 때 id prefix 파싱 없이 쓰도록.
     navigate('/paycheck-plan/consult', {
       state: {
         ...state,
         branch: {
           id: branchKey(selected),
+          institution: selected.institution,
           name: selected.name,
           address: selected.address,
           distance: formatDistance(selected.distanceMeters),
