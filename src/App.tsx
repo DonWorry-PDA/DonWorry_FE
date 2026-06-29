@@ -29,7 +29,6 @@ import PaycheckPlanDetailPage from './paycheckPlan/PaycheckPlanDetailPage'
 import PaycheckPlanStatusPage from './paycheckPlan/PaycheckPlanStatusPage'
 import PaycheckExecutePage from './paycheckPlan/PaycheckExecutePage'
 import PaycheckConsultPage from './paycheckPlan/PaycheckConsultPage'
-import PaycheckBranchSelectPage from './paycheckPlan/PaycheckBranchSelectPage'
 import PaycheckConsultCompletePage from './paycheckPlan/PaycheckConsultCompletePage'
 import StabilityPage from './stability/StabilityPage'
 import HomePage from './home/HomePage'
@@ -71,6 +70,7 @@ import PurposeSetupPage from './purposeAccount/PurposeSetupPage'
 import PurposeDistributionPage from './purposeAccount/PurposeDistributionPage'
 import PurposeDashboardPage from './purposeAccount/PurposeDashboardPage'
 import PurposeDetailPage from './purposeAccount/PurposeDetailPage'
+import BranchFinderPage from './branch/BranchFinderPage'
 
 function AppLayout() {
   useNotificationSSE()
@@ -117,7 +117,7 @@ const router = createBrowserRouter([
   { path: '/paycheck-plan/compare', element: <PaycheckComparePage /> },
   { path: '/paycheck-plan/plans/:planId', element: <PaycheckPlanDetailPage /> },
   { path: '/paycheck-plan/execute', element: <PaycheckExecutePage /> },
-  { path: '/paycheck-plan/consult/branch', element: <PaycheckBranchSelectPage /> },
+  { path: '/paycheck-plan/consult/branch', element: <BranchFinderPage /> },
   { path: '/paycheck-plan/consult', element: <PaycheckConsultPage /> },
   { path: '/paycheck-plan/consult/complete', element: <PaycheckConsultCompletePage /> },
   { path: '/home', element: <HomePage /> },
@@ -152,6 +152,7 @@ const router = createBrowserRouter([
   { path: '/order/transfer', element: <OrderTransferPage /> },
   { path: '/pension/defer', element: <PensionDeferPage /> },
   { path: '/retirement-simulation', element: <RetirementSimulationPage /> },
+  { path: '/branches', element: <BranchFinderPage /> },
   { path: '/purpose-account', element: <PurposeAccountIntroPage /> },
   { path: '/purpose-account/select', element: <PurposeSelectPage /> },
   { path: '/purpose-account/setup', element: <PurposeSetupPage /> },
