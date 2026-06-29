@@ -1,19 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import type { EtfPricePayload } from '@/order/types/product'
 
-/**
- * 여러 ticker를 동시에 구독하는 WS 훅.
- * tickers가 빈 배열이면 연결하지 않는다.
- * 반환값: { [ticker]: currentPrice } 맵 + WS 연결 여부
- */
+const WS_RECONNECT_DELAY_MS = 5_000
+
 const useEtfPriceMap = (tickers: string[]) => {
   const [priceMap, setPriceMap] = useState<Record<string, number>>({})
   const [isLive, setIsLive] = useState(false)
   const wsRef = useRef<WebSocket | null>(null)
-  const tickerSet = tickers.join(',') // 배열 참조 변경 방지용 문자열 키
+  const tickerSet = tickers.join(',')
 
   useEffect(() => {
-    setPriceMap({})
     if (tickers.length === 0) return
 
     const base: string | undefined =
@@ -21,35 +17,62 @@ const useEtfPriceMap = (tickers: string[]) => {
     if (!base) return
 
     const wsUrl = `${base.replace(/^http/, 'ws').replace(/\/$/, '')}/ws/etf/price`
-    const ws = new WebSocket(wsUrl)
-    wsRef.current = ws
 
-    ws.onopen = () => setIsLive(true)
-    ws.onclose = () => setIsLive(false)
-    ws.onerror = () => setIsLive(false)
+    let mounted = true
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
-    ws.onmessage = (event) => {
-      try {
-        const payload: EtfPricePayload = JSON.parse(event.data)
-        if (tickers.includes(payload.ticker)) {
-          setPriceMap((prev) => ({ ...prev, [payload.ticker]: payload.currentPrice }))
+    setPriceMap({})
+
+    const connect = () => {
+      if (!mounted) return
+
+      const ws = new WebSocket(wsUrl)
+      wsRef.current = ws
+
+      ws.onopen = () => {
+        if (mounted) setIsLive(true)
+      }
+
+      ws.onclose = () => {
+        if (!mounted) return
+        setIsLive(false)
+        reconnectTimer = setTimeout(connect, WS_RECONNECT_DELAY_MS)
+      }
+
+      ws.onerror = () => {
+        // onclose가 onerror 이후 항상 발생하므로 재연결은 onclose에서 처리
+      }
+
+      ws.onmessage = (event) => {
+        try {
+          const payload: EtfPricePayload = JSON.parse(event.data)
+          if (tickers.includes(payload.ticker)) {
+            setPriceMap((prev) => ({ ...prev, [payload.ticker]: payload.currentPrice }))
+          }
+        } catch {
+          // 파싱 실패 무시
         }
-      } catch {
-        // 파싱 실패 무시
       }
     }
 
+    connect()
+
     return () => {
-      ws.onopen = null
-      ws.onmessage = null
-      ws.onclose = null
-      ws.onerror = null
-      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-        ws.close()
+      mounted = false
+      if (reconnectTimer) clearTimeout(reconnectTimer)
+      const ws = wsRef.current
+      if (ws) {
+        ws.onopen = null
+        ws.onmessage = null
+        ws.onclose = null
+        ws.onerror = null
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+          ws.close()
+        }
       }
       setIsLive(false)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickerSet])
 
   return { priceMap, isLive }
