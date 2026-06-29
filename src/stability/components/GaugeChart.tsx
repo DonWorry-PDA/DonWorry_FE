@@ -36,12 +36,12 @@ function GaugeChart({ percentage, status, targetLabel }: Props) {
 
   return (
     <svg
-      viewBox="0 0 244 156"
+      viewBox="0 0 244 166"
       width="244"
-      height="156"
+      height="166"
       overflow="visible"
       fill="none"
-      aria-label={`생활 안정도 ${safePct}%`}
+      aria-label={`생활 안정도 ${safePct}%, 목표 ${targetLabel ?? '100%'}`}
     >
       <path
         d={trackPath}
