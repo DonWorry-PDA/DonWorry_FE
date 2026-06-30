@@ -44,6 +44,10 @@ const defaultHub: AssetHubResponse = {
   allocation: [],
   monthlyIncome: 130_000,
   monthlyExpense: 0,
+  etfHoldings: [],
+  etfSnapshotAmount: 0,
+  stockHoldings: [],
+  stockSnapshotAmount: 0,
   menus: {
     salaryMaking: null,
     lifeStability: null,

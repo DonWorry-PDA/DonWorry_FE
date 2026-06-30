@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { NotificationIc, BackArrowIc } from '../common/assets/icons'
 import BottomNav from '../common/components/BottomNav'
-import { formatKrw, formatWon, formatKrwShort } from '../common/utils/formatKrw'
+import { formatKrw, formatWon } from '../common/utils/formatKrw'
 import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import pxr from '../common/utils/pxr'
 import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
@@ -306,6 +306,10 @@ function AssetPage() {
                           <div
                             key={seg.category}
                             className={`h-4 cursor-pointer transition-opacity duration-150 ${
+                              i === 0 ? 'rounded-l-badge' : ''
+                            } ${
+                              i === sortedGroups.length - 1 ? 'rounded-r-badge' : ''
+                            } ${
                               activeCategory !== null && activeCategory !== seg.category
                                 ? 'opacity-40'
                                 : 'opacity-100'
@@ -399,8 +403,8 @@ function AssetPage() {
                                 return (
                                   <div key={account.accountId} className="flex flex-col gap-1">
                                     <div className="flex items-center justify-between gap-2">
-                                      <div className="flex items-center gap-1.5 min-w-0">
-                                        <p className="text-sub text-ink-sub font-semibold">
+                                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                        <p className="text-sub text-ink-sub font-semibold min-w-0 truncate">
                                           {account.institutionName}
                                         </p>
                                         <span className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5">
@@ -414,8 +418,8 @@ function AssetPage() {
                                           )}
                                       </div>
                                       {accountTotal > 0 && (
-                                        <p className="font-inter text-sub text-ink font-semibold shrink-0">
-                                          {formatKrwShort(accountTotal)}
+                                        <p className="font-inter text-sub text-ink font-semibold shrink-0 whitespace-nowrap">
+                                          {formatWon(accountTotal)}
                                         </p>
                                       )}
                                     </div>
@@ -432,7 +436,7 @@ function AssetPage() {
                                         <div className="flex items-center justify-between">
                                           <p className="text-sub text-ink-sub mr-3 truncate">예수금</p>
                                           <p className="font-inter text-sub text-ink-hint shrink-0">
-                                            {formatKrwShort(account.balance)}
+                                            {formatWon(account.balance)}
                                           </p>
                                         </div>
                                       </div>
@@ -445,11 +449,11 @@ function AssetPage() {
                                           className="flex flex-col gap-0.5 py-0.5 pl-1"
                                         >
                                           <div className="flex items-center justify-between">
-                                            <p className="text-sub text-ink-sub mr-3 truncate">
+                                            <p className="text-sub text-ink-sub mr-3 min-w-0 flex-1 truncate">
                                               {holding.productName}
                                             </p>
-                                            <p className="font-inter text-sub text-ink-hint shrink-0">
-                                              {formatKrwShort(holding.evaluationAmount)}
+                                            <p className="font-inter text-sub text-ink-hint shrink-0 whitespace-nowrap">
+                                              {formatWon(holding.evaluationAmount)}
                                             </p>
                                           </div>
                                         </div>
