@@ -145,7 +145,7 @@ function NotificationPage() {
               <div className="flex-1 h-px bg-divider" />
             </div>
 
-            <div className="px-4">
+            <div className="px-5">
               {group.items.map((item) => (
                 <NotificationListItem
                   key={item.id}
@@ -174,7 +174,7 @@ function NotificationListItem({
   const timeText = formatRelativeTime(item.createdAt)
 
   const inner = (
-    <div className={`flex items-start gap-3 px-1 py-[14px] rounded-card border-b border-divider ${item.isUnread ? 'bg-primary-tint border-transparent' : 'bg-white'}`}>
+    <div className={`flex items-start gap-3 py-[14px] rounded-card border-b border-divider ${item.isUnread ? 'bg-primary-tint border-transparent' : 'bg-white'}`}>
       {/* 타입 아이콘 */}
       <div className={`size-11 shrink-0 rounded-full flex items-center justify-center ${bg}`}>
         <NotificationIc className={iconColor} width={20} height={20} />

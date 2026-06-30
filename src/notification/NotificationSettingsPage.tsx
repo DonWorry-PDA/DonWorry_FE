@@ -16,25 +16,21 @@ function NotificationSettingsPage() {
   }
 
   return (
-    <div className="flex flex-col bg-page h-dvh">
+    <div className="flex flex-col bg-white h-dvh">
       <div className="bg-white shrink-0">
         <AppBar title="알림 설정" onBack={() => navigate(-1)} />
       </div>
 
       <main className="flex-1 overflow-y-auto">
-        <div className="px-5 pt-6 pb-2">
-          <p className="text-sub font-semibold text-ink-sub">알림 항목</p>
-        </div>
-
-        {/* 설정 카드 */}
-        <div className="mx-5 bg-white rounded-card-xl overflow-hidden shadow-card">
+        {/* 설정 목록 */}
+        <div className="overflow-hidden">
           {isLoading && (
             <div role="status" aria-live="polite" aria-busy="true">
               <span className="sr-only">알림 설정을 불러오는 중입니다.</span>
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`flex items-center gap-4 px-4 py-[18px] ${i < 3 ? 'border-b border-divider' : ''}`}
+                  className={`flex items-center gap-4 px-5 py-[18px] ${i < 3 ? 'border-b border-divider' : ''}`}
                 >
                   <div className="size-11 shrink-0 animate-pulse rounded-btn bg-surface-muted" />
                   <div className="flex flex-1 flex-col gap-2">
@@ -71,7 +67,7 @@ function NotificationSettingsPage() {
         </div>
 
         {/* 안내 문구 */}
-        <div className="mx-5 mt-3 bg-surface rounded-card px-4 py-3">
+        <div className="px-5 mt-4">
           <p className="text-sub text-ink-hint leading-[1.6]">
             잔액 부족 알림은 예정된 수입·지출을 기반으로 계산됩니다.
           </p>
@@ -96,7 +92,7 @@ function SettingRow({
 }) {
   return (
     <div
-      className={`flex items-center gap-4 px-4 py-[18px] ${!isLast ? 'border-b border-divider' : ''}`}
+      className={`flex items-center gap-4 px-5 py-[18px] ${!isLast ? 'border-b border-divider' : ''}`}
     >
       {/* 텍스트 */}
       <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
