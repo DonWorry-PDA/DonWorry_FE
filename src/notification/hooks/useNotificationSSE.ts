@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { getAccessToken } from '@/common/api/token'
+import { dispatchAuthFailure } from '@/common/api/authEvents'
 
 const SSE_RECONNECT_DELAY_MS = 5_000
 
@@ -35,7 +36,10 @@ const useNotificationSSE = () => {
           signal: abortController.signal,
         })
 
-        if (!res.ok || !res.body) throw new Error(`SSE ${res.status}`)
+        if (!res.ok || !res.body) {
+          if (res.status === 401) { dispatchAuthFailure(); return }
+          throw new Error(`SSE ${res.status}`)
+        }
 
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
