@@ -1,4 +1,5 @@
 import { Navigate, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -20,7 +21,7 @@ const won = (v: number) => `${toManwon(v).toLocaleString('ko-KR')}만원`
 
 function PaycheckPlanStatusPage() {
   const navigate = useNavigate()
-  const { data, isLoading, refetch } = useGetSalaryPlanStatus()
+  const { data, isLoading, refetch, error } = useGetSalaryPlanStatus()
 
   if (isLoading) {
     return (
@@ -37,6 +38,10 @@ function PaycheckPlanStatusPage() {
         </div>
       </div>
     )
+  }
+
+  if (isAxiosError(error) && error.response?.status === 403) {
+    return <Navigate to="/paycheck-plan/assets" replace />
   }
 
   // 캐시도 없고 응답도 없을 때만 에러. (백그라운드 재요청 실패는 캐시로 버틴다)
