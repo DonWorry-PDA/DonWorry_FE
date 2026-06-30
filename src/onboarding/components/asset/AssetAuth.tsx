@@ -61,13 +61,24 @@ function AssetAuth({ onNext, onPrev }: Props) {
         </h1>
 
         {/* 인증서 카드 */}
-        <div className="rounded-card-xl bg-primary relative mt-8 overflow-hidden p-6 text-white">
-          <div
-            className="pointer-events-none absolute top-0 right-0 text-[120px] leading-none font-black text-white/10 select-none"
+        <button
+          type="button"
+          onClick={onNext}
+          className="rounded-card-xl bg-primary relative mt-8 w-full overflow-hidden p-6 text-left text-white active:opacity-90"
+          aria-label="신한인증서로 인증하기"
+        >
+          <svg
+            className="pointer-events-none absolute top-0 right-0 select-none"
+            width="144"
+            height="128"
+            viewBox="0 0 144 128"
+            fill="none"
             aria-hidden="true"
           >
-            신
-          </div>
+            <circle cx="144" cy="0" r="64" stroke="white" strokeWidth="1.5" strokeOpacity="0.2" />
+            <circle cx="144" cy="0" r="94" stroke="white" strokeWidth="1.5" strokeOpacity="0.13" />
+            <circle cx="144" cy="0" r="124" stroke="white" strokeWidth="1.5" strokeOpacity="0.08" />
+          </svg>
 
           <p className="text-card font-bold">{currentUser?.name ?? ''}</p>
 
@@ -97,7 +108,7 @@ function AssetAuth({ onNext, onPrev }: Props) {
           <span className="rounded-badge text-sub mt-2 inline-block bg-white/20 px-2.5 py-0.5">
             {calcDday(CERT_EXPIRY)}
           </span>
-        </div>
+        </button>
 
         {/* <button
           type="button"
