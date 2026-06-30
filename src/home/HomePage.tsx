@@ -406,7 +406,9 @@ function HomePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-caption text-ink-hint">
-                      현재 {formatKrw(stability.currentIncomeKrw)}
+                      {/* active plan이면 currentIncomeKrw=설계안 예상 월급, 아니면 실제 현금흐름 → 라벨로 구분 */}
+                      {stability.hasActivePlan ? '예상 월급' : '현재 수입'}{' '}
+                      {formatKrw(stability.currentIncomeKrw)}
                     </span>
                     <span className="text-caption text-ink-hint">
                       목표 {formatKrw(stability.targetIncomeKrw)}
