@@ -11,9 +11,10 @@ export function usePinInput(userId: number): UsePinInputReturn {
   const [pin, setPin] = useState('')
   const [isError, setIsError] = useState(false)
   const [isServerError, setIsServerError] = useState(false)
+  const [isShaking, setIsShaking] = useState(false)
 
   function appendDigit(digit: string) {
-    if (isPending) return
+    if (isPending || isShaking) return
 
     if (isError || isServerError) {
       setIsError(false)
@@ -37,10 +38,15 @@ export function usePinInput(userId: number): UsePinInputReturn {
           navigate(onboardingCompleted ? '/home' : '/onboarding')
         },
         onError: (error) => {
-          setPin('')
           if (isAxiosError(error) && error.response?.status === 401) {
             setIsError(true)
+            setIsShaking(true)
+            setTimeout(() => {
+              setPin('')
+              setIsShaking(false)
+            }, 600)
           } else {
+            setPin('')
             setIsServerError(true)
           }
         },
@@ -69,6 +75,7 @@ export function usePinInput(userId: number): UsePinInputReturn {
     isPending,
     isError,
     isServerError,
+    isShaking,
     appendDigit,
     deleteDigit,
     reset,

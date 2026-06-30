@@ -100,6 +100,21 @@
   --radius-card: 14px;
   --radius-card-lg: 16px;
   --radius-card-xl: 20px;
+
+  /* ─── Animations ─── */
+  --animate-pin-shake: pin-shake 0.55s ease-in-out;
+}
+
+@keyframes pin-shake {
+  0%   { transform: translateX(0); }
+  12%  { transform: translateX(-10px); }
+  25%  { transform: translateX(10px); }
+  37%  { transform: translateX(-10px); }
+  50%  { transform: translateX(10px); }
+  62%  { transform: translateX(-7px); }
+  75%  { transform: translateX(7px); }
+  87%  { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
 }
 
 /* shadow 토큰 — @theme 밖에 정의해야 rgba 파싱이 안정적 */
