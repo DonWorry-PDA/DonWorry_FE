@@ -105,7 +105,7 @@ function SettingRow({
         checked={item.enabled}
         onChange={onToggle}
         disabled={disabled}
-        aria-label={`${item.title} 알림 ${item.enabled ? '켜짐' : '꺼짐'}`}
+        aria-label={`${item.title} 알림`}
       />
     </div>
   )
