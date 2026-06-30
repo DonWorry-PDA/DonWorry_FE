@@ -54,6 +54,8 @@ export const mockPlans: Plan[] = [
     expectedIncome: 170,
     coverage: 77,
     riskLevel: '낮음',
+    riskScore: 2,
+    riskDesc: '환위험 없는 배당주 중심',
   },
   {
     planId: 'balanced',
@@ -64,6 +66,8 @@ export const mockPlans: Plan[] = [
     expectedIncome: 185,
     coverage: 84,
     riskLevel: '중간',
+    riskScore: 3,
+    riskDesc: '국내외 배당주 혼합',
   },
   {
     planId: 'growth',
@@ -74,6 +78,8 @@ export const mockPlans: Plan[] = [
     expectedIncome: 195,
     coverage: 89,
     riskLevel: '높음',
+    riskScore: 3,
+    riskDesc: '성장형 ETF 중심',
     lockedReason: '지금은 제한',
   },
 ]
@@ -89,6 +95,8 @@ export const mockPlansUnlocked: Plan[] = [
     expectedIncome: 170,
     coverage: 112,
     riskLevel: '낮음',
+    riskScore: 2,
+    riskDesc: '환위험 없는 배당주 중심',
   },
   {
     planId: 'balanced',
@@ -100,6 +108,8 @@ export const mockPlansUnlocked: Plan[] = [
     expectedIncome: 185,
     coverage: 120,
     riskLevel: '중간',
+    riskScore: 3,
+    riskDesc: '국내외 배당주 혼합',
   },
   {
     planId: 'growth',
@@ -111,6 +121,8 @@ export const mockPlansUnlocked: Plan[] = [
     expectedIncome: 195,
     coverage: 89,
     riskLevel: '높음',
+    riskScore: 3,
+    riskDesc: '성장형 ETF 중심',
   },
 ]
 

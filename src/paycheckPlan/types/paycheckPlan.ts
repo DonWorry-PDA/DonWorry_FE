@@ -70,6 +70,8 @@ export type Plan = {
   expectedIncome: number
   coverage: number | null // 연금초과(충당 무의미)면 null → '충분' 표기
   riskLevel: '낮음' | '중간' | '높음'
+  riskScore: 1 | 2 | 3
+  riskDesc: string
   lockedReason?: string
 }
 
