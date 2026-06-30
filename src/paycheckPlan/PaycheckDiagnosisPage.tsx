@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import AppBar from '../common/components/AppBar'
 import { NavHomeIc } from '../common/assets/icons'
 import Button from '../common/components/Button'
+import InfoBox from '../common/components/InfoBox'
 import StickyFooter from '../common/components/StickyFooter'
 import StepProgress from './components/StepProgress'
 import useGetCashFlowDiagnosis from './hooks/useGetCashFlowDiagnosis'
@@ -195,21 +196,27 @@ function PaycheckDiagnosisPage() {
 
         {/* 진단 결과 히어로 카드 */}
         {data.shortfallExists ? (
-          <div className="rounded-card-xl bg-primary-tint px-5 pt-5 pb-4 mb-5">
-            <p className="text-sub font-medium text-primary mb-1.5">매달 부족한 돈</p>
-            <p className="font-inter text-jumbo font-bold text-primary leading-none mb-2">
-              {shortfallLabel}
-            </p>
-            <p className="text-body font-semibold text-ink">월급으로 채워볼까요?</p>
-          </div>
+          <InfoBox tone="primary" className="mb-5">
+            <p className="text-sub mb-1">매달 부족한 돈</p>
+            <p className="font-inter text-display font-bold mb-3">{shortfallLabel}</p>
+            <div className="border-t border-current/20 pt-3">
+              <p className="text-body font-semibold text-ink mb-0.5">
+                부족한 {shortfallLabel}, 월급으로 만들어드릴까요?
+              </p>
+              <p className="text-sub text-ink-sub">원하실 때 언제든 시작할 수 있어요.</p>
+            </div>
+          </InfoBox>
         ) : (
-          <div className="rounded-card-xl bg-success-bg px-5 pt-5 pb-4 mb-5">
-            <p className="text-sub font-medium text-success mb-1.5">현재 현금흐름으로</p>
-            <p className="font-inter text-display font-bold text-success leading-none mb-2">
-              생활비 충당 완료
-            </p>
-            <p className="text-body font-semibold text-ink">더 여유로운 월급도 설계해드릴게요</p>
-          </div>
+          <InfoBox tone="success" className="mb-5">
+            <p className="text-sub mb-1">현재 현금흐름으로</p>
+            <p className="font-inter text-display font-bold mb-3">생활비가 충당돼요</p>
+            <div className="border-t border-current/20 pt-3">
+              <p className="text-body font-semibold text-ink mb-0.5">
+                더 여유로운 월급 설계안도 볼까요?
+              </p>
+              <p className="text-sub text-ink-sub">맞춤 플랜을 보여드릴게요.</p>
+            </div>
+          </InfoBox>
         )}
 
         {/* 커버리지 바 */}
@@ -245,16 +252,6 @@ function PaycheckDiagnosisPage() {
 
       <StickyFooter>
         <Button onClick={handleGoToPlans}>설계안 보기</Button>
-        <p className="text-caption text-ink-hint text-center mt-2 mb-1">
-          보기만 해도 괜찮아요. 실행은 나중에 결정해요.
-        </p>
-        <button
-          type="button"
-          className="w-full text-center text-body text-ink-sub py-2"
-          onClick={() => navigate('/stability')}
-        >
-          안정도 먼저 볼게요
-        </button>
       </StickyFooter>
     </div>
   )
