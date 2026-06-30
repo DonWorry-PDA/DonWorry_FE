@@ -56,7 +56,7 @@ function ProfileEditPage() {
           const superseded = data?.activePlanSuperseded === true
           setToastVariant(superseded ? 'superseded' : 'success')
           timerRef.current = setTimeout(() => {
-            if (returnTo) navigate(returnTo)
+            if (returnTo) navigate(returnTo, { replace: true })
             else navigate(-1)
           }, superseded ? 2800 : 2000)
         },

@@ -125,7 +125,7 @@ function PaycheckPlanStatusPage() {
         <StickyFooter>
           <ReentryGuidanceSection guidance={data.reentryGuidance} />
           <div className="flex flex-col gap-2 mt-3">
-            {data.reentryGuidance.options.map((opt) => (
+            {data.reentryGuidance.options.slice(0, 2).map((opt) => (
               <Button
                 key={opt.action}
                 variant={opt.action === data.reentryGuidance!.emphasis ? 'primary' : 'outline'}
