@@ -55,6 +55,11 @@ export type EtfHoldingItem = {
   quantity: number
 }
 
+export type StockHoldingItem = {
+  ticker: string
+  quantity: number
+}
+
 export type AssetHubResponse = {
   totalAsset: number
   changeAmount: number | null // 월간 스냅샷 도입 전까지 null
@@ -64,5 +69,7 @@ export type AssetHubResponse = {
   monthlyExpense: number
   etfHoldings: EtfHoldingItem[]
   etfSnapshotAmount: number
+  stockHoldings: StockHoldingItem[]
+  stockSnapshotAmount: number
   menus: AssetHubMenus
 }
