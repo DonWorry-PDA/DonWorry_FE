@@ -9,90 +9,72 @@ import type { NotificationSetting } from './types/notification'
 function NotificationSettingsPage() {
   const navigate = useNavigate()
   const { data: settings = [], isLoading, isError } = useGetNotificationSettings()
-  const { mutate: patchSetting } = usePatchNotificationSetting()
+  const { mutate: patchSetting, isPending } = usePatchNotificationSetting()
 
   const toggle = (id: string, enabled: boolean) => {
     patchSetting({ id, enabled })
   }
 
   return (
-    <div className="flex flex-col bg-white h-dvh">
-      <AppBar title="알림 설정" onBack={() => navigate(-1)} />
+    <div className="flex flex-col bg-page h-dvh">
+      <div className="bg-white shrink-0">
+        <AppBar title="알림 설정" onBack={() => navigate(-1)} />
+      </div>
 
-      <main className="flex-1 overflow-y-auto flex flex-col">
-        <div className="h-[37px] shrink-0" />
-
-        {/* 히어로 배너 */}
-        <div className="px-6">
-          <div
-            className="rounded-card-xl px-6 pt-[23px] pb-6 flex flex-col gap-[10px]"
-            style={{ background: 'linear-gradient(134.98deg, #0046FF 0%, #4F86FF 100%)' }}
-          >
-            <p className="text-display font-bold text-white leading-[1.4]">
-              돈 흐름을 놓치지 않게
-              <br />
-              필요한 순간 알려드려요
-            </p>
-            <p className="text-body text-white opacity-90">
-              잔액 부족, 연금 입금, 배당금 수령 등 중요한 현금흐름을 알려드립니다.
-            </p>
-          </div>
+      <main className="flex-1 overflow-y-auto">
+        <div className="px-5 pt-6 pb-2">
+          <p className="text-sub font-semibold text-ink-sub">알림 항목</p>
         </div>
 
-        <div className="h-[10px] shrink-0" />
-
-        {/* 설정 목록 */}
-        <div className="px-6 flex flex-col gap-4 pb-6">
+        {/* 설정 카드 */}
+        <div className="mx-5 bg-white rounded-card-xl overflow-hidden shadow-card">
           {isLoading && (
-            <div role="status" aria-live="polite" aria-busy="true" className="overflow-hidden rounded-card-xl border border-line shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)]">
+            <div role="status" aria-live="polite" aria-busy="true">
               <span className="sr-only">알림 설정을 불러오는 중입니다.</span>
-              {[0, 1, 2].map((i) => (
+              {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`flex items-center gap-3 px-4 py-[18px] ${i < 2 ? 'border-b border-divider' : ''}`}
+                  className={`flex items-center gap-4 px-4 py-[18px] ${i < 3 ? 'border-b border-divider' : ''}`}
                 >
                   <div className="size-11 shrink-0 animate-pulse rounded-btn bg-surface-muted" />
                   <div className="flex flex-1 flex-col gap-2">
                     <div className="h-4 w-28 animate-pulse rounded bg-surface-muted" />
                     <div className="h-3 w-36 animate-pulse rounded bg-surface-muted" />
                   </div>
-                  <div className="h-[26px] w-11 shrink-0 animate-pulse rounded-full bg-surface-muted" />
+                  <div className="h-[30px] w-[50px] shrink-0 animate-pulse rounded-full bg-surface-muted" />
                 </div>
               ))}
             </div>
           )}
 
           {isError && (
-            <div className="flex items-center justify-center py-10">
+            <div className="flex items-center justify-center py-12">
               <p className="text-sub text-danger">설정을 불러오지 못했어요.</p>
             </div>
           )}
 
           {!isLoading && !isError && settings.length === 0 && (
-            <div className="flex items-center justify-center py-10">
+            <div className="flex items-center justify-center py-12">
               <p className="text-sub text-ink-hint">알림 설정 항목이 없어요.</p>
             </div>
           )}
 
-          {!isLoading && !isError && settings.length > 0 && (
-            <div className="border border-line rounded-card-xl shadow-[0px_4px_15px_0px_rgba(0,0,0,0.04)] overflow-hidden">
-              {settings.map((item, index) => (
-                <SettingRow
-                  key={item.id}
-                  item={item}
-                  isLast={index === settings.length - 1}
-                  onToggle={(enabled) => toggle(item.id, enabled)}
-                />
-              ))}
-            </div>
-          )}
+          {!isLoading && !isError && settings.map((item, index) => (
+            <SettingRow
+              key={item.id}
+              item={item}
+              isLast={index === settings.length - 1}
+              disabled={isPending}
+              onToggle={(enabled) => toggle(item.id, enabled)}
+            />
+          ))}
+        </div>
 
-          {/* 안내 문구 */}
-          <div className="bg-surface rounded-card-lg p-4">
-            <p className="text-sub text-ink-sub leading-[1.6]">
-              잔액 부족 알림은 예정된 수입·지출을 기반으로 계산됩니다.
-            </p>
-          </div>
+        {/* 안내 문구 */}
+        <div className="mx-5 mt-3 bg-surface rounded-card px-4 py-3">
+          <p className="text-sub text-ink-hint leading-[1.6]">
+            잔액 부족 알림은 예정된 수입·지출을 기반으로 계산됩니다.
+          </p>
         </div>
       </main>
 
@@ -104,28 +86,31 @@ function NotificationSettingsPage() {
 function SettingRow({
   item,
   isLast,
+  disabled,
   onToggle,
 }: {
   item: NotificationSetting
   isLast: boolean
+  disabled: boolean
   onToggle: (enabled: boolean) => void
 }) {
   return (
     <div
-      className={`flex items-center justify-between px-4 py-[18px] ${
-        !isLast ? 'border-b border-divider' : ''
-      }`}
+      className={`flex items-center gap-4 px-4 py-[18px] ${!isLast ? 'border-b border-divider' : ''}`}
     >
-      <div className="flex items-center gap-3">
-        <div className="bg-primary-tint rounded-btn shrink-0 size-11 flex items-center justify-center">
-          <span className="text-body font-bold text-primary">{item.icon}</span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <p className="text-md font-semibold text-ink">{item.title}</p>
-          <p className="text-sub text-ink-hint">{item.subtitle}</p>
-        </div>
+      {/* 텍스트 */}
+      <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
+        <p className="text-md font-semibold text-ink">{item.title}</p>
+        <p className="text-sub text-ink-hint">{item.subtitle}</p>
       </div>
-      <Toggle checked={item.enabled} onChange={onToggle} aria-label={`${item.title} 알림 활성화`} />
+
+      {/* 토글 */}
+      <Toggle
+        checked={item.enabled}
+        onChange={onToggle}
+        disabled={disabled}
+        aria-label={`${item.title} 알림 ${item.enabled ? '켜짐' : '꺼짐'}`}
+      />
     </div>
   )
 }
