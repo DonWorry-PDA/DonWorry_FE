@@ -17,8 +17,10 @@ const useRealtimeAssetHub = () => {
 
   const etfTickers = hub?.etfHoldings?.map((h) => h.ticker) ?? []
   const stockTickers = hub?.stockHoldings?.map((h) => h.ticker) ?? []
-  const { priceMap: etfPriceMap, isLive } = useEtfPriceMap(etfTickers)
-  const { priceMap: stockPriceMap } = useStockPriceMap(stockTickers)
+  const { priceMap: etfPriceMap, isLive: etfIsLive } = useEtfPriceMap(etfTickers)
+  const { priceMap: stockPriceMap, isLive: stockIsLive } = useStockPriceMap(stockTickers)
+  // ETF·주식 중 하나라도 연결돼 있으면 실시간 상태로 본다 (주식만 보유한 사용자도 반영)
+  const isLive = etfIsLive || stockIsLive
 
   // ETF·주식 가격을 ticker 단일 맵으로 병합 (자산분석 화면이 종목별로 참조)
   const priceMap = useMemo(

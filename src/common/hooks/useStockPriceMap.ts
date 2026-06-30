@@ -33,8 +33,6 @@ const useStockPriceMap = (tickers: string[]) => {
     let mounted = true
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
-    setPriceMap({})
-
     const connect = () => {
       if (!mounted) return
 
@@ -58,7 +56,13 @@ const useStockPriceMap = (tickers: string[]) => {
       ws.onmessage = (event) => {
         try {
           const payload: StockPricePayload = JSON.parse(event.data)
-          if (tickers.includes(payload.ticker)) {
+          // 유효하지 않은 payload(비문자열 ticker·비유한 가격)는 무시해 NaN이 총자산으로 전파되지 않게 한다
+          if (
+            typeof payload?.ticker === 'string' &&
+            typeof payload.currentPrice === 'number' &&
+            Number.isFinite(payload.currentPrice) &&
+            tickers.includes(payload.ticker)
+          ) {
             setPriceMap((prev) => ({ ...prev, [payload.ticker]: payload.currentPrice }))
           }
         } catch {
@@ -82,6 +86,8 @@ const useStockPriceMap = (tickers: string[]) => {
           ws.close()
         }
       }
+      // 구독 종목 변경/해제 시 이전 시세를 비워 stale 값이 남지 않게 한다 (tickers가 비면 리셋 효과)
+      setPriceMap({})
       setIsLive(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

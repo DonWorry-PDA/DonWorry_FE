@@ -403,8 +403,8 @@ function AssetPage() {
                                 return (
                                   <div key={account.accountId} className="flex flex-col gap-1">
                                     <div className="flex items-center justify-between gap-2">
-                                      <div className="flex items-center gap-1.5 min-w-0">
-                                        <p className="text-sub text-ink-sub font-semibold">
+                                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                        <p className="text-sub text-ink-sub font-semibold min-w-0 truncate">
                                           {account.institutionName}
                                         </p>
                                         <span className="text-caption text-ink-hint bg-surface rounded-badge px-1.5 py-0.5">
@@ -418,7 +418,7 @@ function AssetPage() {
                                           )}
                                       </div>
                                       {accountTotal > 0 && (
-                                        <p className="font-inter text-sub text-ink font-semibold shrink-0">
+                                        <p className="font-inter text-sub text-ink font-semibold shrink-0 whitespace-nowrap">
                                           {formatWon(accountTotal)}
                                         </p>
                                       )}
@@ -449,10 +449,10 @@ function AssetPage() {
                                           className="flex flex-col gap-0.5 py-0.5 pl-1"
                                         >
                                           <div className="flex items-center justify-between">
-                                            <p className="text-sub text-ink-sub mr-3 truncate">
+                                            <p className="text-sub text-ink-sub mr-3 min-w-0 flex-1 truncate">
                                               {holding.productName}
                                             </p>
-                                            <p className="font-inter text-sub text-ink-hint shrink-0">
+                                            <p className="font-inter text-sub text-ink-hint shrink-0 whitespace-nowrap">
                                               {formatWon(holding.evaluationAmount)}
                                             </p>
                                           </div>
