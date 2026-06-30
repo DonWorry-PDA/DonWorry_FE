@@ -187,7 +187,7 @@ function AssetGuide() {
         <div className="flex items-start gap-2">
           <GuideMark variant="include" />
           <p className="text-sub text-ink-sub leading-relaxed">
-            <span className="font-semibold text-ink">체크한 자산</span>은 굴려서 매달 월급(분배금·배당)을 만들어요.
+            <span className="font-semibold text-ink">체크한 자산</span>을 활용해서 매달 월급(분배금·배당)을 만들어요.
           </p>
         </div>
         <div className="flex items-start gap-2">

@@ -99,7 +99,7 @@ function AssetGroupAccordion({ group, checkedIds, onToggleItem, onToggleGroup }:
                   <span className="min-w-0">
                     <span className="block text-body text-ink-sub truncate">{item.name}</span>
                     {item.description && (
-                      <span className="block text-caption text-ink-hint truncate">{item.description}</span>
+                      <span className="block text-caption text-ink-hint line-clamp-2">{item.description}</span>
                     )}
                   </span>
                   <span className={`font-inter text-md font-semibold shrink-0 ${checked ? 'text-ink' : 'text-ink-sub'}`}>
