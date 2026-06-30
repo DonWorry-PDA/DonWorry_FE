@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -11,6 +11,8 @@ type PensionStatus = '수령 전' | '수령 중'
 
 function ProfileEditPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const { data: profile } = useGetProfile()
   const { mutate: patchProfile, isPending } = usePatchProfile()
 
@@ -51,10 +53,12 @@ function ProfileEditPage() {
       },
       {
         onSuccess: (data) => {
-          // 목표 변경으로 기존 월급 설계안이 비활성화됐으면 "다시 설계" 안내를 더 오래 보여준다.
           const superseded = data?.activePlanSuperseded === true
           setToastVariant(superseded ? 'superseded' : 'success')
-          timerRef.current = setTimeout(() => navigate(-1), superseded ? 2800 : 2000)
+          timerRef.current = setTimeout(() => {
+            if (returnTo) navigate(returnTo, { replace: true })
+            else navigate(-1)
+          }, superseded ? 2800 : 2000)
         },
         onError: () => {
           setToastVariant('error')

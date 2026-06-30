@@ -6,7 +6,7 @@ import StickyFooter from '../common/components/StickyFooter'
 import CenterMessage from './components/CenterMessage'
 import useGetSalaryPlanStatus from './hooks/useGetSalaryPlanStatus'
 import { toManwon } from './utils/planMapper'
-import type { SalaryPlanBucketRole, SalaryPlanHolding } from './types/paycheckPlan'
+import type { ReentryGuidance, SalaryPlanBucketRole, SalaryPlanHolding } from './types/paycheckPlan'
 
 // 월급명세서형(F안): "매달 받는 월급"이 메인. 달성률(평가액÷목표)은 시세 하락 시
 // 매수 완료자에게도 100% 미만으로 보여 오해를 줘서 화면에서 빼고, 생활비 충당률만 보조로 둔다.
@@ -82,7 +82,7 @@ function PaycheckPlanStatusPage() {
       <div className="flex-1 min-h-0 overflow-y-auto pb-6">
         {/* 헤드라인 — 매달 받는 월급 */}
         <div className="bg-primary px-5 pt-5 pb-6 mx-6 mt-4 rounded-card-xl">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-3">
             <p className="text-sub text-white/70">지금 매달 받는 월급</p>
             {data.displayName && (
               <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-caption text-white/90">
@@ -113,28 +113,51 @@ function PaycheckPlanStatusPage() {
 
             {/* 합계 */}
             <div className="flex items-center justify-between bg-surface-muted px-4 py-3 border-t border-line">
-              <p className="text-body font-semibold text-ink">합계</p>
+              <p className="text-body font-bold text-ink">합계</p>
               <p className="font-inter text-card font-bold text-primary">매달 {won(totalContribution)}</p>
             </div>
           </div>
         </div>
+
       </div>
 
-      {totalRemaining > 0 && (
+      {data.reentryGuidance ? (
+        <StickyFooter>
+          <ReentryGuidanceSection guidance={data.reentryGuidance} />
+          <div className="flex flex-col gap-2 mt-3">
+            {data.reentryGuidance.options.slice(0, 2).map((opt) => (
+              <Button
+                key={opt.action}
+                variant={opt.action === data.reentryGuidance!.emphasis ? 'primary' : 'outline'}
+                onClick={() =>
+                  navigate(
+                    opt.route,
+                    opt.action === 'INCREASE_LIVING_COST'
+                      ? { state: { returnTo: '/paycheck-plan/assets' } }
+                      : undefined,
+                  )
+                }
+              >
+                {opt.action === 'INCREASE_LIVING_COST' ? '목표 생활비 올리기' : '다시 설문하기'}
+              </Button>
+            ))}
+          </div>
+        </StickyFooter>
+      ) : totalRemaining > 0 ? (
         <StickyFooter>
           <p className="text-sub text-ink-hint text-center mb-2">
             {won(totalRemaining)} 더 채우면 월급이 더 늘어요
           </p>
           <Button onClick={() => navigate('/paycheck-plan/assets')}>더 채워서 월급 늘리기</Button>
         </StickyFooter>
-      )}
+      ) : null}
     </div>
   )
 }
 
 function HoldingRow({ holding, divider }: { holding: SalaryPlanHolding; divider: boolean }) {
   return (
-    <div className={`px-4 py-3 ${divider ? 'border-t border-divider' : ''}`}>
+    <div className={`px-4 py-4 ${divider ? 'border-t border-divider' : ''}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -153,6 +176,20 @@ function HoldingRow({ holding, divider }: { holding: SalaryPlanHolding; divider:
           매달 {won(holding.productContribution)}
         </p>
       </div>
+    </div>
+  )
+}
+
+function ReentryGuidanceSection({ guidance }: { guidance: ReentryGuidance }) {
+  const coverageFull = guidance.emphasis === 'INCREASE_LIVING_COST'
+  return (
+    <div className="pb-2">
+      <p className="text-card font-bold text-ink mb-1">월급을 다시 설계해볼까요?</p>
+      <p className="text-sub text-ink-hint">
+        {coverageFull
+          ? '이미 목표 생활비를 채우고 있어요. 목표를 올리면 더 많은 월급을 만들 수 있어요.'
+          : '설문을 다시 하거나 목표 생활비를 바꾸면 새로운 설계를 받을 수 있어요.'}
+      </p>
     </div>
   )
 }
