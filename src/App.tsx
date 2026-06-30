@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useNavigate } from 'react-router-dom'
 import { ToastProvider } from './common/contexts/ToastContext'
+import { RealtimePriceProvider } from './common/contexts/RealtimePriceContext'
 import { useToast } from './common/contexts/ToastContext'
 import useNotificationSSE from './notification/hooks/useNotificationSSE'
 import { isTokenValid, clearTokens } from './common/api/token'
@@ -109,7 +110,11 @@ function RequireAuth() {
   }, [valid, navigate, showToast])
 
   if (!valid) return null
-  return <Outlet />
+  return (
+    <RealtimePriceProvider>
+      <Outlet />
+    </RealtimePriceProvider>
+  )
 }
 
 const router = createBrowserRouter([

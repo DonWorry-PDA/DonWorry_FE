@@ -1,11 +1,10 @@
 import { useMemo } from 'react'
 import useGetAssetHub from './useGetAssetHub'
-import useEtfPriceMap from '@/common/hooks/useEtfPriceMap'
-import useStockPriceMap from '@/common/hooks/useStockPriceMap'
+import { useRealtimePrice } from '@/common/contexts/RealtimePriceContext'
 import type { AssetHubAllocationItem } from '../types/assetHub'
 
 /**
- * Combines the asset hub query with ETF/stock WebSocket prices.
+ * Combines the asset hub query with ETF/stock WebSocket prices from the global RealtimePriceContext.
  *
  * The hub response is the initial source of truth. WebSocket prices update the
  * summary only after every ticker in a source has a price, so partial price maps
@@ -13,22 +12,15 @@ import type { AssetHubAllocationItem } from '../types/assetHub'
  */
 const useRealtimeAssetHub = () => {
   const { data: hub, isLoading, isError, refetch } = useGetAssetHub()
+  const { priceMap, isLive } = useRealtimePrice()
 
   const etfTickers = hub?.etfHoldings?.map((h) => h.ticker) ?? []
   const stockTickers = hub?.stockHoldings?.map((h) => h.ticker) ?? []
-  const { priceMap: etfPriceMap, isLive: etfIsLive } = useEtfPriceMap(etfTickers)
-  const { priceMap: stockPriceMap, isLive: stockIsLive } = useStockPriceMap(stockTickers)
-  const isLive = etfIsLive || stockIsLive
-
-  const priceMap = useMemo(
-    () => ({ ...etfPriceMap, ...stockPriceMap }),
-    [etfPriceMap, stockPriceMap],
-  )
 
   const etfReceived =
-    etfTickers.length > 0 && etfTickers.every((ticker) => ticker in etfPriceMap)
+    etfTickers.length > 0 && etfTickers.every((ticker) => ticker in priceMap)
   const stockReceived =
-    stockTickers.length > 0 && stockTickers.every((ticker) => ticker in stockPriceMap)
+    stockTickers.length > 0 && stockTickers.every((ticker) => ticker in priceMap)
   const hasRealtimeSource = etfReceived || stockReceived
 
   let realtimeTotalAsset = hub?.totalAsset
@@ -37,12 +29,12 @@ const useRealtimeAssetHub = () => {
   if (hub && hasRealtimeSource) {
     const realtimeEtfAmount = etfReceived
       ? hub.etfHoldings.reduce((sum, holding) => {
-          return sum + holding.quantity * etfPriceMap[holding.ticker]
+          return sum + holding.quantity * priceMap[holding.ticker]
         }, 0)
       : hub.etfSnapshotAmount
     const realtimeStockAmount = stockReceived
       ? hub.stockHoldings.reduce((sum, holding) => {
-          return sum + holding.quantity * stockPriceMap[holding.ticker]
+          return sum + holding.quantity * priceMap[holding.ticker]
         }, 0)
       : hub.stockSnapshotAmount
 
