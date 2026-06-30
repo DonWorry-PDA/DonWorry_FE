@@ -5,6 +5,7 @@ import pxr from '@/common/utils/pxr'
 import BottomNav from '../common/components/BottomNav'
 import { NotificationIc, RetirementSimIc, InvestmentCheckIc, PensionDeferIc, PurposeAccountIc } from '../common/assets/icons'
 import AssetCard from './components/AssetCard'
+import HomeCoachMark from './components/HomeCoachMark'
 import useRealtimeAssetHub from '@/asset/hooks/useRealtimeAssetHub'
 import useGetNotificationUnreadCount from '@/notification/hooks/useGetNotificationUnreadCount'
 import type { AssetHubResponse, LifeStabilityGrade } from '@/asset/types/assetHub'
@@ -275,6 +276,7 @@ function HomePage() {
           </p>
         </div>
         <button
+          data-onboarding-id="notification-icon"
           aria-label={unreadCount > 0 ? `읽지 않은 알림 ${unreadCount}개, 알림 페이지로 이동` : '알림 페이지로 이동'}
           className="relative flex size-11 items-center justify-center"
           onClick={() => navigate('/notification')}
@@ -358,7 +360,7 @@ function HomePage() {
 
             {/* 생활 안정도 + 월급 만들기 */}
             {stability ? (
-              <div className="bg-white rounded-card-xl border border-line px-5 pt-5 pb-4 flex flex-col gap-4">
+              <div data-onboarding-id="home-stability" className="bg-white rounded-card-xl border border-line px-5 pt-5 pb-4 flex flex-col gap-4">
                 {/* 생활 안정도 제목 + 상태배지 + 이동 */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
@@ -418,6 +420,7 @@ function HomePage() {
 
                 <div className="flex flex-col gap-2">
                   <button
+                    data-onboarding-id="salary-create-cta"
                     onClick={() => navigate('/paycheck-plan/status')}
                     className="animate-cta-enter relative overflow-hidden w-full bg-primary text-white rounded-btn py-[14px] px-5 flex items-center justify-between"
                   >
@@ -432,6 +435,7 @@ function HomePage() {
               </div>
             ) : (
               <button
+                data-onboarding-id="salary-create-cta"
                 onClick={() => navigate('/paycheck-plan/status')}
                 className="w-full bg-primary-tint rounded-card-xl border border-primary-dim p-5 text-left flex items-center justify-between gap-3"
               >
@@ -502,6 +506,7 @@ function HomePage() {
       </main>
 
       <BottomNav />
+      <HomeCoachMark />
     </div>
   )
 }
