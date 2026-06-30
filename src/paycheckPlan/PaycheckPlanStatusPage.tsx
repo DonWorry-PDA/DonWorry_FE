@@ -5,7 +5,7 @@ import StickyFooter from '../common/components/StickyFooter'
 import CenterMessage from './components/CenterMessage'
 import useGetSalaryPlanStatus from './hooks/useGetSalaryPlanStatus'
 import { toManwon } from './utils/planMapper'
-import type { SalaryPlanBucketRole, SalaryPlanHolding } from './types/paycheckPlan'
+import type { ReentryGuidance, SalaryPlanBucketRole, SalaryPlanHolding } from './types/paycheckPlan'
 
 // 월급명세서형(F안): "매달 받는 월급"이 메인. 달성률(평가액÷목표)은 시세 하락 시
 // 매수 완료자에게도 100% 미만으로 보여 오해를 줘서 화면에서 빼고, 생활비 충당률만 보조로 둔다.
@@ -113,6 +113,14 @@ function PaycheckPlanStatusPage() {
             </div>
           </div>
         </div>
+
+        {/* 재진입 안내 — 다시 설계(생활비 상향/재설문) 유도. 일회용 탈피. */}
+        {data.reentryGuidance && (
+          <ReentryGuidanceSection
+            guidance={data.reentryGuidance}
+            onNavigate={(to) => navigate(to)}
+          />
+        )}
       </div>
 
       {totalRemaining > 0 && (
@@ -147,6 +155,37 @@ function HoldingRow({ holding, divider }: { holding: SalaryPlanHolding; divider:
         <p className="font-inter text-body font-bold text-ink shrink-0">
           매달 {won(holding.productContribution)}
         </p>
+      </div>
+    </div>
+  )
+}
+
+function ReentryGuidanceSection({
+  guidance,
+  onNavigate,
+}: {
+  guidance: ReentryGuidance
+  onNavigate: (to: string) => void
+}) {
+  const coverageFull = guidance.emphasis === 'INCREASE_LIVING_COST'
+  return (
+    <div className="px-6 pt-6">
+      <p className="text-body font-semibold text-ink mb-1">월급을 다시 설계해볼까요?</p>
+      <p className="text-sub text-ink-hint mb-3">
+        {coverageFull
+          ? '이미 목표 생활비를 채우고 있어요. 목표를 올리면 더 많은 월급을 만들 수 있어요.'
+          : '설문을 다시 하거나 목표 생활비를 바꾸면 새로운 설계를 받을 수 있어요.'}
+      </p>
+      <div className="flex flex-col gap-2">
+        {guidance.options.map((opt) => (
+          <Button
+            key={opt.action}
+            variant={opt.action === guidance.emphasis ? 'primary' : 'outline'}
+            onClick={() => onNavigate(opt.route)}
+          >
+            {opt.label}
+          </Button>
+        ))}
       </div>
     </div>
   )
