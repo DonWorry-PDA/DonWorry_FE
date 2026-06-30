@@ -5,12 +5,12 @@ import useStockPriceMap from '@/common/hooks/useStockPriceMap'
 import type { AssetHubAllocationItem } from '../types/assetHub'
 
 /**
- * useGetAssetHub + 실시간 가격(ETF WebSocket·주식 REST 폴링)을 합산해
+ * useGetAssetHub + 실시간 가격(ETF·주식 WebSocket push)을 합산해
  * 총자산·allocation 비율을 실시간으로 계산한다.
  *
- * - ETF는 WS push, 개별주식은 by-ticker 배치 폴링으로 가격을 받는다.
+ * - ETF·주식 모두 WebSocket push로 가격을 받는다.
  * - 두 출처의 가격을 ticker 기준 단일 priceMap으로 합쳐 자산분석 화면 종목별 평가액에도 그대로 쓴다.
- * - etf/stock 보유 ticker 가격이 모두 수신되면 실시간 총자산으로 전환, 그 전까지는 hub 스냅샷 유지.
+ * - 소스(ETF·주식)별로 가격 수신 여부를 독립 판정해, 한 소스만 라이브여도 그 부분은 실시간 총자산에 반영한다.
  */
 const useRealtimeAssetHub = () => {
   const { data: hub, isLoading, isError, refetch } = useGetAssetHub()
@@ -28,23 +28,23 @@ const useRealtimeAssetHub = () => {
     [etfPriceMap, stockPriceMap],
   )
 
+  // 각 소스(ETF·주식)별로 보유 ticker 가격이 모두 도착했는지 독립 판정한다.
+  // 한 소스만 라이브여도 그 소스는 실시간 값, 나머지는 스냅샷으로 합산해 총자산이 멈추지 않게 한다.
   const etfReceived = etfTickers.every((t) => t in etfPriceMap)
   const stockReceived = stockTickers.every((t) => t in stockPriceMap)
   const hasInvested = etfTickers.length + stockTickers.length > 0
-  const allPricesReceived = hasInvested && etfReceived && stockReceived
+  const anyLive = hasInvested && (etfReceived || stockReceived)
 
   let realtimeTotalAsset = hub?.totalAsset
   let realtimeAllocation: AssetHubAllocationItem[] | undefined = hub?.allocation
 
-  if (hub && allPricesReceived) {
-    const realtimeEtfAmount = hub.etfHoldings.reduce(
-      (sum, h) => sum + h.quantity * etfPriceMap[h.ticker],
-      0,
-    )
-    const realtimeStockAmount = hub.stockHoldings.reduce(
-      (sum, h) => sum + h.quantity * stockPriceMap[h.ticker],
-      0,
-    )
+  if (hub && anyLive) {
+    const realtimeEtfAmount = etfReceived
+      ? hub.etfHoldings.reduce((sum, h) => sum + h.quantity * etfPriceMap[h.ticker], 0)
+      : hub.etfSnapshotAmount
+    const realtimeStockAmount = stockReceived
+      ? hub.stockHoldings.reduce((sum, h) => sum + h.quantity * stockPriceMap[h.ticker], 0)
+      : hub.stockSnapshotAmount
     const snapshotInvested = hub.etfSnapshotAmount + hub.stockSnapshotAmount
     const nonInvestedAmount = hub.totalAsset - snapshotInvested
     const newTotal = nonInvestedAmount + realtimeEtfAmount + realtimeStockAmount
