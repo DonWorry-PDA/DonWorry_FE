@@ -29,7 +29,20 @@ const TYPE_MAP: Record<BackendPlanType, PlanType> = {
 const RISK_LEVEL: Record<BackendPlanType, Plan['riskLevel']> = {
   STABLE: '낮음',
   BALANCED: '중간',
-  LIQUIDITY: '높음',
+  LIQUIDITY: '낮음', // 위험자산 비중 LIQUIDITY(25%) < STABLE(32%) < BALANCED(42%)
+}
+
+const RISK_DESC: Record<BackendPlanType, string> = {
+  STABLE: '환위험 없는 배당주 중심',
+  BALANCED: '국내외 배당주 혼합',
+  LIQUIDITY: '비상금 먼저 떼두고 운용',
+}
+
+// LIQUIDITY(25%) < STABLE(32%) < BALANCED(42%) — BE RISK_WEIGHT 기준
+const RISK_SCORE: Record<BackendPlanType, 1 | 2 | 3> = {
+  LIQUIDITY: 1,
+  STABLE: 2,
+  BALANCED: 3,
 }
 
 const ALLOCATION_COLORS = ['#0046FF', '#4A90E2', '#A8C4F0', '#D6E4FF', '#6BA3E8', '#C2D6F5']
@@ -58,6 +71,8 @@ export const mapPlan = (plan: RecommendationPlan): Plan => ({
   incrementalIncome: toManwon(plan.incrementalMonthlyIncome),
   coverage: roundCoverage(plan.alphaCoverageRate),
   riskLevel: RISK_LEVEL[plan.type],
+  riskScore: RISK_SCORE[plan.type],
+  riskDesc: RISK_DESC[plan.type],
 })
 
 export const mapPlans = (response: RecommendationResponse): Plan[] => response.plans.map(mapPlan)

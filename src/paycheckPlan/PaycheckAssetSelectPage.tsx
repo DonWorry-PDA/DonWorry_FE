@@ -10,6 +10,7 @@ import Checkbox from '../common/components/Checkbox'
 import StepProgress from './components/StepProgress'
 import useGetSalaryAssets from './hooks/useGetSalaryAssets'
 import usePutSalaryAssetExclusions from './hooks/usePutSalaryAssetExclusions'
+import { NavHomeIc } from '../common/assets/icons'
 import type { SalaryAssetItem } from './types/paycheckPlan'
 
 // 선택 가능(FREE) 판정 — 시스템 고정(정기예금·연금·개별주)이 아닌 자산만 사용자가 토글한다.
@@ -90,7 +91,7 @@ function PaycheckAssetSelectPage() {
   if (isSurveyLoading || surveyMissing) {
     return (
       <div role="status" aria-live="polite" className="flex flex-col h-dvh">
-        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
         <span className="sr-only">투자성향 설문 확인 중입니다.</span>
         <div className="flex-1 px-6 pt-6 flex flex-col gap-3">
           {[0, 1, 2, 3].map((i) => (
@@ -105,7 +106,7 @@ function PaycheckAssetSelectPage() {
   if (surveyError) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
         <div className="flex-1 px-6 flex flex-col items-center justify-center gap-4">
           <p className="text-body text-ink-sub text-center">설문 상태를 확인하지 못했어요.</p>
           <button
@@ -126,10 +127,10 @@ function PaycheckAssetSelectPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+      <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
       <StepProgress current={1} total={2} />
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-8">
         <h2 className="text-heading font-bold text-ink mb-1">
           어떤 자산으로
           <br />
@@ -316,6 +317,15 @@ function AssetGuide() {
         정기예금·개별주·연금은 성격에 맞게 자동으로 분류돼요.
       </p>
     </div>
+  )
+}
+
+function HomeButton() {
+  const navigate = useNavigate()
+  return (
+    <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+      <NavHomeIc width={22} height={22} />
+    </button>
   )
 }
 

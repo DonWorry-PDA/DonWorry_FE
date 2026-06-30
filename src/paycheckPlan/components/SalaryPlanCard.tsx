@@ -6,10 +6,23 @@ type SalaryPlanCardProps = {
   onClick?: () => void
 }
 
-const riskColor: Record<string, string> = {
-  낮음: 'text-success',
-  중간: 'text-warning',
-  높음: 'text-danger',
+const RISK_DOT_COLOR: Record<1 | 2 | 3, string> = {
+  1: 'bg-success',
+  2: 'bg-warning',
+  3: 'bg-danger',
+}
+
+function RiskDots({ score }: { score: 1 | 2 | 3 }) {
+  return (
+    <div className="flex items-center gap-1" aria-label={`위험도 ${score}/3`}>
+      {([1, 2, 3] as const).map((n) => (
+        <span
+          key={n}
+          className={`block size-2 rounded-full ${n <= score ? RISK_DOT_COLOR[score] : 'bg-line'}`}
+        />
+      ))}
+    </div>
+  )
 }
 
 function SalaryPlanCard({ plan, onClick }: SalaryPlanCardProps) {
@@ -23,9 +36,7 @@ function SalaryPlanCard({ plan, onClick }: SalaryPlanCardProps) {
       className={`w-full text-left rounded-card-lg p-4 border transition-colors ${
         isLocked
           ? 'bg-surface border-line opacity-60 cursor-default'
-          : isSelected
-            ? 'bg-white border-primary border-2'
-            : 'bg-white border-line'
+          : 'bg-white border-line'
       }`}
     >
       <div className="flex items-center gap-2 mb-1">
@@ -60,7 +71,10 @@ function SalaryPlanCard({ plan, onClick }: SalaryPlanCardProps) {
           </div>
           <div>
             <p className="text-sub text-ink-hint mb-0.5">위험도</p>
-            <p className={`text-md font-bold ${riskColor[plan.riskLevel]}`}>{plan.riskLevel}</p>
+            <RiskDots score={plan.riskScore} />
+            {plan.riskDesc && (
+              <p className="text-caption text-ink-hint mt-0.5">{plan.riskDesc}</p>
+            )}
           </div>
         </div>
       )}

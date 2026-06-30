@@ -12,6 +12,7 @@ import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { findPlan, mapExecutionSummary } from './utils/planMapper'
 import useGetAccountCheck from '@/accountOpen/hooks/useGetAccountCheck'
+import { NavHomeIc } from '../common/assets/icons'
 
 function ArrowUpIcon() {
   return (
@@ -76,7 +77,7 @@ function PaycheckExecutePage() {
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
         <CenterMessage>설계안을 불러오고 있어요</CenterMessage>
       </div>
     )
@@ -96,7 +97,7 @@ function PaycheckExecutePage() {
   if (!data) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
         <CenterMessage variant="alert">설계안을 불러오지 못했어요</CenterMessage>
       </div>
     )
@@ -115,7 +116,7 @@ function PaycheckExecutePage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+      <AppBar title="실행 요약" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
         <Badge tone="primary" className="mb-3">{summary.planName}</Badge>
@@ -126,24 +127,27 @@ function PaycheckExecutePage() {
           <span className="text-primary">매달 받는 돈이 늘어요</span>
         </h2>
 
-        {/* 충당률 변화 카드 */}
-        <div className="border border-line rounded-card px-4 py-3 flex items-center justify-between mb-4 mt-4">
+        {/* 금액 변화 카드 (Primary) */}
+        <div className="border border-line rounded-card px-4 py-4 flex items-center justify-between mb-4 mt-4">
           <div>
-            <p className="text-sub text-ink-hint mb-0.5">지금 충당률</p>
-            <p className="font-inter text-card font-bold text-warning">{summary.coverageFrom}%</p>
+            <p className="text-sub text-ink-hint mb-0.5">지금 월수입</p>
+            <p className="font-inter text-card font-bold text-ink">{summary.cashflowFrom.toLocaleString('ko-KR')}만원</p>
           </div>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-ink-hint">
-            <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <div className="flex flex-col items-center gap-1">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-ink-hint">
+              <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-caption font-bold text-success">+{(summary.cashflowTo - summary.cashflowFrom).toLocaleString('ko-KR')}만원</span>
+          </div>
           <div className="text-right">
             <p className="text-sub text-ink-hint mb-0.5">실행 후</p>
-            <p className="font-inter text-card font-bold text-success">{summary.coverageTo}%</p>
+            <p className="font-inter text-card font-bold text-success">{summary.cashflowTo.toLocaleString('ko-KR')}만원</p>
           </div>
         </div>
 
         <InfoBox tone="success" className="mb-5">
-          매달 받는 돈이 {summary.cashflowFrom}만원 →{' '}
-          <span className="font-semibold">{summary.cashflowTo}만원</span>으로 늘어날 것으로 예상돼요.
+          충당률이 {summary.coverageFrom}% →{' '}
+          <span className="font-semibold">{summary.coverageTo}%</span>로 올라가요.
         </InfoBox>
 
         <div className="relative mb-3">

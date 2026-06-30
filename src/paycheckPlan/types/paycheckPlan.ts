@@ -77,6 +77,8 @@ export type Plan = {
   incrementalIncome: number // (N−M).max(0): 추천 운용으로 늘어나는 순월급(만원). 0이면 안정·상속 가치로 프레이밍
   coverage: number | null // 연금초과(충당 무의미)면 null → '충분' 표기
   riskLevel: '낮음' | '중간' | '높음'
+  riskScore: 1 | 2 | 3
+  riskDesc: string
   lockedReason?: string
 }
 

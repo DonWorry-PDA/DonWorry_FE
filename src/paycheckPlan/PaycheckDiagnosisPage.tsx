@@ -3,9 +3,10 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { useQueryClient } from '@tanstack/react-query'
 import AppBar from '../common/components/AppBar'
+import { NavHomeIc } from '../common/assets/icons'
 import Button from '../common/components/Button'
-import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
+import StickyFooter from '../common/components/StickyFooter'
 import StepProgress from './components/StepProgress'
 import useGetCashFlowDiagnosis from './hooks/useGetCashFlowDiagnosis'
 import client from '@/common/api/client'
@@ -58,10 +59,57 @@ function PlanLoadingScreen() {
         </div>
         <img src="/logos/sol-mark.svg" alt="" width={56} height={56} className="rounded-full" />
       </div>
-      <p className="text-card font-bold text-ink text-center">
-        {LOADING_MESSAGES[msgIdx]}
-      </p>
+      <p className="text-card font-bold text-ink text-center">{LOADING_MESSAGES[msgIdx]}</p>
       <p className="mt-2 text-sub text-ink-hint text-center">잠시만 기다려주세요</p>
+    </div>
+  )
+}
+
+function CoverageBar({
+  pension,
+  dividend,
+  target,
+}: {
+  pension: number
+  dividend: number
+  target: number
+}) {
+  const pensionPct = target > 0 ? Math.min(100, (pension / target) * 100) : 0
+  const dividendPct = target > 0 ? Math.min(100 - pensionPct, (dividend / target) * 100) : 0
+
+  return (
+    <div className="mb-5">
+      <div className="flex justify-between items-baseline mb-2">
+        <p className="text-sub text-ink-hint">현재 충당 현황</p>
+        <p className="text-sub text-ink-hint">
+          <span className="font-inter font-bold text-primary">{pension + dividend}</span>
+          <span> / {target}만원</span>
+        </p>
+      </div>
+
+      <div className="relative h-3 bg-surface-muted rounded-full overflow-hidden mb-2.5">
+        <div
+          className="absolute left-0 top-0 h-full bg-primary"
+          style={{ width: `${pensionPct}%` }}
+        />
+        <div
+          className="absolute top-0 h-full bg-primary/35"
+          style={{ left: `${pensionPct}%`, width: `${dividendPct}%` }}
+        />
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex items-center gap-1.5">
+          <span className="block size-2 rounded-full bg-primary shrink-0" />
+          <span className="text-caption text-ink-hint">국민연금 {pension}만원</span>
+        </div>
+        {dividend > 0 && (
+          <div className="flex items-center gap-1.5">
+            <span className="block size-2 rounded-full bg-primary/35 border border-primary/20 shrink-0" />
+            <span className="text-caption text-ink-hint">배당 ETF {dividend}만원</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -92,22 +140,28 @@ function PaycheckDiagnosisPage() {
     })
   }
 
-  if (showPlanLoading) {
-    return <PlanLoadingScreen />
-  }
+  const homeAction = (
+    <button
+      type="button"
+      onClick={() => navigate('/home')}
+      aria-label="홈으로"
+      className="text-ink-sub"
+    >
+      <NavHomeIc width={22} height={22} />
+    </button>
+  )
+
+  if (showPlanLoading) return <PlanLoadingScreen />
 
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={homeAction} />
         <StepProgress current={2} total={2} />
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
-          <div className="mb-2 h-5 w-28 animate-pulse rounded bg-surface-muted" />
-          <div className="mb-6 h-10 w-36 animate-pulse rounded bg-surface-muted" />
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-[52px] animate-pulse border-b border-divider bg-surface-muted" />
-          ))}
-          <div className="mt-6 h-[80px] animate-pulse rounded-btn bg-surface-muted" />
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4 flex flex-col gap-4">
+          <div className="h-[120px] animate-pulse rounded-card-xl bg-surface-muted" />
+          <div className="h-[72px] animate-pulse rounded-card-lg bg-surface-muted" />
+          <div className="h-[160px] animate-pulse rounded-card-lg bg-surface-muted" />
         </div>
       </div>
     )
@@ -120,7 +174,7 @@ function PaycheckDiagnosisPage() {
   if (isError || !data) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={homeAction} />
         <StepProgress current={2} total={2} />
         <p className="text-body text-danger text-center pt-20">데이터를 불러오지 못했어요.</p>
       </div>
@@ -135,33 +189,14 @@ function PaycheckDiagnosisPage() {
 
   return (
     <div className="flex flex-col h-dvh overflow-hidden">
-      <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+      <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={homeAction} />
       <StepProgress current={2} total={2} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
-        <p className="text-body text-ink-sub mb-1">지금의 월 현금흐름</p>
-        <p className="font-inter text-display font-bold text-ink mb-6">
-          {monthlyCashFlowMan}만원
-          <span className="text-body font-normal text-ink-hint ml-1">/ 월</span>
-        </p>
 
-        <div className="flex flex-col gap-0 mb-6">
-          <div className="flex items-center justify-between py-3.5 border-b border-divider">
-            <span className="text-body text-ink-sub">국민연금</span>
-            <span className="font-inter text-body font-medium text-ink">{nationalPensionMan}만원</span>
-          </div>
-          <div className="flex items-center justify-between py-3.5 border-b border-divider">
-            <span className="text-body text-ink-sub">배당 ETF 분배금</span>
-            <span className="font-inter text-body font-medium text-ink">{dividendIncomeMan}만원</span>
-          </div>
-          <div className="flex items-center justify-between py-3.5 border-b border-divider">
-            <span className="text-body text-ink-sub">목표 생활비</span>
-            <span className="font-inter text-body font-medium text-ink">{targetMan}만원</span>
-          </div>
-        </div>
-
+        {/* 진단 결과 히어로 카드 */}
         {data.shortfallExists ? (
-          <InfoBox tone="primary" className="mb-6">
+          <InfoBox tone="primary" className="mb-5">
             <p className="text-sub mb-1">매달 부족한 돈</p>
             <p className="font-inter text-display font-bold mb-3">{shortfallLabel}</p>
             <div className="border-t border-current/20 pt-3">
@@ -172,7 +207,7 @@ function PaycheckDiagnosisPage() {
             </div>
           </InfoBox>
         ) : (
-          <InfoBox tone="primary" className="mb-6">
+          <InfoBox tone="success" className="mb-5">
             <p className="text-sub mb-1">현재 현금흐름으로</p>
             <p className="font-inter text-display font-bold mb-3">생활비가 충당돼요</p>
             <div className="border-t border-current/20 pt-3">
@@ -183,17 +218,40 @@ function PaycheckDiagnosisPage() {
             </div>
           </InfoBox>
         )}
+
+        {/* 커버리지 바 */}
+        <CoverageBar
+          pension={nationalPensionMan}
+          dividend={dividendIncomeMan}
+          target={targetMan}
+        />
+
+        {/* 브레이크다운 카드 */}
+        <div className="bg-surface rounded-card-lg px-4 py-1 mb-6">
+          <div className="flex items-center justify-between py-3 border-b border-divider">
+            <span className="text-body text-ink-sub">국민연금</span>
+            <span className="font-inter text-body text-ink">+{nationalPensionMan}만원</span>
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-divider">
+            <span className="text-body text-ink-sub">배당 ETF 분배금</span>
+            <span className="font-inter text-body text-ink">+{dividendIncomeMan}만원</span>
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-divider">
+            <span className="text-body text-ink-sub">목표 생활비</span>
+            <span className="font-inter text-body text-ink">{targetMan}만원</span>
+          </div>
+          <div className="flex items-center justify-between py-3">
+            <span className="text-body font-semibold text-ink">월수입 합계</span>
+            <span className="font-inter text-body font-semibold text-primary">
+              {monthlyCashFlowMan}만원
+            </span>
+          </div>
+        </div>
+
       </div>
 
       <StickyFooter>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/stability')}>
-            안정도 먼저
-          </Button>
-          <Button onClick={handleGoToPlans}>
-            설계안 보기
-          </Button>
-        </div>
+        <Button onClick={handleGoToPlans}>설계안 보기</Button>
       </StickyFooter>
     </div>
   )

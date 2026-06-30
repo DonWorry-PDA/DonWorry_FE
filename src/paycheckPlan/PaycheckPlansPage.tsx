@@ -1,5 +1,7 @@
 import { Navigate, useNavigate } from 'react-router-dom'
+import { NavHomeIc } from '../common/assets/icons'
 import { isAxiosError } from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -16,12 +18,18 @@ const userName = '고객'
 
 function PaycheckPlansPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data, isLoading, isError, error, refetch } = useGetRecommendation()
+
+  const handleGoToProfileEdit = () => {
+    queryClient.invalidateQueries({ queryKey: ['portfolio', 'recommendation'] })
+    navigate('/mypage/profile-edit')
+  }
 
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
+        <AppBar title="월급 설계안" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-8 w-48 animate-pulse rounded bg-surface-muted" />
           <div className="mb-6 h-5 w-56 animate-pulse rounded bg-surface-muted" />
@@ -42,7 +50,7 @@ function PaycheckPlansPage() {
   if (isError || !data) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
+        <AppBar title="월급 설계안" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
         <CenterMessage variant="alert">
           <div className="flex flex-col items-center gap-3">
             <p>설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</p>
@@ -65,24 +73,30 @@ function PaycheckPlansPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
+      <AppBar title="월급 설계안" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
 
       {isStructuralShortage ? (
         <>
-          <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
-            <h2 className="text-heading font-bold text-ink mb-2">
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-8 pb-6">
+            <h2 className="text-heading font-bold text-ink mb-4">
               지금은 월급 설계안을
               <br />
               만들기 어려워요
             </h2>
-            <p className="text-body text-ink-sub mb-6">
+            <p className="text-body text-ink-sub mb-7">
               들어오는 돈이 생활비에 거의 다 쓰여서
               <br />
               지금은 더 굴릴 여유 자금이 부족해요.
             </p>
 
+            <InfoBox tone="primary" className="mb-7">
+              목표 생활비를 줄이면 설계안을 만들 수 있어요.
+              <br />
+              아래 버튼에서 목표 생활비를 수정해보세요.
+            </InfoBox>
+
             {/* 현재 상황 — 구조적 부족이어도 BE가 내려주는 baseline 숫자로 채운다 */}
-            <div className="bg-surface rounded-card-lg border border-line p-5 mb-4">
+            <div className="bg-surface rounded-card-lg border border-line p-5">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sub text-ink-hint">매달 들어오는 돈</span>
                 <span className="font-inter text-body font-semibold text-ink">
@@ -102,31 +116,11 @@ function PaycheckPlansPage() {
                 </span>
               </div>
             </div>
-
-            {/* 산출 근거 — surplus = (총자산−연금저축) − 바닥자산, 바닥자산 = (필수생활비−국민연금)×남은 평생.
-                FE엔 금액이 안 내려와 정성 설명만. 상황 카드와 통일감 위해 동일 카드 스타일. */}
-            <div className="bg-surface rounded-card-lg border border-line p-5 mb-6">
-              <p className="text-body font-semibold text-ink mb-1.5">왜 여유 자금이 부족한가요?</p>
-              <p className="text-sub text-ink-sub leading-relaxed">
-                꼭 필요한 생활비 중 국민연금으로 채워지지 않는 부분을, 앞으로 살아갈 기간 내내 메우려면 지금
-                가진 자산이 거의 다 필요해요. 그래서 더 굴려서 월급을 만들 여유가 남지 않아요.
-              </p>
-            </div>
-
-            <InfoBox className="mb-6">
-              여유가 생기면 그때 월급 만들기를 다시 추천드릴게요. 지금은 안전자산 중심으로 지키는 운용이 우선이에요.
-            </InfoBox>
           </div>
 
           <StickyFooter>
-            <Button
-              onClick={() =>
-                navigate('/paycheck-plan/consult/branch', {
-                  state: { context: 'SALARY_SHORTAGE', institution: 'SHINHAN_SECURITIES' },
-                })
-              }
-            >
-              전문가와 같이 보기
+            <Button onClick={handleGoToProfileEdit}>
+              목표 생활비 수정하기
             </Button>
           </StickyFooter>
         </>
