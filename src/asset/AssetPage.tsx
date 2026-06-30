@@ -674,7 +674,7 @@ function AssetPage() {
                     </div>
                     {INCOME_EVENT_TYPES.has(event.type) ? (
                       <p className="font-inter text-md text-primary shrink-0 font-bold">
-                        +{formatKrw(event.amount ?? 0)}
+                        +{formatWon(event.amount ?? 0)}
                       </p>
                     ) : event.amount != null ? (
                       <span className="bg-warning-bg text-warning-text text-sub rounded-badge shrink-0 px-[9px] py-1 font-bold">
