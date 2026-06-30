@@ -12,12 +12,18 @@ export type AssetItem = {
   subLabel: string
 }
 
+// 자산 가용성 — BE가 item별로 내려주는 운용 가능 분류(additive). 선택 가능 여부를 이 값으로 분기한다.
+// FREE: 자유현금·비연금 ETF(선택 가능) / PINNED_SAFE: 정기예금(유지·이자 기여) /
+// RESTRICTED_PENSION: IRP·연금저축(55세 제약, 별도 연금 트랙) / EXCLUDED_STOCK: 개별주(성장 자산).
+export type Deployability = 'FREE' | 'PINNED_SAFE' | 'RESTRICTED_PENSION' | 'EXCLUDED_STOCK'
+
 export type SalaryAssetItem = {
   assetKey: string
   name: string
   description: string
   amount: number
   excluded: boolean
+  deployability: Deployability
 }
 
 export type SalaryAssetGroup = {
@@ -67,7 +73,8 @@ export type Plan = {
   tagline: string
   badge?: string
   status: PlanStatus
-  expectedIncome: number
+  expectedIncome: number // N: 이 안 선택 시 전체 월수령(만원)
+  incrementalIncome: number // (N−M).max(0): 추천 운용으로 늘어나는 순월급(만원). 0이면 안정·상속 가치로 프레이밍
   coverage: number | null // 연금초과(충당 무의미)면 null → '충분' 표기
   riskLevel: '낮음' | '중간' | '높음'
   lockedReason?: string
@@ -101,14 +108,17 @@ export type AllocationItem = {
 export type PlanDetail = {
   planId: string
   planName: string
-  expectedMonthlyIncome: number
+  expectedMonthlyIncome: number // N: 전체 월수령(만원)
+  currentCashFlow: number // M: 현재 월 현금흐름(국민연금+현재배당, 만원) — before
+  incrementalIncome: number // (N−M).max(0): 운용 순증분(만원). 0이면 안정·상속 프레이밍
+  inheritance: number // 예상 상속액(만원) — 증분 0 케이스 가치 근거
+  sustainableCoverage: number | null // 지속가능(이자·배당만) 충당률 %, 100캡
   afterTaxIncome: number
   coverageFrom: number
   coverageTo: number
   shortfallFrom: number
   shortfallTo: number
   allocations: AllocationItem[]
-  monthlyIncome: number
   principalValue: number
   notice: string
 }

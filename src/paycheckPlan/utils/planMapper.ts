@@ -55,6 +55,7 @@ export const mapPlan = (plan: RecommendationPlan): Plan => ({
   badge: plan.status === 'RECOMMENDED' ? '추천' : undefined,
   status: toStatus(plan.status),
   expectedIncome: toManwon(plan.monthlyIncome),
+  incrementalIncome: toManwon(plan.incrementalMonthlyIncome),
   coverage: roundCoverage(plan.alphaCoverageRate),
   riskLevel: RISK_LEVEL[plan.type],
 })
@@ -75,31 +76,27 @@ const mapAllocations = (plan: RecommendationPlan): AllocationItem[] =>
     color: ALLOCATION_COLORS[index % ALLOCATION_COLORS.length],
   }))
 
-// ── BE 미제공 필드용 static placeholder. TODO: BE 확장 시 제거 ──
-const DETAIL_PLACEHOLDER: Record<PlanType, { operationIncome: number }> = {
-  stable: { operationIncome: 50 },
-  balanced: { operationIncome: 65 },
-  growth: { operationIncome: 75 },
-}
 const DETAIL_NOTICE =
   '월급이 보장되는 건 아니에요. 분배금·배당이 줄면 알림으로 알려드리고, 다시 조정하도록 도와드려요.'
 
 export const mapPlanDetail = (response: RecommendationResponse, plan: RecommendationPlan): PlanDetail => {
   const type = TYPE_MAP[plan.type]
   const expected = toManwon(plan.monthlyIncome)
-  const placeholder = DETAIL_PLACEHOLDER[type]
   const principal = toManwon(plan.allocations.reduce((sum, a) => sum + a.amount, 0))
   return {
     planId: type,
     planName: plan.displayName,
-    expectedMonthlyIncome: expected, // BE
+    expectedMonthlyIncome: expected, // BE (N: 전체 월수령)
+    currentCashFlow: toManwon(response.currentMonthlyCashFlow), // BE (M: before)
+    incrementalIncome: toManwon(plan.incrementalMonthlyIncome), // BE (순증분 = N−M)
+    inheritance: toManwon(plan.inheritanceAmount), // BE
+    sustainableCoverage: roundCoverage(plan.sustainableCoverageRate), // BE
     afterTaxIncome: Math.round(expected * 0.96), // TODO(static): 세후 미제공 — 임시 96% 추정
     coverageFrom: Math.min(100, Math.round(response.currentCoverageRate)), // BE
     coverageTo: Math.min(100, Math.round(plan.totalCoverageRate)), // BE
     shortfallFrom: toManwon(response.currentMonthlyShortfall), // BE
     shortfallTo: toManwon(plan.residualMonthlyShortfall), // BE
     allocations: mapAllocations(plan), // BE
-    monthlyIncome: placeholder.operationIncome, // TODO(static): 국민연금 분리 미제공
     principalValue: principal, // BE (운용자산 합)
     notice: DETAIL_NOTICE,
   }
@@ -120,13 +117,17 @@ export const mapComparison = (response: RecommendationResponse): ComparisonTable
   const [left, right] = response.plans
   const leftIncome = toManwon(left.monthlyIncome)
   const rightIncome = toManwon(right.monthlyIncome)
+  const leftInc = toManwon(left.incrementalMonthlyIncome)
+  const rightInc = toManwon(right.incrementalMonthlyIncome)
+  const fmtInc = (v: number) => (v > 0 ? `+${v.toLocaleString('ko-KR')}만원` : '늘지 않음')
   return {
     leftPlanId: TYPE_MAP[left.type],
     rightPlanId: TYPE_MAP[right.type],
     leftPlanName: left.displayName,
     rightPlanName: right.displayName,
     rows: [
-      { label: '예상 월수입', left: `${leftIncome.toLocaleString('ko-KR')}만원`, right: `${rightIncome.toLocaleString('ko-KR')}만원` }, // BE
+      { label: '늘어나는 월급', left: fmtInc(leftInc), right: fmtInc(rightInc) }, // BE (순증분, 핵심)
+      { label: '전체 월수입', left: `${leftIncome.toLocaleString('ko-KR')}만원`, right: `${rightIncome.toLocaleString('ko-KR')}만원` }, // BE (국민연금+배당 포함 N)
       { label: '생활비 충당', left: fmtCoverage(left.alphaCoverageRate), right: fmtCoverage(right.alphaCoverageRate) }, // BE
       // ── 이하 BE 미제공 — static placeholder (TODO: BE 확장/협의) ──
       { label: '세후 실수령', left: `${Math.round(leftIncome * 0.96).toLocaleString('ko-KR')}만원`, right: `${Math.round(rightIncome * 0.96).toLocaleString('ko-KR')}만원` },
