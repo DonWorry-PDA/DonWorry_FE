@@ -95,9 +95,12 @@ function AssetGroupAccordion({ group, checkedIds, onToggleItem, onToggleGroup }:
                 className="flex items-center gap-3 text-left w-full py-2.5"
               >
                 <CheckBox checked={checked} />
-                <span className="flex items-center justify-between flex-1 min-w-0">
-                  <span className="text-body text-ink-sub truncate mr-2">
-                    {item.name}
+                <span className="flex items-center justify-between flex-1 min-w-0 gap-2">
+                  <span className="min-w-0">
+                    <span className="block text-body text-ink-sub truncate">{item.name}</span>
+                    {item.description && (
+                      <span className="block text-caption text-ink-hint truncate">{item.description}</span>
+                    )}
                   </span>
                   <span className={`font-inter text-md font-semibold shrink-0 ${checked ? 'text-ink' : 'text-ink-sub'}`}>
                     {formatWon(item.amount)}
