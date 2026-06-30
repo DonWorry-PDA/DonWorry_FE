@@ -11,6 +11,7 @@ import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import usePostSavedPlan from './hooks/usePostSavedPlan'
 import { findPlan, mapPlanDetail, buildSavePlanRequest } from './utils/planMapper'
+import { NavHomeIc } from '../common/assets/icons'
 
 function WarningIcon() {
   return (
@@ -34,10 +35,16 @@ function PaycheckPlanDetailPage() {
   const { mutate: savePlan, isPending: isSaving } = usePostSavedPlan()
   const [savedModalOpen, setSavedModalOpen] = useState(false)
 
+  const homeAction = (
+    <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+      <NavHomeIc width={22} height={22} />
+    </button>
+  )
+
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="설계안" onBack={() => navigate(-1)} />
+        <AppBar title="설계안" onBack={() => navigate(-1)} rightAction={homeAction} />
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-4 h-[56px] animate-pulse rounded-card bg-surface-muted" />
           <div className="flex flex-col gap-3">
@@ -58,7 +65,7 @@ function PaycheckPlanDetailPage() {
   if (!data) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="설계안" onBack={() => navigate(-1)} />
+        <AppBar title="설계안" onBack={() => navigate(-1)} rightAction={homeAction} />
         <CenterMessage variant="alert">설계안을 불러오지 못했어요</CenterMessage>
       </div>
     )
@@ -73,7 +80,7 @@ function PaycheckPlanDetailPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title={detail.planName} onBack={() => navigate(-1)} />
+      <AppBar title={detail.planName} onBack={() => navigate(-1)} rightAction={homeAction} />
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         {/* 헤더 카드 — 핵심은 '운용으로 늘어나는 월급(순증분)'. 전체 월수령(N)은 과대표시라 보조로만. */}

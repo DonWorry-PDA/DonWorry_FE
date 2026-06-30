@@ -4,6 +4,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import DateTimePickerSheet, { formatTime24 } from '../common/components/DateTimePickerSheet'
+import { NavHomeIc } from '../common/assets/icons'
 import { buildScheduledAtIso } from '../mypage/utils/consultation'
 import { usePostConsultation } from '../mypage/hooks/consultation'
 import type { ConsultApiMethod } from '../mypage/types/consultation'
@@ -106,7 +107,15 @@ function PaycheckConsultPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="상담 예약" onBack={() => navigate(-1)} />
+      <AppBar
+        title="상담 예약"
+        onBack={() => navigate(-1)}
+        rightAction={
+          <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+            <NavHomeIc width={22} height={22} />
+          </button>
+        }
+      />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-4 pb-6">
         {/* 선택된 지점 카드 */}

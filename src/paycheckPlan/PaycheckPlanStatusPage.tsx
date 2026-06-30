@@ -6,6 +6,7 @@ import StickyFooter from '../common/components/StickyFooter'
 import CenterMessage from './components/CenterMessage'
 import useGetSalaryPlanStatus from './hooks/useGetSalaryPlanStatus'
 import { toManwon } from './utils/planMapper'
+import { NavHomeIc } from '../common/assets/icons'
 import type { ReentryGuidance, SalaryPlanBucketRole, SalaryPlanHolding } from './types/paycheckPlan'
 
 // 월급명세서형(F안): "매달 받는 월급"이 메인. 달성률(평가액÷목표)은 시세 하락 시
@@ -23,10 +24,16 @@ function PaycheckPlanStatusPage() {
   const navigate = useNavigate()
   const { data, isLoading, refetch, error } = useGetSalaryPlanStatus()
 
+  const homeAction = (
+    <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+      <NavHomeIc width={22} height={22} />
+    </button>
+  )
+
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
+        <AppBar title="내 월급 현황" onBack={() => navigate(-1)} rightAction={homeAction} />
         <div role="status" aria-live="polite" className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <span className="sr-only">월급 현황을 불러오는 중입니다.</span>
           <div className="mb-4 h-[120px] animate-pulse rounded-card-xl bg-surface-muted" />
@@ -48,7 +55,7 @@ function PaycheckPlanStatusPage() {
   if (!data) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
+        <AppBar title="내 월급 현황" onBack={() => navigate(-1)} rightAction={homeAction} />
         <CenterMessage variant="alert">
           <div className="flex flex-col items-center gap-3">
             <p>현황을 불러오지 못했어요</p>
@@ -77,7 +84,7 @@ function PaycheckPlanStatusPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="내 월급 현황" onBack={() => navigate(-1)} />
+      <AppBar title="내 월급 현황" onBack={() => navigate(-1)} rightAction={homeAction} />
 
       <div className="flex-1 min-h-0 overflow-y-auto pb-6">
         {/* 헤드라인 — 매달 받는 월급 */}

@@ -7,6 +7,8 @@ import useGetSavedPlan from './hooks/useGetSavedPlan'
 import useDeleteSavedPlan from './hooks/useDeleteSavedPlan'
 import { toManwon } from './utils/planMapper'
 import type { SavedPlanResponse } from './types/savedPlan'
+import { useToast } from '../common/contexts/ToastContext'
+import { NavHomeIc } from '../common/assets/icons'
 
 const PLAN_TYPE_LABEL: Record<string, string> = {
   STABLE: '안정 월급형',
@@ -19,15 +21,29 @@ function SavedPlansPage() {
   const { data: savedPlans, isLoading } = useGetSavedPlan()
   const { mutate: deletePlan, isPending: isDeleting } = useDeleteSavedPlan()
   const [targetPlan, setTargetPlan] = useState<SavedPlanResponse | null>(null)
+  const { showToast } = useToast()
 
   const handleDelete = () => {
     if (!targetPlan) return
-    deletePlan(targetPlan.id, { onSuccess: () => setTargetPlan(null) })
+    deletePlan(targetPlan.id, {
+      onSuccess: () => {
+        setTargetPlan(null)
+        showToast('설계안을 삭제했어요')
+      },
+    })
   }
 
   return (
     <div className="flex flex-col h-dvh bg-white">
-      <AppBar title="저장한 설계안" onBack={() => navigate(-1)} />
+      <AppBar
+        title="저장한 설계안"
+        onBack={() => navigate(-1)}
+        rightAction={
+          <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+            <NavHomeIc width={22} height={22} />
+          </button>
+        }
+      />
 
       <main className="flex-1 overflow-y-auto px-4 pt-4 pb-6 flex flex-col gap-3">
         {isLoading ? (

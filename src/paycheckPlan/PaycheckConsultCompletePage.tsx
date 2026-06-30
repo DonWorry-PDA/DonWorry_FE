@@ -3,6 +3,7 @@ import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import CheckBadge from '../common/components/CheckBadge'
+import { NavHomeIc } from '../common/assets/icons'
 import type { SelectedBranch, ConsultMethod } from './types/paycheckPlan'
 
 const METHOD_LABELS: Record<ConsultMethod, string> = {
@@ -51,7 +52,15 @@ function PaycheckConsultCompletePage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="상담 예약" onBack={() => navigate('/home', { replace: true })} />
+      <AppBar
+        title="상담 예약"
+        onBack={() => navigate('/home', { replace: true })}
+        rightAction={
+          <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+            <NavHomeIc width={22} height={22} />
+          </button>
+        }
+      />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-[80px]">
         {/* 성공 아이콘 */}
