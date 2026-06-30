@@ -56,8 +56,12 @@ function SalaryPlanCard({ plan, onClick }: SalaryPlanCardProps) {
       ) : (
         <div className="flex gap-4 mt-2">
           <div>
-            <p className="text-sub text-ink-hint mb-0.5">예상 월수입</p>
-            <p className="font-inter text-md font-bold text-primary">{plan.expectedIncome}만원</p>
+            <p className="text-sub text-ink-hint mb-0.5">늘어나는 월급</p>
+            {plan.incrementalIncome > 0 ? (
+              <p className="font-inter text-md font-bold text-primary">+{plan.incrementalIncome}만원</p>
+            ) : (
+              <p className="text-md font-bold text-ink-sub">안정·상속형</p>
+            )}
           </div>
           <div>
             <p className="text-sub text-ink-hint mb-0.5">충당</p>

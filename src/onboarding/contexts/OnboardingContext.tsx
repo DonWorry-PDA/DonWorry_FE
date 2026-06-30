@@ -14,10 +14,10 @@ const OnboardingContext = createContext<OnboardingContextValue | null>(null)
 const INITIAL_ANSWERS: OnboardingAnswers = {
   situation: null,
   pensionStatus: null,
-  age: 63,
-  retiredYear: 2024,
-  monthlyLiving: 220,
-  monthlyMedical: 50,
+  age: null,
+  retiredYear: null,
+  monthlyLiving: null,
+  monthlyMedical: null,
 }
 
 export function OnboardingContextProvider({ children }: { children: React.ReactNode }) {

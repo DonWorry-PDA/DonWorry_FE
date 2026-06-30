@@ -135,7 +135,9 @@ function ProfileEditPage() {
               })}
             </div>
             <p className="text-caption leading-[1.6] text-[#b0b8c1]">
-              '은퇴 전' 선택 시 예상 은퇴 나이를 입력받아 인출 계획을 세워드려요.
+              {retirementStatus === '은퇴 전'
+                ? '은퇴 전 상태예요. 목표 시점까지 자산을 불려 생활비를 만드는 계획을 세워드려요.'
+                : '은퇴 후 상태예요. 보유한 자산으로 매달 생활비를 만드는 계획을 세워드려요.'}
             </p>
           </div>
 

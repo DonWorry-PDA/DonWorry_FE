@@ -52,13 +52,6 @@ function AssetIntro({ onNext, onPrev }: Props) {
             {/* 부드러운 후광 */}
             <circle cx="130" cy="150" r="62" fill="#eef3ff" />
 
-            {/* 허브에서 퍼지는 펄스 링 (계속 반복) */}
-            <circle className="animate-asset-pulse" cx="130" cy="150" r="44" fill="none" stroke="#6e96ff" strokeWidth="2" />
-            <circle className="animate-asset-pulse" cx="130" cy="150" r="44" fill="none" stroke="#6e96ff" strokeWidth="2" style={{ animationDelay: '1.3s' } as CSSProperties} />
-
-            {/* 허브 둘레 점선 궤도 (천천히 회전) */}
-            <circle className="animate-asset-orbit" cx="130" cy="150" r="54" fill="none" stroke="#c7d7ff" strokeWidth="1.5" strokeDasharray="2 7" strokeLinecap="round" />
-
             {/* 중앙 허브 — 흰 원 + 미니 도넛(모인 자산 구성). 카드 3색이 도넛 세그먼트로 합쳐진다 */}
             <g className="animate-asset-hub">
               <circle cx="130" cy="150" r="44" fill="#ffffff" filter="url(#assetHubShadow)" />

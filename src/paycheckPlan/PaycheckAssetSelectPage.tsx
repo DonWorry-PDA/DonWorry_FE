@@ -2,15 +2,23 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import useGetSurvey from '@/survey/hooks/useGetSurvey'
+import { formatWon } from '../common/utils/formatKrw'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import Checkbox from '../common/components/Checkbox'
 import StepProgress from './components/StepProgress'
-import AssetGroupAccordion from './components/AssetGroupAccordion'
 import useGetSalaryAssets from './hooks/useGetSalaryAssets'
 import usePutSalaryAssetExclusions from './hooks/usePutSalaryAssetExclusions'
 import { NavHomeIc } from '../common/assets/icons'
+import type { SalaryAssetItem } from './types/paycheckPlan'
+
+// 선택 가능(FREE) 판정 — 시스템 고정(정기예금·연금·개별주)이 아닌 자산만 사용자가 토글한다.
+// 미상/누락(undefined)은 안전하게 선택 가능으로 본다(BE additive 하위호환).
+const isSelectable = (item: SalaryAssetItem) =>
+  item.deployability !== 'PINNED_SAFE' &&
+  item.deployability !== 'RESTRICTED_PENSION' &&
+  item.deployability !== 'EXCLUDED_STOCK'
 
 function PaycheckAssetSelectPage() {
   const navigate = useNavigate()
@@ -30,25 +38,29 @@ function PaycheckAssetSelectPage() {
     if (surveyMissing) navigate('/survey', { replace: true })
   }, [surveyMissing, navigate])
 
+  // 선택 가능(FREE) 자산만 초기 체크. 시스템 고정 자산은 토글 대상이 아니라 set에 넣지 않는다.
   useEffect(() => {
     if (!data || initialized.current) return
     initialized.current = true
     const includedKeys = data.assetGroups
       .flatMap((g) => g.items)
+      .filter(isSelectable)
       .filter((item) => !item.excluded)
       .map((item) => item.assetKey)
     setCheckedIds(new Set(includedKeys))
   }, [data])
 
-  const allItemKeys = data?.assetGroups.flatMap((g) => g.items.map((i) => i.assetKey)) ?? []
-  const allChecked = allItemKeys.length > 0 && allItemKeys.every((key) => checkedIds.has(key))
+  const allItems = data?.assetGroups.flatMap((g) => g.items) ?? []
+  // deployability 4계층 분기 — 연금(RESTRICTED_PENSION)은 미노출(별도 연금 트랙).
+  const selectableItems = allItems.filter(isSelectable)
+  const pinnedItems = allItems.filter((i) => i.deployability === 'PINNED_SAFE')
+  const stockItems = allItems.filter((i) => i.deployability === 'EXCLUDED_STOCK')
+
+  const selectableKeys = selectableItems.map((i) => i.assetKey)
+  const allChecked = selectableKeys.length > 0 && selectableKeys.every((key) => checkedIds.has(key))
 
   const toggleAll = () => {
-    if (allChecked) {
-      setCheckedIds(new Set())
-    } else {
-      setCheckedIds(new Set(allItemKeys))
-    }
+    setCheckedIds(allChecked ? new Set() : new Set(selectableKeys))
   }
 
   const toggleItem = (assetKey: string) => {
@@ -63,20 +75,9 @@ function PaycheckAssetSelectPage() {
     })
   }
 
-  const toggleGroup = (category: string) => {
-    const group = data?.assetGroups.find((g) => g.category === category)
-    if (!group) return
-    const groupKeys = group.items.map((i) => i.assetKey)
-    setCheckedIds((prev) => {
-      const groupAllChecked = groupKeys.every((key) => prev.has(key))
-      const next = new Set(prev)
-      groupKeys.forEach((key) => (groupAllChecked ? next.delete(key) : next.add(key)))
-      return next
-    })
-  }
-
   const handleSubmit = () => {
-    const excludedKeys = allItemKeys.filter((key) => !checkedIds.has(key))
+    // 시스템 고정 자산은 제외 대상에 넣지 않는다(끄면 연금 income 트랙만 손해 — FREE만 의미 있음).
+    const excludedKeys = selectableKeys.filter((key) => !checkedIds.has(key))
     saveExclusions(
       { excludedAssetKeys: excludedKeys },
       {
@@ -120,6 +121,10 @@ function PaycheckAssetSelectPage() {
     )
   }
 
+  // 선택 가능한 자산이 하나도 없으면(예금·연금만 연결) 체크 없이도 진행 가능해야 한다.
+  const submitDisabled =
+    (selectableKeys.length > 0 && checkedIds.size === 0) || isLoading || isPending
+
   return (
     <div className="flex flex-col h-dvh">
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
@@ -143,23 +148,58 @@ function PaycheckAssetSelectPage() {
           </div>
         ) : isError ? (
           <p className="text-body text-danger text-center pt-10">자산 목록을 불러오지 못했어요.</p>
-        ) : data?.assetGroups.length === 0 ? (
+        ) : allItems.length === 0 ? (
           <p className="text-body text-ink-hint text-center pt-10">연결된 자산이 없어요.</p>
         ) : (
           <>
-            <div className="border-b border-divider py-4">
-              <Checkbox checked={allChecked} onChange={toggleAll} label="전체 선택" />
-            </div>
+            {/* ① 운용할 자산(FREE) — 사용자가 직접 고른다 */}
+            {selectableItems.length > 0 && (
+              <section>
+                <div className="border-b border-divider py-4">
+                  <Checkbox checked={allChecked} onChange={toggleAll} label="월급 만들 자산 전체 선택" />
+                </div>
+                <ul className="flex flex-col pb-2">
+                  {selectableItems.map((item) => (
+                    <SelectableRow
+                      key={item.assetKey}
+                      item={item}
+                      checked={checkedIds.has(item.assetKey)}
+                      onToggle={() => toggleItem(item.assetKey)}
+                    />
+                  ))}
+                </ul>
+              </section>
+            )}
 
-            {data?.assetGroups.map((group) => (
-              <AssetGroupAccordion
-                key={group.category}
-                group={group}
-                checkedIds={checkedIds}
-                onToggleItem={toggleItem}
-                onToggleGroup={toggleGroup}
-              />
-            ))}
+            {/* ② 그대로 두는 자산 — 정기예금(유지·기여 중)·개별주(성장 자산). 읽기 전용. */}
+            {(pinnedItems.length > 0 || stockItems.length > 0) && (
+              <section className="mt-6 pt-1">
+                <p className="text-sub font-semibold text-ink-sub mb-1">그대로 두는 자산</p>
+                <p className="text-caption text-ink-hint mb-3">
+                  아래 자산은 성격상 월급 재료에서 자동으로 분류돼요. 선택하지 않아도 돼요.
+                </p>
+                <ul className="flex flex-col gap-2.5">
+                  {pinnedItems.map((item) => (
+                    <KeptRow
+                      key={item.assetKey}
+                      item={item}
+                      chipLabel="유지"
+                      chipClass="bg-success-bg text-success"
+                      note="건드리지 않고 만기까지 안전 수익으로 월급에 기여하고 있어요."
+                    />
+                  ))}
+                  {stockItems.map((item) => (
+                    <KeptRow
+                      key={item.assetKey}
+                      item={item}
+                      chipLabel="성장"
+                      chipClass="bg-surface-muted text-ink-sub"
+                      note="시세차익을 노리는 성장 자산이라 월급 재료에서 빠져요. 투자 건강검진에서 따로 살펴봐요."
+                    />
+                  ))}
+                </ul>
+              </section>
+            )}
           </>
         )}
       </div>
@@ -168,10 +208,7 @@ function PaycheckAssetSelectPage() {
         {submitError && (
           <p className="text-sub text-danger text-center mb-3">저장에 실패했어요. 다시 시도해 주세요.</p>
         )}
-        <Button
-          onClick={handleSubmit}
-          disabled={checkedIds.size === 0 || isLoading || isPending}
-        >
+        <Button onClick={handleSubmit} disabled={submitDisabled}>
           월급 설계하기
         </Button>
       </StickyFooter>
@@ -179,7 +216,85 @@ function PaycheckAssetSelectPage() {
   )
 }
 
-// 월급 재료 개념 안내 — 포함/제외가 결과에 어떻게 반영되는지, 무엇을 빼면 좋은지 설명(#280)
+function CheckMark() {
+  return (
+    <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
+      <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// 선택 가능(FREE) 자산 행 — 체크박스 토글.
+function SelectableRow({
+  item,
+  checked,
+  onToggle,
+}: {
+  item: SalaryAssetItem
+  checked: boolean
+  onToggle: () => void
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        onClick={onToggle}
+        className="flex items-center gap-3 text-left w-full py-3"
+      >
+        <span
+          className={`shrink-0 size-6 rounded-[6px] flex items-center justify-center transition-colors ${
+            checked ? 'bg-primary' : 'bg-white border-2 border-line'
+          }`}
+        >
+          {checked && <CheckMark />}
+        </span>
+        <span className="flex items-center justify-between flex-1 min-w-0 gap-2">
+          <span className="min-w-0">
+            <span className="block text-body text-ink truncate">{item.name}</span>
+            {item.description && (
+              <span className="block text-caption text-ink-hint line-clamp-2">{item.description}</span>
+            )}
+          </span>
+          <span className={`font-inter text-md font-semibold shrink-0 ${checked ? 'text-ink' : 'text-ink-sub'}`}>
+            {formatWon(item.amount)}
+          </span>
+        </span>
+      </button>
+    </li>
+  )
+}
+
+// 시스템 고정 자산 행 — 읽기 전용. 토글 없이 "왜 못 고르는지" 뉘앙스 칩+설명만.
+function KeptRow({
+  item,
+  chipLabel,
+  chipClass,
+  note,
+}: {
+  item: SalaryAssetItem
+  chipLabel: string
+  chipClass: string
+  note: string
+}) {
+  return (
+    <li className="rounded-card bg-surface p-4">
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <span className="flex items-center gap-2 min-w-0">
+          <span className={`shrink-0 rounded-badge px-1.5 py-0.5 text-caption font-semibold ${chipClass}`}>
+            {chipLabel}
+          </span>
+          <span className="text-body font-medium text-ink-sub truncate">{item.name}</span>
+        </span>
+        <span className="font-inter text-md font-semibold text-ink-sub shrink-0">{formatWon(item.amount)}</span>
+      </div>
+      <p className="text-caption text-ink-hint leading-relaxed">{note}</p>
+    </li>
+  )
+}
+
+// 월급 재료 개념 안내 — 포함/제외가 결과에 어떻게 반영되는지 설명(#280)
 function AssetGuide() {
   return (
     <div className="rounded-card bg-surface-muted p-4 mb-5">
@@ -199,7 +314,7 @@ function AssetGuide() {
         </div>
       </div>
       <p className="text-caption text-ink-hint mt-2.5 pt-2.5 border-t border-divider">
-        연금·IRP처럼 노후에 쓸 계좌는 빼두는 걸 권해요.
+        정기예금·개별주·연금은 성격에 맞게 자동으로 분류돼요.
       </p>
     </div>
   )

@@ -44,7 +44,8 @@ export type RecommendationPlan = {
   shortTermBucket: number
   holdings: Holding[] // 개별 보유 종목
   allocations: AllocationView[]
-  monthlyIncome: number // 원, 총인출 기준
+  monthlyIncome: number // N: 원, 총인출 기준 (원금소진+자본차익 포함)
+  incrementalMonthlyIncome: number // (N−현재월현금흐름).max(0): 추천 운용 순증분(원). 국민연금 상쇄돼 순수 운용 기여만
   alphaCoverageRate: number | null // α충족률 %, 100캡. 연금초과(PENSION_SUFFICIENT)면 null
   sustainableCoverageRate: number | null // α충족률 (지속가능 기준, 이자·배당만), 100캡
   inheritanceAmount: number // 원

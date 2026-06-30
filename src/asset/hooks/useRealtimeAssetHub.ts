@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import useGetAssetHub from './useGetAssetHub'
 import { useRealtimePrice } from '@/common/contexts/RealtimePriceContext'
 import type { AssetHubAllocationItem } from '../types/assetHub'
