@@ -18,12 +18,22 @@ const useNotificationSSE = () => {
       queryClient.invalidateQueries({ queryKey: ['notificationUnreadCount'] })
     }
 
+    const scheduleReconnect = () => {
+      if (!mounted || document.hidden) return
+      reconnectTimer = setTimeout(connect, SSE_RECONNECT_DELAY_MS)
+    }
+
     const connect = async () => {
-      if (!mounted) return
+      if (!mounted || document.hidden) return
+
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer)
+        reconnectTimer = null
+      }
 
       const token = getAccessToken()
       if (!token) {
-        reconnectTimer = setTimeout(connect, SSE_RECONNECT_DELAY_MS)
+        scheduleReconnect()
         return
       }
 
@@ -50,7 +60,6 @@ const useNotificationSSE = () => {
           if (done) break
 
           buffer += decoder.decode(value, { stream: true })
-          // SSE events are separated by double newline
           const events = buffer.split('\n\n')
           buffer = events.pop() ?? ''
 
@@ -62,15 +71,28 @@ const useNotificationSSE = () => {
         if (!mounted) return
       }
 
-      if (mounted) {
-        reconnectTimer = setTimeout(connect, SSE_RECONNECT_DELAY_MS)
+      scheduleReconnect()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // 탭이 백그라운드로 가기 전에 먼저 끊어 ERR_NETWORK_IO_SUSPENDED를 방지한다.
+        abortController?.abort()
+        if (reconnectTimer) {
+          clearTimeout(reconnectTimer)
+          reconnectTimer = null
+        }
+      } else {
+        connect()
       }
     }
 
+    document.addEventListener('visibilitychange', handleVisibilityChange)
     connect()
 
     return () => {
       mounted = false
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       abortController?.abort()
       if (reconnectTimer) clearTimeout(reconnectTimer)
     }

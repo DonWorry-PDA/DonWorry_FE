@@ -49,6 +49,7 @@ function AssetPage() {
   const {
     hub,
     priceMap,
+    realtimeTotalAsset,
     isLoading: hubLoading,
     isError: hubError,
     refetch: refetchHub,
@@ -216,7 +217,7 @@ function AssetPage() {
               </div>
               <div className="pt-0.5">
                 <p className="font-inter text-jumbo text-ink leading-tight font-bold tracking-tight">
-                  {formatWon(realtimeComposition?.totalAsset ?? hub.totalAsset)}
+                  {formatWon(realtimeTotalAsset ?? hub.totalAsset)}
                 </p>
               </div>
               {hub.changeAmount != null && hub.changeDirection !== 'FLAT' && (
