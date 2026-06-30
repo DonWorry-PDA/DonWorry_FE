@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useNavigate } from 'react-router-dom'
 import { ToastProvider } from './common/contexts/ToastContext'
+import { useToast } from './common/contexts/ToastContext'
 import useNotificationSSE from './notification/hooks/useNotificationSSE'
 import { isTokenValid, clearTokens } from './common/api/token'
 import { AUTH_FAILURE_EVENT } from './common/api/authEvents'
@@ -93,7 +94,18 @@ function AppLayout() {
 }
 
 function RequireAuth() {
-  if (!isTokenValid()) return <Navigate to="/login" replace />
+  const navigate = useNavigate()
+  const { showToast } = useToast()
+  const valid = isTokenValid()
+
+  useEffect(() => {
+    if (!valid) {
+      showToast('로그인 후 이용해주세요')
+      navigate('/login', { replace: true })
+    }
+  }, [valid, navigate, showToast])
+
+  if (!valid) return null
   return <Outlet />
 }
 

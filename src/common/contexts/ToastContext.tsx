@@ -20,7 +20,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {message &&
         createPortal(
-          <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-6">
+          <div className="pointer-events-none fixed inset-x-0 top-10 z-50 flex justify-center px-6">
             <div className="rounded-card bg-ink px-4 py-3 text-center text-sub font-medium text-white shadow-float">
               {message}
             </div>
