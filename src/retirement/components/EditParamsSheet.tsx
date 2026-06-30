@@ -26,12 +26,25 @@ function EditParamsSheet({ open, params, onClose, onConfirm }: EditParamsSheetPr
     }
   }, [open, params])
 
+  const ageNum = Number(age)
+  const assetsNum = Number(assets)
+  const livingNum = Number(living)
+  const pensionNum = Number(pension)
+  // 빈값·음수·NaN('-', '.' 등) 차단. 금액은 만원 단위 소수 허용이라 정수 강제는 안 함.
+  const isValid =
+    [age, assets, living, pension].every((s) => s.trim() !== '') &&
+    Number.isFinite(ageNum) && ageNum > 0 &&
+    Number.isFinite(assetsNum) && assetsNum >= 0 &&
+    Number.isFinite(livingNum) && livingNum > 0 &&
+    Number.isFinite(pensionNum) && pensionNum >= 0
+
   const handleConfirm = () => {
+    if (!isValid) return
     const next: SimParams = {
-      ageYears: Number(age) || params.ageYears,
-      totalAssetsKrw: (Number(assets) || 0) * 10_000,
-      monthlyLivingKrw: (Number(living) || 0) * 10_000,
-      monthlyPensionKrw: (Number(pension) || 0) * 10_000,
+      ageYears: ageNum,
+      totalAssetsKrw: assetsNum * 10_000,
+      monthlyLivingKrw: livingNum * 10_000,
+      monthlyPensionKrw: pensionNum * 10_000,
     }
     onConfirm(next)
     onClose()
@@ -48,7 +61,7 @@ function EditParamsSheet({ open, params, onClose, onConfirm }: EditParamsSheetPr
           <Field label="연금" unit="만원/월" value={pension} onChange={setPension} />
         </div>
         <div className="mt-6">
-          <Button onClick={handleConfirm}>확인</Button>
+          <Button onClick={handleConfirm} disabled={!isValid}>확인</Button>
         </div>
       </div>
     </BottomSheet>
@@ -62,19 +75,29 @@ interface FieldProps {
   onChange: (v: string) => void
 }
 
+// 단위 글자 폭만큼 input 오른쪽 패딩 확보 (단위는 absolute 배치)
+const UNIT_PAD: Record<string, string> = {
+  세: 'pr-9',
+  만원: 'pr-12',
+  '만원/월': 'pr-16',
+}
+
 function Field({ label, unit, value, onChange }: FieldProps) {
   return (
     <div className="flex items-center gap-3">
       <span className="w-16 shrink-0 text-sub text-ink-sub">{label}</span>
-      <div className="flex flex-1 items-center rounded-card border border-line px-3 py-2.5">
+      {/* min-w-0 로 좁은 화면에서 input이 줄어들게 해 단위 짤림 방지. 단위는 absolute 고정 */}
+      <div className="relative min-w-0 flex-1">
         <input
           type="number"
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 text-md font-semibold text-ink outline-none"
+          className={`w-full rounded-card border border-line py-2.5 pl-3 text-md font-semibold text-ink outline-none focus:border-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${UNIT_PAD[unit] ?? 'pr-12'}`}
         />
-        <span className="ml-1 shrink-0 text-sub text-ink-hint">{unit}</span>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sub text-ink-hint">
+          {unit}
+        </span>
       </div>
     </div>
   )
