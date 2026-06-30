@@ -201,7 +201,7 @@ function MonthlyReportPage() {
                       {formatWon(data.nextMonthPreview.incomingTotal)}
                     </span>
                     <span className="text-sub text-ink-hint">
-                      (연금 {formatWon(data.nextMonthPreview.pensionAmount)} 배당 {formatWon(data.nextMonthPreview.dividendAmount)})
+                      (연금 {formatWon(data.nextMonthPreview.pensionAmount)} 배당 {formatWon(data.nextMonthPreview.dividendAmount)} 이자 {formatWon(data.nextMonthPreview.interestAmount)})
                     </span>
                   </div>
                 </div>

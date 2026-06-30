@@ -22,6 +22,7 @@ export type MonthlyReportResponse = {
     incomingTotal: number
     pensionAmount: number
     dividendAmount: number
+    interestAmount: number
     outgoingTotal: number
     balanceSufficient: boolean
   }

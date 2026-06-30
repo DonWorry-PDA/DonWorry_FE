@@ -227,7 +227,7 @@ function PaycheckDiagnosisPage() {
         />
 
         {/* 브레이크다운 카드 */}
-        <div className="bg-surface rounded-card-lg px-4 py-1 mb-6">
+        <div className="bg-surface rounded-card-lg px-4 py-1 mb-2">
           <div className="flex items-center justify-between py-3 border-b border-divider">
             <span className="text-body text-ink-sub">국민연금</span>
             <span className="font-inter text-body text-ink">+{nationalPensionMan}만원</span>
@@ -247,6 +247,10 @@ function PaycheckDiagnosisPage() {
             </span>
           </div>
         </div>
+        {/* 실수령 기준 안내 — 자산분석의 세전 배당과 달라 보이는 이유를 설명 */}
+        <p className="text-caption text-ink-hint mb-6 px-1">
+          분배금은 세금(15.4%)을 뗀 실수령 기준이에요.
+        </p>
 
       </div>
 
