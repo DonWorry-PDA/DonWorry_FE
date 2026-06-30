@@ -126,11 +126,13 @@ function PaycheckAssetSelectPage() {
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6">
         <h2 className="text-heading font-bold text-ink mb-1">
-          월급 재료로 쓰지 않을
+          어떤 자산으로
           <br />
-          자산을 빼주세요
+          월급을 만들까요?
         </h2>
-        <p className="text-body text-ink-sub mb-6">연금 계좌나 오래 두고 싶은 자산은 그대로 지켜드려요.</p>
+        <p className="text-body text-ink-sub mb-4">체크한 자산으로 매달 받을 월급을 설계해요.</p>
+
+        <AssetGuide />
 
         {isLoading ? (
           <div className="flex flex-col gap-3 pt-2">
@@ -173,6 +175,54 @@ function PaycheckAssetSelectPage() {
         </Button>
       </StickyFooter>
     </div>
+  )
+}
+
+// 월급 재료 개념 안내 — 포함/제외가 결과에 어떻게 반영되는지, 무엇을 빼면 좋은지 설명(#280)
+function AssetGuide() {
+  return (
+    <div className="rounded-card bg-surface-muted p-4 mb-5">
+      <p className="text-body font-semibold text-ink mb-2.5">월급 재료가 뭔가요?</p>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-start gap-2">
+          <GuideMark variant="include" />
+          <p className="text-sub text-ink-sub leading-relaxed">
+            <span className="font-semibold text-ink">체크한 자산</span>을 활용해서 매달 월급(분배금·배당)을 만들어요.
+          </p>
+        </div>
+        <div className="flex items-start gap-2">
+          <GuideMark variant="exclude" />
+          <p className="text-sub text-ink-sub leading-relaxed">
+            <span className="font-semibold text-ink">뺀 자산</span>은 건드리지 않고 그대로 둬요.
+          </p>
+        </div>
+      </div>
+      <p className="text-caption text-ink-hint mt-2.5 pt-2.5 border-t border-divider">
+        연금·IRP처럼 노후에 쓸 계좌는 빼두는 걸 권해요.
+      </p>
+    </div>
+  )
+}
+
+function GuideMark({ variant }: { variant: 'include' | 'exclude' }) {
+  const include = variant === 'include'
+  return (
+    <span
+      aria-hidden="true"
+      className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${
+        include ? 'bg-primary' : 'bg-line'
+      }`}
+    >
+      {include ? (
+        <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+          <path d="M1 3.5L3.3 5.8L8 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : (
+        <svg width="7" height="2" viewBox="0 0 7 2" fill="none">
+          <path d="M1 1H6" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      )}
+    </span>
   )
 }
 
