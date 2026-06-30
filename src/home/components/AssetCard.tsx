@@ -123,7 +123,7 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
       : null
 
   return (
-    <div className="bg-primary rounded-card-xl px-[22px] pt-[18px] pb-[20px] flex flex-col gap-4">
+    <div data-onboarding-id="home-summary" className="bg-primary rounded-card-xl px-[22px] pt-[18px] pb-[20px] flex flex-col gap-4">
       {/* Header: 총자산 + 자세히 보기 버튼 */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-[5px]">

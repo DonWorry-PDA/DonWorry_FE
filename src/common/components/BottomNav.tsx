@@ -21,6 +21,12 @@ const NAV_ITEMS: NavItem[] = [
   },
 ]
 
+const NAV_ONBOARDING_IDS: Partial<Record<string, string>> = {
+  '/asset': 'navbar-asset',
+  '/calendar': 'navbar-calendar',
+  '/mypage': 'navbar-mypage',
+}
+
 function isTabActive(pathname: string, path: string, activeFor?: string[]) {
   const ownedPaths = [path, ...(activeFor ?? [])]
   return ownedPaths.some(
@@ -39,6 +45,7 @@ function BottomNav() {
         return (
           <button
             key={path}
+            data-onboarding-id={NAV_ONBOARDING_IDS[path]}
             onClick={() => navigate(path)}
             aria-current={active ? 'page' : undefined}
             className="flex flex-1 flex-col items-center justify-center gap-1"

@@ -13,6 +13,7 @@ export type UsePinInputReturn = {
   isPending: boolean
   isError: boolean
   isServerError: boolean
+  isShaking: boolean
   appendDigit: (digit: string) => void
   deleteDigit: () => void
   reset: () => void
