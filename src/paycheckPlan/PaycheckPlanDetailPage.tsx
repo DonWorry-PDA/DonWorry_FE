@@ -1,13 +1,16 @@
+import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
+import Modal from '../common/components/Modal'
 import StickyFooter from '../common/components/StickyFooter'
 import InfoBox from '../common/components/InfoBox'
 import AllocationStackBar from './components/AllocationStackBar'
 import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
-import { findPlan, mapPlanDetail } from './utils/planMapper'
+import usePostSavedPlan from './hooks/usePostSavedPlan'
+import { findPlan, mapPlanDetail, buildSavePlanRequest } from './utils/planMapper'
 
 function WarningIcon() {
   return (
@@ -28,6 +31,8 @@ function PaycheckPlanDetailPage() {
   const navigate = useNavigate()
   const { planId } = useParams<{ planId: string }>()
   const { data, isLoading, error } = useGetRecommendation()
+  const { mutate: savePlan, isPending: isSaving } = usePostSavedPlan()
+  const [savedModalOpen, setSavedModalOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -133,16 +138,25 @@ function PaycheckPlanDetailPage() {
             진행하기
           </Button>
           <Button
-            onClick={() =>
-              navigate('/paycheck-plan/consult/branch', {
-                state: { context: 'SALARY_PLAN', planId, institution: 'SHINHAN_SECURITIES' },
-              })
-            }
+            disabled={isSaving}
+            onClick={() => savePlan(buildSavePlanRequest(data, plan), { onSuccess: () => setSavedModalOpen(true) })}
           >
-            전문가와 같이 보기
+            {isSaving ? '저장 중…' : '이 설계안 저장하기'}
           </Button>
         </div>
       </StickyFooter>
+
+      {savedModalOpen && (
+        <Modal>
+          <div className="flex flex-col items-center px-6 pt-8 pb-6 gap-2 text-center">
+            <p className="text-card font-bold text-ink">저장됐어요</p>
+            <p className="text-body text-ink-sub">마이페이지에서 언제든지 다시 볼 수 있어요</p>
+            <Button className="mt-4 w-full" onClick={() => { setSavedModalOpen(false); navigate('/paycheck-plan/saved') }}>
+              확인
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

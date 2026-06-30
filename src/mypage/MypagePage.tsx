@@ -123,6 +123,11 @@ function MypagePage() {
           onPress={() => navigate('/notification/settings')}
         />
         <MenuRow
+          title="저장한 설계안"
+          subtitle="내가 저장한 월급 설계안 보기"
+          onPress={() => navigate('/paycheck-plan/saved')}
+        />
+        <MenuRow
           title="상담 내역"
           subtitle={consultSubtitle}
           onPress={() => navigate('/mypage/consult-history')}

@@ -67,6 +67,8 @@ import OrderPinPage from './order/OrderPinPage'
 import OrderReservedPage from './order/OrderReservedPage'
 import OrderTransferPage from './order/OrderTransferPage'
 import AssetPage from './asset/AssetPage'
+import SavedPlansPage from './paycheckPlan/SavedPlansPage'
+import SavedPlanDetailPage from './paycheckPlan/SavedPlanDetailPage'
 import RetirementSimulationPage from './retirement/RetirementSimulationPage'
 import NotFoundPage from './error/NotFoundPage'
 import ServerErrorPage from './error/ServerErrorPage'
@@ -154,6 +156,8 @@ const router = createBrowserRouter([
           { path: '/paycheck-plan/assets', element: <PaycheckAssetSelectPage /> },
           { path: '/paycheck-plan/diagnosis', element: <PaycheckDiagnosisPage /> },
           { path: '/paycheck-plan/plans', element: <PaycheckPlansPage /> },
+          { path: '/paycheck-plan/saved', element: <SavedPlansPage /> },
+          { path: '/paycheck-plan/saved/:id', element: <SavedPlanDetailPage /> },
           { path: '/paycheck-plan/compare', element: <PaycheckComparePage /> },
           { path: '/paycheck-plan/plans/:planId', element: <PaycheckPlanDetailPage /> },
           { path: '/paycheck-plan/execute', element: <PaycheckExecutePage /> },

@@ -14,6 +14,7 @@ import type {
   RecommendationPlan,
   RecommendationResponse,
 } from '../types/recommendation'
+import type { SavePlanRequest } from '../types/savedPlan'
 
 // BE 응답 → 기존 화면 뷰 타입 변환. 파생 로직은 BE(#83)가 끝냈으므로 여기선 표기 변환만 한다.
 //
@@ -219,6 +220,26 @@ export const buildSalaryPlanConfirm = (
     weight: h.weight,
     targetAmount: Math.round(h.amount),
     productContribution: Math.round(h.monthlyContribution),
+  })),
+})
+
+export const buildSavePlanRequest = (
+  response: RecommendationResponse,
+  plan: RecommendationPlan,
+): SavePlanRequest => ({
+  planType: plan.type,
+  monthlyIncome: Math.round(plan.monthlyIncome),
+  currentCoverageRate: response.currentCoverageRate,
+  totalCoverageRate: plan.totalCoverageRate,
+  currentMonthlyShortfall: Math.round(response.currentMonthlyShortfall),
+  residualMonthlyShortfall: Math.round(plan.residualMonthlyShortfall),
+  principalAmount: Math.round(plan.allocations.reduce((sum, a) => sum + a.amount, 0)),
+  holdings: plan.holdings.map((h) => ({
+    productId: h.productId,
+    ticker: h.ticker,
+    productName: h.productName,
+    weight: h.weight,
+    targetAmount: Math.round(h.amount),
   })),
 })
 
