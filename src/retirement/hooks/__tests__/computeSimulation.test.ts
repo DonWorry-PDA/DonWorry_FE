@@ -86,6 +86,15 @@ describe('computeSimulation', () => {
     expect(result.coverableMonths).toBe(1200)
   })
 
+  it('월 수입 구성(연금 + 투자수익)을 노출한다', () => {
+    // 수익률 12% → 월 1% → 투자수익 = 2.5억 × 0.01 = 250만, 수입 = 연금 120만 + 250만 = 370만
+    const result = computeSimulation(BASE, 12, 0)
+    expect(result.monthlyInvestmentIncomeKrw).toBe(2_500_000)
+    expect(result.monthlyIncomeKrw).toBe(3_700_000)
+    expect(result.monthlyPensionKrw).toBe(1_200_000)
+    expect(result.monthlyLivingKrw).toBe(2_200_000)
+  })
+
   it('coverableMonths는 자산 소진까지 월 수', () => {
     const result = computeSimulation(
       { ...BASE, totalAssetsKrw: 12_000_000, monthlyPensionKrw: 0 },

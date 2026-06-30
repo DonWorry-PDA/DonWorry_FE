@@ -14,4 +14,9 @@ export interface SimResult {
   monthlyShortfallKrw: number
   coverableMonths: number
   status: SimStatus
+  // 현금흐름 구성(월) — 게이지가 왜 그 %인지 설명용
+  monthlyIncomeKrw: number
+  monthlyInvestmentIncomeKrw: number
+  monthlyPensionKrw: number
+  monthlyLivingKrw: number
 }
