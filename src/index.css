@@ -433,32 +433,45 @@ html.large {
 
 /* ─── 자산연결 인트로: 자산이 허브로 모이는 수렴 애니메이션 ─── */
 @keyframes asset-hub-in {
-  from { opacity: 0; transform: scale(0.6); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* 카드별 --fly-x/--fly-y(인라인)에서 날아 들어와 제자리에 안착 */
 @keyframes asset-card-fly {
-  from { opacity: 0; transform: translate(var(--fly-x, 0), var(--fly-y, 0)) scale(0.6); }
-  to   { opacity: 1; transform: translate(0, 0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(var(--fly-x, 0), var(--fly-y, 0)) scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
 }
 
-/* SVG 그룹 변형은 자기 bounding-box 기준으로 — 부모의 translate/rotate와 충돌 없이 scale */
+/* SVG 그룹 변형은 자기 bounding-box 기준으로 — 부모 translate/rotate와 충돌 없이 scale */
 .animate-asset-hub {
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   animation: asset-hub-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* 살짝 오버슈트(back-ease)로 날아와 톡 안착 */
 .animate-asset-card {
-  transform-box: fill-box;
   transform-origin: center;
-  /* 살짝 오버슈트(back-ease)로 '날아와 톡 안착'하는 느낌 */
+  transform-box: fill-box;
   animation: asset-card-fly 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ─── 계속 움직이는 모션 (안착 후에도 살아있게) ─── */
-/* 카드가 둥둥 떠다님 */
+/* ─── 계속 움직이는 모션 (안착 후에도 살아있게): 카드 둥둥 ─── */
 @keyframes asset-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-4px); }
@@ -471,26 +484,36 @@ html.large {
 
 /* 허브에서 퍼지는 펄스 링 */
 @keyframes asset-pulse {
-  0%   { transform: scale(0.82); opacity: 0.5; }
-  70%  { opacity: 0; }
-  100% { transform: scale(1.7); opacity: 0; }
+  0% {
+    opacity: 0.5;
+    transform: scale(0.82);
+  }
+
+  70% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
 }
 
 .animate-asset-float {
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   animation: asset-float 3s ease-in-out infinite;
 }
 
 .animate-asset-orbit {
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   animation: asset-orbit 18s linear infinite;
 }
 
 .animate-asset-pulse {
-  transform-box: fill-box;
   transform-origin: center;
+  transform-box: fill-box;
   animation: asset-pulse 2.6s ease-out infinite;
 }
 
@@ -503,8 +526,9 @@ html.large {
     transform: none;
     animation: none;
   }
+
   .animate-asset-pulse {
-    animation: none;
     opacity: 0;
+    animation: none;
   }
 }
