@@ -118,8 +118,6 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
   const changeText =
     changeAmount != null && changeDirection !== 'FLAT'
       ? `${formatKrw(Math.abs(changeAmount))} ${changeDirection === 'UP' ? '올랐어요' : '내렸어요'}`
-      : changeDirection === 'FLAT'
-      ? '지난 달과 동일해요'
       : null
 
   return (
