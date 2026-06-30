@@ -62,19 +62,29 @@ interface FieldProps {
   onChange: (v: string) => void
 }
 
+// 단위 글자 폭만큼 input 오른쪽 패딩 확보 (단위는 absolute 배치)
+const UNIT_PAD: Record<string, string> = {
+  세: 'pr-9',
+  만원: 'pr-12',
+  '만원/월': 'pr-16',
+}
+
 function Field({ label, unit, value, onChange }: FieldProps) {
   return (
     <div className="flex items-center gap-3">
       <span className="w-16 shrink-0 text-sub text-ink-sub">{label}</span>
-      <div className="flex flex-1 items-center rounded-card border border-line px-3 py-2.5">
+      {/* min-w-0 로 좁은 화면에서 input이 줄어들게 해 단위 짤림 방지. 단위는 absolute 고정 */}
+      <div className="relative min-w-0 flex-1">
         <input
           type="number"
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 text-md font-semibold text-ink outline-none"
+          className={`w-full rounded-card border border-line py-2.5 pl-3 text-md font-semibold text-ink outline-none focus:border-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${UNIT_PAD[unit] ?? 'pr-12'}`}
         />
-        <span className="ml-1 shrink-0 text-sub text-ink-hint">{unit}</span>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sub text-ink-hint">
+          {unit}
+        </span>
       </div>
     </div>
   )
