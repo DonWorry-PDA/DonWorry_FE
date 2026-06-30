@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useNavigate } from 'react-router-dom'
 import { ToastProvider } from './common/contexts/ToastContext'
 import { useToast } from './common/contexts/ToastContext'
@@ -79,15 +80,17 @@ import BranchFinderPage from './branch/BranchFinderPage'
 
 function AppLayout() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     const handler = () => {
       clearTokens()
+      queryClient.clear()
       navigate('/login', { replace: true })
     }
     window.addEventListener(AUTH_FAILURE_EVENT, handler)
     return () => window.removeEventListener(AUTH_FAILURE_EVENT, handler)
-  }, [navigate])
+  }, [navigate, queryClient])
 
   useNotificationSSE()
   return <Outlet />
