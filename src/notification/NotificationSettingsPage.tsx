@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Toggle from '../common/components/Toggle'
@@ -9,10 +10,12 @@ import type { NotificationSetting } from './types/notification'
 function NotificationSettingsPage() {
   const navigate = useNavigate()
   const { data: settings = [], isLoading, isError } = useGetNotificationSettings()
-  const { mutate: patchSetting, isPending } = usePatchNotificationSetting()
+  const { mutate: patchSetting } = usePatchNotificationSetting()
+  const [pendingId, setPendingId] = useState<string | null>(null)
 
   const toggle = (id: string, enabled: boolean) => {
-    patchSetting({ id, enabled })
+    setPendingId(id)
+    patchSetting({ id, enabled }, { onSettled: () => setPendingId(null) })
   }
 
   return (
@@ -60,7 +63,7 @@ function NotificationSettingsPage() {
               key={item.id}
               item={item}
               isLast={index === settings.length - 1}
-              disabled={isPending}
+              disabled={pendingId === item.id}
               onToggle={(enabled) => toggle(item.id, enabled)}
             />
           ))}
@@ -105,7 +108,7 @@ function SettingRow({
         checked={item.enabled}
         onChange={onToggle}
         disabled={disabled}
-        aria-label={`${item.title} 알림 ${item.enabled ? '켜짐' : '꺼짐'}`}
+        aria-label={`${item.title} 알림`}
       />
     </div>
   )

@@ -6,7 +6,7 @@ function getGroupLabel(createdAt: string): string {
   const diffDays = Math.round(
     (now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24),
   )
-  return diffDays <= 7 ? '최근 7일' : '이전 알림'
+  return diffDays <= 6 ? '최근 7일' : '이전 알림'
 }
 
 const GROUP_ORDER = ['최근 7일', '이전 알림']
