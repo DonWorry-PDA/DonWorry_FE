@@ -131,17 +131,17 @@ function PaycheckExecutePage() {
         <div className="border border-line rounded-card px-4 py-4 flex items-center justify-between mb-4 mt-4">
           <div>
             <p className="text-sub text-ink-hint mb-0.5">지금 월수입</p>
-            <p className="font-inter text-card font-bold text-ink">{summary.cashflowFrom}만원</p>
+            <p className="font-inter text-card font-bold text-ink">{summary.cashflowFrom.toLocaleString('ko-KR')}만원</p>
           </div>
           <div className="flex flex-col items-center gap-1">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-ink-hint">
               <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-caption font-bold text-success">+{summary.cashflowTo - summary.cashflowFrom}만원</span>
+            <span className="text-caption font-bold text-success">+{(summary.cashflowTo - summary.cashflowFrom).toLocaleString('ko-KR')}만원</span>
           </div>
           <div className="text-right">
             <p className="text-sub text-ink-hint mb-0.5">실행 후</p>
-            <p className="font-inter text-card font-bold text-success">{summary.cashflowTo}만원</p>
+            <p className="font-inter text-card font-bold text-success">{summary.cashflowTo.toLocaleString('ko-KR')}만원</p>
           </div>
         </div>
 
