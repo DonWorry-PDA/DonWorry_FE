@@ -31,6 +31,7 @@ export function Step1Page() {
           updateAnswers({ pensionStatus: 'before' })
           navigate('/onboarding/step3')
         } else {
+          updateAnswers({ pensionStatus: null })
           navigate('/onboarding/step2')
         }
       }}

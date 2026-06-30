@@ -65,7 +65,6 @@ function AssetAuth({ onNext, onPrev }: Props) {
           type="button"
           onClick={onNext}
           className="rounded-card-xl bg-primary relative mt-8 w-full overflow-hidden p-6 text-left text-white active:opacity-90"
-          aria-label="신한인증서로 인증하기"
         >
           <svg
             className="pointer-events-none absolute top-0 right-0 select-none"

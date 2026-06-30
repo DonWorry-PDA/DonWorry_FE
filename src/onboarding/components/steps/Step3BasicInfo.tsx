@@ -5,7 +5,11 @@ import { useOnboarding } from '../../contexts/OnboardingContext'
 import BottomSheet from '../../../common/components/BottomSheet'
 
 const CURRENT_YEAR = new Date().getFullYear()
-const BIRTH_YEARS = Array.from({ length: 50 }, (_, i) => 1979 - i) // 1979 → 1930
+const MIN_AGE = 19
+const BIRTH_YEARS = Array.from(
+  { length: CURRENT_YEAR - MIN_AGE - 1930 },
+  (_, i) => CURRENT_YEAR - MIN_AGE - i,
+)
 const RETIRED_YEARS = Array.from({ length: CURRENT_YEAR - 1959 }, (_, i) => CURRENT_YEAR - i)
 
 interface Props {
@@ -136,6 +140,8 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
     answers.retiredYear?.toString() ?? ''
   )
 
+  const isValid = !!birthYear && (!isRetired || !!retiredYear)
+
   function handleNext() {
     const birthYearNum = birthYear ? parseInt(birthYear, 10) : null
     updateAnswers({
@@ -190,7 +196,8 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         <button
           type="button"
           onClick={handleNext}
-          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white"
+          disabled={!isValid}
+          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           다음
         </button>

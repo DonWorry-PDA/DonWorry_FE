@@ -39,6 +39,7 @@ function Step5PensionDefer({ onNext, onPrev }: Props) {
               <button
                 key={option}
                 type="button"
+                aria-pressed={isSelected}
                 onClick={() => setSelected(option)}
                 className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
                   isSelected
