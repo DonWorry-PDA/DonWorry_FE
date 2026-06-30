@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Toggle from '../common/components/Toggle'
@@ -9,10 +10,14 @@ import type { NotificationSetting } from './types/notification'
 function NotificationSettingsPage() {
   const navigate = useNavigate()
   const { data: settings = [], isLoading, isError } = useGetNotificationSettings()
-  const { mutate: patchSetting, isPending } = usePatchNotificationSetting()
+  const { mutate: patchSetting } = usePatchNotificationSetting()
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
 
   const toggle = (id: string, enabled: boolean) => {
-    patchSetting({ id, enabled })
+    setPendingIds((prev) => new Set(prev).add(id))
+    patchSetting({ id, enabled }, {
+      onSettled: () => setPendingIds((prev) => { const next = new Set(prev); next.delete(id); return next }),
+    })
   }
 
   return (
@@ -60,7 +65,7 @@ function NotificationSettingsPage() {
               key={item.id}
               item={item}
               isLast={index === settings.length - 1}
-              disabled={isPending}
+              disabled={pendingIds.has(item.id)}
               onToggle={(enabled) => toggle(item.id, enabled)}
             />
           ))}
