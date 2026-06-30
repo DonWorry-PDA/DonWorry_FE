@@ -27,7 +27,7 @@ function Step1Situation({ onNext, onPrev }: Props) {
         </button>
       </div>
 
-      <OnboardingProgressBar current={1} total={6} />
+      <OnboardingProgressBar current={1} total={selected === 'preparing' ? 3 : 4} />
 
       <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">
