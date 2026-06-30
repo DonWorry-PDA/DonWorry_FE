@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { NotificationIc, BackArrowIc } from '../common/assets/icons'
 import BottomNav from '../common/components/BottomNav'
-import { formatKrw, formatWon, formatKrwShort } from '../common/utils/formatKrw'
+import { formatKrw, formatWon } from '../common/utils/formatKrw'
 import { formatMD, formatYM, calcDday } from '../common/utils/formatDate'
 import pxr from '../common/utils/pxr'
 import useRealtimeAssetHub from './hooks/useRealtimeAssetHub'
@@ -306,6 +306,10 @@ function AssetPage() {
                           <div
                             key={seg.category}
                             className={`h-4 cursor-pointer transition-opacity duration-150 ${
+                              i === 0 ? 'rounded-l-badge' : ''
+                            } ${
+                              i === sortedGroups.length - 1 ? 'rounded-r-badge' : ''
+                            } ${
                               activeCategory !== null && activeCategory !== seg.category
                                 ? 'opacity-40'
                                 : 'opacity-100'
@@ -415,7 +419,7 @@ function AssetPage() {
                                       </div>
                                       {accountTotal > 0 && (
                                         <p className="font-inter text-sub text-ink font-semibold shrink-0">
-                                          {formatKrwShort(accountTotal)}
+                                          {formatWon(accountTotal)}
                                         </p>
                                       )}
                                     </div>
@@ -432,7 +436,7 @@ function AssetPage() {
                                         <div className="flex items-center justify-between">
                                           <p className="text-sub text-ink-sub mr-3 truncate">예수금</p>
                                           <p className="font-inter text-sub text-ink-hint shrink-0">
-                                            {formatKrwShort(account.balance)}
+                                            {formatWon(account.balance)}
                                           </p>
                                         </div>
                                       </div>
@@ -449,7 +453,7 @@ function AssetPage() {
                                               {holding.productName}
                                             </p>
                                             <p className="font-inter text-sub text-ink-hint shrink-0">
-                                              {formatKrwShort(holding.evaluationAmount)}
+                                              {formatWon(holding.evaluationAmount)}
                                             </p>
                                           </div>
                                         </div>
