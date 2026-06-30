@@ -33,7 +33,7 @@ export const isTokenValid = (): boolean => {
   if (!token) return false
   try {
     const payload = decodePayload(token)
-    return payload.exp ? payload.exp * 1000 > Date.now() : true
+    return payload.exp > 0 && payload.exp * 1000 > Date.now()
   } catch {
     return false
   }
