@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -11,6 +11,8 @@ type PensionStatus = '수령 전' | '수령 중'
 
 function ProfileEditPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const { data: profile } = useGetProfile()
   const { mutate: patchProfile, isPending } = usePatchProfile()
 
@@ -52,7 +54,10 @@ function ProfileEditPage() {
       {
         onSuccess: () => {
           setToastVariant('success')
-          timerRef.current = setTimeout(() => navigate(-1), 2000)
+          timerRef.current = setTimeout(() => {
+            if (returnTo) navigate(returnTo)
+            else navigate(-1)
+          }, 2000)
         },
         onError: () => {
           setToastVariant('error')
