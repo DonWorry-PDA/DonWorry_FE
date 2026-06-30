@@ -71,14 +71,30 @@ function PaycheckPlanDetailPage() {
       <AppBar title={detail.planName} onBack={() => navigate(-1)} />
 
       <div className="flex-1 min-h-0 overflow-y-auto">
-        {/* 헤더 카드 */}
+        {/* 헤더 카드 — 핵심은 '운용으로 늘어나는 월급(순증분)'. 전체 월수령(N)은 과대표시라 보조로만. */}
         <div className="bg-primary px-5 pt-4 pb-6 mx-6 mt-4 rounded-card-xl">
-          <p className="text-sub text-white/70 mb-1">이 설계안의 예상 월급</p>
-          <p className="font-inter text-display font-bold text-white">
-            {detail.expectedMonthlyIncome}만원
-            <span className="text-body font-normal text-white/70 ml-1">/ 월 · 세후 {detail.afterTaxIncome}만원</span>
-          </p>
-          <p className="text-sub text-white/80 mt-2">
+          {detail.incrementalIncome > 0 ? (
+            <>
+              <p className="text-sub text-white/70 mb-1">이 설계안으로 늘어나는 월급</p>
+              <p className="font-inter text-display font-bold text-white">
+                +{detail.incrementalIncome}만원
+                <span className="text-body font-normal text-white/70 ml-1">/ 월</span>
+              </p>
+              <p className="text-sub text-white/80 mt-2">
+                현재 월 {detail.currentCashFlow}만원 → 합쳐서 월 {detail.expectedMonthlyIncome}만원
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sub text-white/70 mb-1">이 설계안의 가치</p>
+              <p className="font-inter text-card font-bold text-white">지금보다 월급이 더 늘지는 않아요</p>
+              <p className="text-sub text-white/80 mt-2">
+                대신 더 안정적으로 오래 받고, 예상 상속{' '}
+                {detail.inheritance.toLocaleString('ko-KR')}만원을 남겨요
+              </p>
+            </>
+          )}
+          <p className="text-sub text-white/80 mt-1">
             생활비 충당 {detail.coverageFrom}% → {detail.coverageTo}% · 부족분 {detail.shortfallFrom}만 → {detail.shortfallTo}만원
           </p>
         </div>
@@ -90,9 +106,11 @@ function PaycheckPlanDetailPage() {
           <div className="border-t border-divider pt-4 mt-2">
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-surface rounded-card p-4">
-                <p className="text-sub text-ink-hint mb-1">매달 받는 월급</p>
-                <p className="font-inter text-card font-bold text-ink">{detail.monthlyIncome}만원</p>
-                <p className="text-sub text-ink-hint mt-1">국민연금 120만과 별도</p>
+                <p className="text-sub text-ink-hint mb-1">지속 가능 충당</p>
+                <p className="font-inter text-card font-bold text-ink">
+                  {detail.sustainableCoverage === null ? '충분' : `${detail.sustainableCoverage}%`}
+                </p>
+                <p className="text-sub text-ink-hint mt-1">원금 안 헐고 이자·배당만으로</p>
               </div>
               <div className="bg-surface rounded-card p-4">
                 <p className="text-sub text-ink-hint mb-1">원금 평가액</p>
