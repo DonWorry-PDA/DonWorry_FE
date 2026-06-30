@@ -1,6 +1,7 @@
 import { Navigate, useNavigate } from 'react-router-dom'
 import { NavHomeIc } from '../common/assets/icons'
 import { isAxiosError } from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -17,7 +18,13 @@ const userName = '고객'
 
 function PaycheckPlansPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data, isLoading, isError, error, refetch } = useGetRecommendation()
+
+  const handleGoToProfileEdit = () => {
+    queryClient.invalidateQueries({ queryKey: ['portfolio', 'recommendation'] })
+    navigate('/mypage/profile-edit')
+  }
 
   if (isLoading) {
     return (
@@ -112,7 +119,7 @@ function PaycheckPlansPage() {
           </div>
 
           <StickyFooter>
-            <Button onClick={() => navigate('/mypage/profile-edit')}>
+            <Button onClick={handleGoToProfileEdit}>
               목표 생활비 수정하기
             </Button>
           </StickyFooter>
