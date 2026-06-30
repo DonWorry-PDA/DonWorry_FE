@@ -27,7 +27,6 @@ function RiskDots({ score }: { score: 1 | 2 | 3 }) {
 
 function SalaryPlanCard({ plan, onClick }: SalaryPlanCardProps) {
   const isLocked = plan.status === 'locked'
-  const isSelected = plan.status === 'selected' || plan.status === 'recommended'
 
   return (
     <button
