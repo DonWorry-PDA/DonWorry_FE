@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import usePostLogin from '../../login/hooks/usePostLogin'
-import { getUserIdFromToken } from '@/common/api/token'
-import { setAccessToken } from '@/common/api/token'
+import usePostVerifyPin from './usePostVerifyPin'
 
 const useOrderPinInput = (planId: string | undefined) => {
   const navigate = useNavigate()
-  const { mutate: postLogin, isPending } = usePostLogin()
+  const { mutate: verifyPin, isPending } = usePostVerifyPin()
 
   const [pin, setPin] = useState('')
   const [isError, setIsError] = useState(false)
@@ -30,31 +28,20 @@ const useOrderPinInput = (planId: string | undefined) => {
       return
     }
 
-    const userId = getUserIdFromToken()
-    if (!userId) {
-      setIsServerError(true)
-      setPin('')
-      return
-    }
-
     setPin(next)
-    postLogin(
-      { userId, pin: next },
-      {
-        onSuccess: ({ token }) => {
-          setAccessToken(token)
-          navigate('/order/review', { state: { planId } })
-        },
-        onError: (error) => {
-          setPin('')
-          if (isAxiosError(error) && error.response?.status === 401) {
-            setIsError(true)
-          } else {
-            setIsServerError(true)
-          }
-        },
+    verifyPin(next, {
+      onSuccess: () => {
+        navigate('/order/review', { state: { planId } })
       },
-    )
+      onError: (error) => {
+        setPin('')
+        if (isAxiosError(error) && error.response?.status === 401) {
+          setIsError(true)
+        } else {
+          setIsServerError(true)
+        }
+      },
+    })
   }
 
   function deleteDigit() {
