@@ -5,8 +5,6 @@ import SimParamsBar from './components/SimParamsBar'
 import SimParamsBarSkeleton from './components/SimParamsBarSkeleton'
 import SimSliders from './components/SimSliders'
 import SimResultCards from './components/SimResultCards'
-import SimActionItems from './components/SimActionItems'
-import useSimActionItems from './hooks/useSimActionItems'
 import EditParamsSheet from './components/EditParamsSheet'
 import useSimulation from './hooks/useSimulation'
 import useGetRetirementSimParams from './hooks/useGetRetirementSimParams'
@@ -31,7 +29,6 @@ function RetirementSimulationPage() {
   const activeParams = localParams ?? data
 
   const result = useSimulation(activeParams ?? FALLBACK_PARAMS, returnRate, inflationRate)
-  const actionItems = useSimActionItems()
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -74,10 +71,6 @@ function RetirementSimulationPage() {
             <div className="border-t border-divider" />
             <div className="py-6">
               <SimResultCards result={result} />
-            </div>
-            <div className="border-t border-divider" />
-            <div className="py-5">
-              <SimActionItems items={actionItems} />
             </div>
             <div className="h-6" />
           </>
