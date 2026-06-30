@@ -26,12 +26,25 @@ function EditParamsSheet({ open, params, onClose, onConfirm }: EditParamsSheetPr
     }
   }, [open, params])
 
+  const ageNum = Number(age)
+  const assetsNum = Number(assets)
+  const livingNum = Number(living)
+  const pensionNum = Number(pension)
+  // 빈값·음수·NaN('-', '.' 등) 차단. 금액은 만원 단위 소수 허용이라 정수 강제는 안 함.
+  const isValid =
+    [age, assets, living, pension].every((s) => s.trim() !== '') &&
+    Number.isFinite(ageNum) && ageNum > 0 &&
+    Number.isFinite(assetsNum) && assetsNum >= 0 &&
+    Number.isFinite(livingNum) && livingNum > 0 &&
+    Number.isFinite(pensionNum) && pensionNum >= 0
+
   const handleConfirm = () => {
+    if (!isValid) return
     const next: SimParams = {
-      ageYears: Number(age) || params.ageYears,
-      totalAssetsKrw: (Number(assets) || 0) * 10_000,
-      monthlyLivingKrw: (Number(living) || 0) * 10_000,
-      monthlyPensionKrw: (Number(pension) || 0) * 10_000,
+      ageYears: ageNum,
+      totalAssetsKrw: assetsNum * 10_000,
+      monthlyLivingKrw: livingNum * 10_000,
+      monthlyPensionKrw: pensionNum * 10_000,
     }
     onConfirm(next)
     onClose()
@@ -48,7 +61,7 @@ function EditParamsSheet({ open, params, onClose, onConfirm }: EditParamsSheetPr
           <Field label="연금" unit="만원/월" value={pension} onChange={setPension} />
         </div>
         <div className="mt-6">
-          <Button onClick={handleConfirm}>확인</Button>
+          <Button onClick={handleConfirm} disabled={!isValid}>확인</Button>
         </div>
       </div>
     </BottomSheet>
