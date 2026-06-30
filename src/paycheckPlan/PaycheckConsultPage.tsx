@@ -5,12 +5,13 @@ import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
 import DateTimePickerSheet, { formatTime24 } from '../common/components/DateTimePickerSheet'
 import { buildScheduledAtIso } from '../mypage/utils/consultation'
-import { type ConsultContext } from './constants/consultContext'
-import type { Branch, ConsultMethod } from './types/paycheckPlan'
+import { usePostConsultation } from '../mypage/hooks/consultation'
+import type { ConsultApiMethod } from '../mypage/types/consultation'
+import { resolveConsultContext, type ConsultContext } from './constants/consultContext'
+import type { SelectedBranch, ConsultMethod } from './types/paycheckPlan'
 
 const METHODS: { key: ConsultMethod; label: string }[] = [
   { key: 'face', label: '대면' },
-  { key: 'video', label: '화상' },
   { key: 'phone', label: '전화' },
 ]
 
@@ -34,7 +35,7 @@ type LocationState = {
   context?: ConsultContext
   planId?: string | number | null
   purposeAccountTypes?: string[]
-  branch?: Branch
+  branch?: SelectedBranch
 }
 
 function PaycheckConsultPage() {
@@ -42,11 +43,13 @@ function PaycheckConsultPage() {
   const { state } = useLocation() as { state: LocationState | null }
   const branch = state?.branch
 
+  const { mutate: reserve, isPending } = usePostConsultation()
   const [method, setMethod] = useState<ConsultMethod>('face')
   const [pickedDate, setPickedDate] = useState<Date | null>(null)
   const [pickedTime, setPickedTime] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [selectedTopics, setSelectedTopics] = useState<string[]>([])
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!branch) {
@@ -64,12 +67,33 @@ function PaycheckConsultPage() {
   const canSubmit = pickedDate !== null && pickedTime !== null
 
   const handleReserve = () => {
-    if (!pickedDate || !pickedTime) return
+    if (!pickedDate || !pickedTime || !branch) return
     const scheduledAt = buildScheduledAtIso(pickedDate, pickedTime)
-    navigate('/paycheck-plan/consult/complete', {
-      replace: true,
-      state: { branch, scheduledAt, method },
-    })
+    const copy = resolveConsultContext(state?.context)
+    const apiMethod: ConsultApiMethod = method === 'face' ? 'FACE_TO_FACE' : 'PHONE'
+    // planId는 월급 설계안 진입(SALARY_PLAN)에서만 들어온다. 문자열로 와도 숫자로 정규화한다.
+    const planId = state?.planId != null ? Number(state.planId) : null
+    setSubmitError(null)
+    reserve(
+      {
+        consultType: 'PB',
+        scheduledAt,
+        planId: planId != null && !Number.isNaN(planId) ? planId : null,
+        topic: copy.topic,
+        // 사용자가 주제 칩을 골랐으면 그걸, 아니면 진입 맥락의 기본 "다룰 내용"을 보낸다.
+        contextTopics: selectedTopics.length > 0 ? selectedTopics : copy.topics,
+        branchId: branch.branchId,
+        method: apiMethod,
+      },
+      {
+        onSuccess: () =>
+          navigate('/paycheck-plan/consult/complete', {
+            replace: true,
+            state: { branch, scheduledAt, method },
+          }),
+        onError: () => setSubmitError('예약에 실패했어요. 잠시 후 다시 시도해 주세요.'),
+      },
+    )
   }
 
   const pickerInitialDate = pickedDate ?? nextWeekday()
@@ -181,8 +205,11 @@ function PaycheckConsultPage() {
       </div>
 
       <StickyFooter>
-        <Button onClick={handleReserve} disabled={!canSubmit}>
-          예약하기
+        {submitError && (
+          <p className="mb-2 text-center text-[12.5px] text-[#e5484d]">{submitError}</p>
+        )}
+        <Button onClick={handleReserve} disabled={!canSubmit || isPending}>
+          {isPending ? '예약 중…' : '예약하기'}
         </Button>
       </StickyFooter>
 

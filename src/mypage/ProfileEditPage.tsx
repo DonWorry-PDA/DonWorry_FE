@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -11,6 +11,8 @@ type PensionStatus = '수령 전' | '수령 중'
 
 function ProfileEditPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const { data: profile } = useGetProfile()
   const { mutate: patchProfile, isPending } = usePatchProfile()
 
@@ -19,7 +21,7 @@ function ProfileEditPage() {
   const [retirementStatus, setRetirementStatus] = useState<RetirementStatus>('은퇴 전')
   const [pensionStatus, setPensionStatus] = useState<PensionStatus>('수령 전')
   const [monthlyTarget, setMonthlyTarget] = useState('')
-  const [toastVariant, setToastVariant] = useState<'success' | 'error' | null>(null)
+  const [toastVariant, setToastVariant] = useState<'success' | 'superseded' | 'error' | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -50,9 +52,13 @@ function ProfileEditPage() {
         monthlyTargetKrw: monthlyNum * 10_000,
       },
       {
-        onSuccess: () => {
-          setToastVariant('success')
-          timerRef.current = setTimeout(() => navigate(-1), 2000)
+        onSuccess: (data) => {
+          const superseded = data?.activePlanSuperseded === true
+          setToastVariant(superseded ? 'superseded' : 'success')
+          timerRef.current = setTimeout(() => {
+            if (returnTo) navigate(returnTo, { replace: true })
+            else navigate(-1)
+          }, superseded ? 2800 : 2000)
         },
         onError: () => {
           setToastVariant('error')
@@ -199,16 +205,7 @@ function ProfileEditPage() {
           toastVariant ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0'
         }`}
       >
-        {toastVariant === 'success' ? (
-          <>
-            <div className="flex size-5 shrink-0 items-center justify-center rounded-[10px] bg-primary">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M2 6L5 9L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span className="text-sub font-semibold text-white">프로필이 수정됐어요</span>
-          </>
-        ) : (
+        {toastVariant === 'error' ? (
           <>
             <div className="flex size-5 shrink-0 items-center justify-center rounded-[10px] bg-danger">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -216,6 +213,19 @@ function ProfileEditPage() {
               </svg>
             </div>
             <span className="text-sub font-semibold text-white">저장에 실패했어요. 다시 시도해주세요</span>
+          </>
+        ) : (
+          <>
+            <div className="flex size-5 shrink-0 items-center justify-center rounded-[10px] bg-primary">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 6L5 9L10 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="text-sub font-semibold text-white">
+              {toastVariant === 'superseded'
+                ? '목표가 바뀌어 월급 설계안을 다시 맞춰야 해요'
+                : '프로필이 수정됐어요'}
+            </span>
           </>
         )}
       </div>

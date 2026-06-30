@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
+import RedirectWithToast from '../common/components/RedirectWithToast'
 import PinDots from '../login/components/PinDots'
 import PinKeypad from '../login/components/PinKeypad'
 import useOrderPinInput from './hooks/useOrderPinInput'
@@ -13,16 +14,7 @@ function OrderPinPage() {
     useOrderPinInput(planId)
 
   if (!planId) {
-    return (
-      <div className="flex h-dvh flex-col bg-white">
-        <AppBar title="" onBack={() => navigate(-1)} />
-        <div className="flex-1 flex items-center justify-center px-6">
-          <p className="text-body text-ink-hint text-center">
-            주문 정보를 찾을 수 없어요.<br />처음부터 다시 시도해주세요.
-          </p>
-        </div>
-      </div>
-    )
+    return <RedirectWithToast to="/paycheck-plan/plans" message="주문 정보를 찾을 수 없어요" />
   }
 
   return (

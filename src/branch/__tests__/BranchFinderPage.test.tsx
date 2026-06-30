@@ -70,11 +70,35 @@ describe('BranchFinderPage', () => {
     expect(screen.getByText('320m')).toBeInTheDocument()
     expect(screen.getByText('신한투자증권 서소문 PWM센터')).toBeInTheDocument()
     expect(screen.getByText('1.2km')).toBeInTheDocument()
-    // 기관 배지(탭 대신) + region이 있는 항목만 region 표시
-    expect(screen.getByText('신한은행')).toBeInTheDocument()
-    expect(screen.getByText('신한투자증권')).toBeInTheDocument()
+    // 뱃지는 제거 — region이 있는 항목만 region 표시
     expect(screen.getByText('중구')).toBeInTheDocument()
     expect(screen.getByText('가까운 순 · 2곳')).toBeInTheDocument()
+  })
+
+  it('표시명: 은행은 기관 접두어가 없으면 "신한은행 …"을 붙이고, 증권은 원본 그대로 둔다', () => {
+    resultByInstitution = {
+      SHINHAN_BANK: ok([
+        { id: 7, name: '가락동금융센터', address: '서울 송파구 송파대로 268', phone: '02-7', region: null, distanceMeters: 200, distanceKm: 0.2 },
+      ]),
+      SHINHAN_SECURITIES: ok([
+        { id: 8, name: '신한 프리미어 광진금융센터', address: '서울 광진구 능동로 110', phone: '02-8', region: '광진구', distanceMeters: 400, distanceKm: 0.4 },
+      ]),
+    }
+    render(<BranchFinderPage />)
+
+    expect(screen.getByText('신한은행 가락동금융센터')).toBeInTheDocument()
+    expect(screen.getByText('신한 프리미어 광진금융센터')).toBeInTheDocument()
+    // 기관 접두어를 단독 뱃지로 보여주지 않는다.
+    expect(screen.queryByText('신한은행')).not.toBeInTheDocument()
+  })
+
+  it('진입점이 기관을 지정하면(목적별 통장→은행) 그 기관 지점만 보여준다', () => {
+    locationState = { institution: 'SHINHAN_BANK' }
+    render(<BranchFinderPage />)
+
+    expect(screen.getByText('신한은행 광화문점')).toBeInTheDocument()
+    expect(screen.queryByText('신한투자증권 서소문 PWM센터')).not.toBeInTheDocument()
+    expect(screen.getByText('가까운 순 · 1곳')).toBeInTheDocument()
   })
 
   it('가장 가까운 지점이 기본 선택되고, 예약 시 그 지점을 상담 화면으로 넘긴다', () => {
@@ -84,7 +108,7 @@ describe('BranchFinderPage', () => {
     expect(navigate).toHaveBeenCalledWith('/paycheck-plan/consult', {
       state: {
         branch: {
-          id: 'SHINHAN_BANK-1',
+          branchId: 1,
           institution: 'SHINHAN_BANK',
           name: '신한은행 광화문점',
           address: '서울 종로구 새문안로 50',
@@ -104,7 +128,7 @@ describe('BranchFinderPage', () => {
       expect.objectContaining({
         state: expect.objectContaining({
           branch: expect.objectContaining({
-            id: 'SHINHAN_SECURITIES-1',
+            branchId: 1,
             institution: 'SHINHAN_SECURITIES',
             distance: '1.2km',
           }),

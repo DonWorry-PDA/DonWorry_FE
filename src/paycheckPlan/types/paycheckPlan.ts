@@ -1,3 +1,5 @@
+import type { Institution } from '@/branch/types/branch'
+
 export type AssetCategory = {
   id: string
   name: string
@@ -134,17 +136,17 @@ export type ExecutionSummary = {
   notice: string
 }
 
-export type Branch = {
-  id: string
+/** 지점 선택 화면(BranchFinderPage)에서 고른 영업점 — 예약 POST에 쓸 실 DB branchId를 들고 다닌다. */
+export type SelectedBranch = {
+  branchId: number
+  institution: Institution
   name: string
-  type: 'PWM' | '영업점'
   address: string
-  hours: string
-  available: boolean
   distance: string
 }
 
-export type ConsultMethod = 'face' | 'video' | 'phone'
+// 상담 방식 — 대면/전화 2종(BE FACE_TO_FACE/PHONE와 매핑). 화상은 제거.
+export type ConsultMethod = 'face' | 'phone'
 
 export type ConsultType = 'pb'
 
@@ -197,6 +199,21 @@ export type SalaryPlanConfirmRequest = {
   holdings: SalaryPlanConfirmHolding[]
 }
 
+// 재진입(plan 보유) 안내 — 현황 화면에서 "생활비 상향/재설문" 두 선택지를 제시한다.
+export type GuidanceAction = 'INCREASE_LIVING_COST' | 'RETAKE_SURVEY'
+export type ReentryEmphasis = 'INCREASE_LIVING_COST' | 'NEUTRAL'
+
+export type GuidanceOption = {
+  action: GuidanceAction
+  route: string // BE가 주는 이동 경로 (/mypage/profile-edit, /survey)
+  label: string
+}
+
+export type ReentryGuidance = {
+  emphasis: ReentryEmphasis // 강조할 선택지. NEUTRAL이면 균등.
+  options: GuidanceOption[] // 항상 2개
+}
+
 // hasPlan=false면 본문 전부 null → 최초 진입(자산 선택)으로 라우팅.
 export type SalaryPlanStatusResponse = {
   hasPlan: boolean
@@ -210,4 +227,5 @@ export type SalaryPlanStatusResponse = {
   totalAchievedRate: number | null // 전체 진행률 %, 100 캡
   createdAt: string | null // 확정 시각(ISO)
   holdings: SalaryPlanHolding[] | null
+  reentryGuidance: ReentryGuidance | null // 재진입 안내. 최초 진입(hasPlan=false)이면 null.
 }

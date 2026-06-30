@@ -4,6 +4,8 @@ export type UserProfile = {
   status: string
   pensionStatus: string
   monthlyTargetKrw: number
+  // 이번 프로필 수정으로 ACTIVE 월급 설계안이 비활성화됐는지(목표 변경 시). 조회 응답에선 항상 false.
+  activePlanSuperseded?: boolean
 }
 
 export type LinkedAccount = {
