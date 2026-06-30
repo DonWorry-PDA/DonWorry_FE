@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import pxr from '@/common/utils/pxr'
 
@@ -106,6 +106,8 @@ function CoachMarkInner({ steps, onComplete, onSkip }: Props) {
   const step = steps[currentStep]
   const { rect, ready, found } = useTargetRect(step.targetId)
   const isLastStep = currentStep === steps.length - 1
+  const tooltipRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<Element | null>(null)
 
   useEffect(() => {
     if (!ready || found) return
@@ -131,6 +133,48 @@ function CoachMarkInner({ steps, onComplete, onSkip }: Props) {
     }
     document.addEventListener('touchmove', prevent, { passive: false })
     return () => document.removeEventListener('touchmove', prevent)
+  }, [])
+
+  // 마운트 시 이전 포커스 저장 → 첫 버튼으로 이동, 언마운트 시 복원
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement
+    const first = tooltipRef.current?.querySelector<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    )
+    first?.focus()
+    return () => {
+      ;(previousFocusRef.current as HTMLElement | null)?.focus()
+    }
+  }, [])
+
+  // Tab / Shift+Tab 포커스 트랩
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      const tooltip = tooltipRef.current
+      if (!tooltip) return
+      const focusable = Array.from(
+        tooltip.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      )
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const handleNext = useCallback(() => {
@@ -224,6 +268,7 @@ function CoachMarkInner({ steps, onComplete, onSkip }: Props) {
 
       {/* 컴팩트 툴팁 박스 */}
       <div
+        ref={tooltipRef}
         id="coachmark-tooltip"
         role="dialog"
         aria-modal="true"

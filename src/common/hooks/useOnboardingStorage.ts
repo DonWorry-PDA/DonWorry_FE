@@ -11,6 +11,13 @@ export function initOnboarding() {
     const params = new URLSearchParams(window.location.search)
     if (params.get('resetOnboarding') === '1') {
       Object.values(ONBOARDING_KEYS).forEach((k) => localStorage.removeItem(k))
+      params.delete('resetOnboarding')
+      const newSearch = params.toString()
+      history.replaceState(
+        null,
+        '',
+        window.location.pathname + (newSearch ? '?' + newSearch : '') + window.location.hash,
+      )
     }
     if (import.meta.env.DEV) {
       ;(window as unknown as Record<string, unknown>).__resetOnboarding = () => {
