@@ -10,8 +10,9 @@ import { MydataAccount } from './types/account'
 
 const EMPTY_ITEMS: BuyItem[] = []
 
-function maskNumber(accountNumber: string | null) {
-  if (!accountNumber) return '—'
+// 표시 가능한 계좌번호만 반환. 목업 식별자(MOCK-*-…)·빈값은 표시하지 않음(null).
+function displayAccountNumber(accountNumber: string | null): string | null {
+  if (!accountNumber || accountNumber.startsWith('MOCK')) return null
   if (accountNumber.length <= 4) return accountNumber
   return accountNumber.slice(0, -4).replace(/\d/g, '*') + accountNumber.slice(-4)
 }
@@ -264,7 +265,11 @@ function OrderTransferPage() {
                         <p className="text-body font-semibold text-ink-hint">
                           {account.institutionName} {accountLabel(account)}
                         </p>
-                        <p className="text-sub text-ink-hint">{maskNumber(account.accountNumber)}</p>
+                        {displayAccountNumber(account.accountNumber) && (
+                          <p className="text-sub text-ink-hint">
+                            {displayAccountNumber(account.accountNumber)}
+                          </p>
+                        )}
                       </div>
                       <div className="text-right shrink-0">
                         <p className="font-inter text-body font-semibold text-ink">
