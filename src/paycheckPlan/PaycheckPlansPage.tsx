@@ -1,4 +1,5 @@
 import { Navigate, useNavigate } from 'react-router-dom'
+import { NavHomeIc } from '../common/assets/icons'
 import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -21,7 +22,7 @@ function PaycheckPlansPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
+        <AppBar title="월급 설계안" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-2 h-8 w-48 animate-pulse rounded bg-surface-muted" />
           <div className="mb-6 h-5 w-56 animate-pulse rounded bg-surface-muted" />
@@ -42,7 +43,7 @@ function PaycheckPlansPage() {
   if (isError || !data) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
+        <AppBar title="월급 설계안" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
         <CenterMessage variant="alert">
           <div className="flex flex-col items-center gap-3">
             <p>설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</p>
@@ -65,7 +66,7 @@ function PaycheckPlansPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="월급 설계안" onBack={() => navigate(-1)} />
+      <AppBar title="월급 설계안" onBack={() => navigate(-1)} rightAction={<button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub"><NavHomeIc width={22} height={22} /></button>} />
 
       {isStructuralShortage ? (
         <>

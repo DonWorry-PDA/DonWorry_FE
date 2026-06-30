@@ -10,6 +10,7 @@ import StepProgress from './components/StepProgress'
 import AssetGroupAccordion from './components/AssetGroupAccordion'
 import useGetSalaryAssets from './hooks/useGetSalaryAssets'
 import usePutSalaryAssetExclusions from './hooks/usePutSalaryAssetExclusions'
+import { NavHomeIc } from '../common/assets/icons'
 
 function PaycheckAssetSelectPage() {
   const navigate = useNavigate()
@@ -89,7 +90,7 @@ function PaycheckAssetSelectPage() {
   if (isSurveyLoading || surveyMissing) {
     return (
       <div role="status" aria-live="polite" className="flex flex-col h-dvh">
-        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
         <span className="sr-only">투자성향 설문 확인 중입니다.</span>
         <div className="flex-1 px-6 pt-6 flex flex-col gap-3">
           {[0, 1, 2, 3].map((i) => (
@@ -104,7 +105,7 @@ function PaycheckAssetSelectPage() {
   if (surveyError) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+        <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
         <div className="flex-1 px-6 flex flex-col items-center justify-center gap-4">
           <p className="text-body text-ink-sub text-center">설문 상태를 확인하지 못했어요.</p>
           <button
@@ -121,7 +122,7 @@ function PaycheckAssetSelectPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="월급 만들기" onBack={() => navigate(-1)} />
+      <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
       <StepProgress current={1} total={2} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6">
@@ -201,6 +202,15 @@ function AssetGuide() {
         연금·IRP처럼 노후에 쓸 계좌는 빼두는 걸 권해요.
       </p>
     </div>
+  )
+}
+
+function HomeButton() {
+  const navigate = useNavigate()
+  return (
+    <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+      <NavHomeIc width={22} height={22} />
+    </button>
   )
 }
 
