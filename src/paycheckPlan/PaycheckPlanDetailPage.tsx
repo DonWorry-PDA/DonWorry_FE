@@ -50,8 +50,17 @@ function PaycheckPlanDetailPage() {
   }
 
   // 캐시된 설계안이 있으면 백그라운드 재요청 실패(isError)와 무관하게 그대로 보여준다.
-  const plan = data && planId ? findPlan(data, planId) : undefined
-  if (!data || !plan) {
+  if (!data) {
+    return (
+      <div className="flex flex-col h-dvh">
+        <AppBar title="설계안" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안을 불러오지 못했어요</CenterMessage>
+      </div>
+    )
+  }
+
+  const plan = planId ? findPlan(data, planId) : undefined
+  if (!plan) {
     return <Navigate to="/paycheck-plan/plans" replace />
   }
 

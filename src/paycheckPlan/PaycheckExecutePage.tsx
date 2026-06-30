@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import RedirectWithToast from '../common/components/RedirectWithToast'
 import AppBar from '../common/components/AppBar'
@@ -82,11 +82,28 @@ function PaycheckExecutePage() {
     )
   }
 
-  if (!planId || (isAxiosError(error) && error.response?.status === 403) || (!data && !isLoading)) {
+  // location.state 없이 직접 접근한 경우
+  if (!planId) {
     return <RedirectWithToast to="/paycheck-plan/plans" message="설계안을 먼저 선택해주세요" />
   }
 
-  const plan = data && planId ? findPlan(data, planId) : undefined
+  // 플로우 미진입 (403)
+  if (isAxiosError(error) && error.response?.status === 403) {
+    return <Navigate to="/paycheck-plan/assets" replace />
+  }
+
+  // 데이터 로드 실패 (캐시도 없음)
+  if (!data) {
+    return (
+      <div className="flex flex-col h-dvh">
+        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
+        <CenterMessage variant="alert">설계안을 불러오지 못했어요</CenterMessage>
+      </div>
+    )
+  }
+
+  // 해당 planId의 설계안을 찾을 수 없는 경우
+  const plan = findPlan(data, planId)
   if (!plan) {
     return <RedirectWithToast to="/paycheck-plan/plans" message="설계안을 먼저 선택해주세요" />
   }
