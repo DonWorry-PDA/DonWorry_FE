@@ -5,12 +5,11 @@ import useStockPriceMap from '@/common/hooks/useStockPriceMap'
 import type { AssetHubAllocationItem } from '../types/assetHub'
 
 /**
- * useGetAssetHub + 실시간 가격(ETF·주식 WebSocket push)을 합산해
- * 총자산·allocation 비율을 실시간으로 계산한다.
+ * Combines the asset hub query with ETF/stock WebSocket prices.
  *
- * - ETF·주식 모두 WebSocket push로 가격을 받는다.
- * - 두 출처의 가격을 ticker 기준 단일 priceMap으로 합쳐 자산분석 화면 종목별 평가액에도 그대로 쓴다.
- * - 소스(ETF·주식)별로 가격 수신 여부를 독립 판정해, 한 소스만 라이브여도 그 부분은 실시간 총자산에 반영한다.
+ * The hub response is the initial source of truth. WebSocket prices update the
+ * summary only after every ticker in a source has a price, so partial price maps
+ * never make missing holdings count as zero.
  */
 const useRealtimeAssetHub = () => {
   const { data: hub, isLoading, isError, refetch } = useGetAssetHub()
@@ -19,62 +18,69 @@ const useRealtimeAssetHub = () => {
   const stockTickers = hub?.stockHoldings?.map((h) => h.ticker) ?? []
   const { priceMap: etfPriceMap, isLive: etfIsLive } = useEtfPriceMap(etfTickers)
   const { priceMap: stockPriceMap, isLive: stockIsLive } = useStockPriceMap(stockTickers)
-  // ETF·주식 중 하나라도 연결돼 있으면 실시간 상태로 본다 (주식만 보유한 사용자도 반영)
   const isLive = etfIsLive || stockIsLive
 
-  // ETF·주식 가격을 ticker 단일 맵으로 병합 (자산분석 화면이 종목별로 참조)
   const priceMap = useMemo(
     () => ({ ...etfPriceMap, ...stockPriceMap }),
     [etfPriceMap, stockPriceMap],
   )
 
-  // 각 소스(ETF·주식)별로 보유 ticker 가격이 모두 도착했는지 독립 판정한다.
-  // 한 소스만 라이브여도 그 소스는 실시간 값, 나머지는 스냅샷으로 합산해 총자산이 멈추지 않게 한다.
-  const etfReceived = etfTickers.every((t) => t in etfPriceMap)
-  const stockReceived = stockTickers.every((t) => t in stockPriceMap)
-  const hasInvested = etfTickers.length + stockTickers.length > 0
-  const anyLive = hasInvested && (etfReceived || stockReceived)
+  const etfReceived =
+    etfTickers.length > 0 && etfTickers.every((ticker) => ticker in etfPriceMap)
+  const stockReceived =
+    stockTickers.length > 0 && stockTickers.every((ticker) => ticker in stockPriceMap)
+  const hasRealtimeSource = etfReceived || stockReceived
 
   let realtimeTotalAsset = hub?.totalAsset
-  let realtimeAllocation: AssetHubAllocationItem[] | undefined = hub?.allocation
+  let realtimeAllocation = hub?.allocation
 
-  if (hub && anyLive) {
+  if (hub && hasRealtimeSource) {
     const realtimeEtfAmount = etfReceived
-      ? hub.etfHoldings.reduce((sum, h) => sum + h.quantity * etfPriceMap[h.ticker], 0)
+      ? hub.etfHoldings.reduce((sum, holding) => {
+          return sum + holding.quantity * etfPriceMap[holding.ticker]
+        }, 0)
       : hub.etfSnapshotAmount
     const realtimeStockAmount = stockReceived
-      ? hub.stockHoldings.reduce((sum, h) => sum + h.quantity * stockPriceMap[h.ticker], 0)
+      ? hub.stockHoldings.reduce((sum, holding) => {
+          return sum + holding.quantity * stockPriceMap[holding.ticker]
+        }, 0)
       : hub.stockSnapshotAmount
-    const snapshotInvested = hub.etfSnapshotAmount + hub.stockSnapshotAmount
-    const nonInvestedAmount = hub.totalAsset - snapshotInvested
-    const newTotal = nonInvestedAmount + realtimeEtfAmount + realtimeStockAmount
 
-    if (newTotal > 0) {
-      realtimeTotalAsset = newTotal
+    const snapshotInvestedAmount = hub.etfSnapshotAmount + hub.stockSnapshotAmount
+    const nonInvestedAmount = hub.totalAsset - snapshotInvestedAmount
+    const nextTotalAsset = nonInvestedAmount + realtimeEtfAmount + realtimeStockAmount
 
-      const updated: AssetHubAllocationItem[] = hub.allocation.map((item) => {
+    if (nextTotalAsset > 0) {
+      realtimeTotalAsset = nextTotalAsset
+
+      const nextAllocation: AssetHubAllocationItem[] = hub.allocation.map((item) => {
         if (item.category === 'ETF') {
-          return { ...item, ratio: Math.round((realtimeEtfAmount / newTotal) * 100) }
+          return { ...item, ratio: Math.round((realtimeEtfAmount / nextTotalAsset) * 100) }
         }
         if (item.category === '주식') {
-          return { ...item, ratio: Math.round((realtimeStockAmount / newTotal) * 100) }
+          return { ...item, ratio: Math.round((realtimeStockAmount / nextTotalAsset) * 100) }
         }
+
         const originalAmount = (item.ratio / 100) * hub.totalAsset
-        return { ...item, ratio: Math.round((originalAmount / newTotal) * 100) }
+        return { ...item, ratio: Math.round((originalAmount / nextTotalAsset) * 100) }
       })
 
-      // 반올림 오차 보정: 비율 합이 100이 되도록 가장 큰 항목에 흡수 (음수 방지)
-      const ratioSum = updated.reduce((s, a) => s + a.ratio, 0)
+      const ratioSum = nextAllocation.reduce((sum, item) => sum + item.ratio, 0)
       const diff = 100 - ratioSum
-      if (diff !== 0 && updated.length > 0) {
-        const targetIdx = updated.reduce(
-          (maxIdx, item, idx) => (item.ratio > updated[maxIdx].ratio ? idx : maxIdx),
+
+      if (diff !== 0 && nextAllocation.length > 0) {
+        const targetIndex = nextAllocation.reduce(
+          (maxIndex, item, index) =>
+            item.ratio > nextAllocation[maxIndex].ratio ? index : maxIndex,
           0,
         )
-        updated[targetIdx] = { ...updated[targetIdx], ratio: updated[targetIdx].ratio + diff }
+        nextAllocation[targetIndex] = {
+          ...nextAllocation[targetIndex],
+          ratio: nextAllocation[targetIndex].ratio + diff,
+        }
       }
 
-      realtimeAllocation = updated
+      realtimeAllocation = nextAllocation
     }
   }
 
