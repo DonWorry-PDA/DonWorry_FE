@@ -7,6 +7,8 @@ export type NotificationUIItem = {
   subtitle?: string
   isUnread?: boolean
   linkTarget?: string
+  createdAt?: string
+  notificationType?: string
 }
 
 export type NotificationGroup = {

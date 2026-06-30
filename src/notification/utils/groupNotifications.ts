@@ -1,21 +1,15 @@
 import type { NotificationGroup, NotificationItem } from '../types/notification'
 
-function toLocalDateString(date: Date): string {
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-}
-
 function getGroupLabel(createdAt: string): string {
   const now = new Date()
   const date = new Date(createdAt)
-
-  if (toLocalDateString(date) === toLocalDateString(now)) return '오늘'
-
-  const diffDays = Math.round((now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24))
-  if (diffDays <= 6) return '이번 주'
-  return '이전'
+  const diffDays = Math.round(
+    (now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24),
+  )
+  return diffDays <= 7 ? '최근 7일' : '이전 알림'
 }
 
-const GROUP_ORDER = ['오늘', '이번 주', '이전']
+const GROUP_ORDER = ['최근 7일', '이전 알림']
 
 function groupNotifications(items: NotificationItem[]): NotificationGroup[] {
   const map = new Map<string, NotificationGroup>()
@@ -31,6 +25,8 @@ function groupNotifications(items: NotificationItem[]): NotificationGroup[] {
       subtitle: item.content || undefined,
       isUnread: !item.read,
       linkTarget: item.linkTarget || undefined,
+      createdAt: item.createdAt,
+      notificationType: item.notificationType,
     })
   }
 
