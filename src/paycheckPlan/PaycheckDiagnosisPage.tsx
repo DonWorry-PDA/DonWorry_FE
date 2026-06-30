@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import { useQueryClient } from '@tanstack/react-query'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
@@ -70,7 +71,7 @@ function PaycheckDiagnosisPage() {
   const queryClient = useQueryClient()
   const [showPlanLoading, setShowPlanLoading] = useState(false)
   const fetchedRef = useRef(false)
-  const { data, isLoading, isError } = useGetCashFlowDiagnosis()
+  const { data, isLoading, isError, error } = useGetCashFlowDiagnosis()
 
   const handleGoToPlans = () => {
     if (fetchedRef.current) return
@@ -110,6 +111,10 @@ function PaycheckDiagnosisPage() {
         </div>
       </div>
     )
+  }
+
+  if (isAxiosError(error) && error.response?.status === 403) {
+    return <Navigate to="/paycheck-plan/assets" replace />
   }
 
   if (isError || !data) {

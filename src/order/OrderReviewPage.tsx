@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
+import RedirectWithToast from '../common/components/RedirectWithToast'
 import Button from '../common/components/Button'
 import { type BuyItem } from './components/BuyConfirmModal'
 import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
@@ -37,12 +38,7 @@ function OrderReviewPage() {
 
   const plan = data && planId ? findPlan(data, planId) : undefined
   if (!data || !plan) {
-    return (
-      <div className="flex flex-col h-dvh">
-        <AppBar title="주문 검토" onBack={() => navigate(-1)} />
-        <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 이전 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
-      </div>
-    )
+    return <RedirectWithToast to="/paycheck-plan/plans" message="설계안 정보를 찾을 수 없어요" />
   }
 
   const summary = mapExecutionSummary(data, plan)

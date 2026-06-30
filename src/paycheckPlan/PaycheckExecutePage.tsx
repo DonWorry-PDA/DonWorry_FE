@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
+import RedirectWithToast from '../common/components/RedirectWithToast'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -68,7 +70,7 @@ function PaycheckExecutePage() {
   const { state } = useLocation()
   const planId = state?.planId as string | undefined
   const [showAccountSheet, setShowAccountSheet] = useState(false)
-  const { data, isLoading } = useGetRecommendation()
+  const { data, isLoading, error } = useGetRecommendation()
   const { data: accountCheck } = useGetAccountCheck()
 
   if (isLoading) {
@@ -80,14 +82,13 @@ function PaycheckExecutePage() {
     )
   }
 
+  if (!planId || (isAxiosError(error) && error.response?.status === 403) || (!data && !isLoading)) {
+    return <RedirectWithToast to="/paycheck-plan/plans" message="설계안을 먼저 선택해주세요" />
+  }
+
   const plan = data && planId ? findPlan(data, planId) : undefined
-  if (!data || !plan) {
-    return (
-      <div className="flex flex-col h-dvh">
-        <AppBar title="실행 요약" onBack={() => navigate(-1)} />
-        <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 설계안 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
-      </div>
-    )
+  if (!plan) {
+    return <RedirectWithToast to="/paycheck-plan/plans" message="설계안을 먼저 선택해주세요" />
   }
 
   const summary = {

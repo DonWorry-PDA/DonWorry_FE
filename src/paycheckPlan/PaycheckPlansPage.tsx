@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -15,7 +16,7 @@ const userName = '고객'
 
 function PaycheckPlansPage() {
   const navigate = useNavigate()
-  const { data, isLoading, isError, refetch } = useGetRecommendation()
+  const { data, isLoading, isError, error, refetch } = useGetRecommendation()
 
   if (isLoading) {
     return (
@@ -32,6 +33,10 @@ function PaycheckPlansPage() {
         </div>
       </div>
     )
+  }
+
+  if (isAxiosError(error) && error.response?.status === 403) {
+    return <Navigate to="/paycheck-plan/assets" replace />
   }
 
   if (isError || !data) {

@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -9,7 +10,7 @@ import { mapComparison, toManwon, Q3_LABELS } from './utils/planMapper'
 
 function PaycheckComparePage() {
   const navigate = useNavigate()
-  const { data, isLoading, isError } = useGetRecommendation()
+  const { data, isLoading, isError, error } = useGetRecommendation()
 
   if (isLoading) {
     return (
@@ -25,6 +26,10 @@ function PaycheckComparePage() {
         </div>
       </div>
     )
+  }
+
+  if (isAxiosError(error) && error.response?.status === 403) {
+    return <Navigate to="/paycheck-plan/assets" replace />
   }
 
   if (isError) {

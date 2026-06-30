@@ -1,4 +1,5 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 import AppBar from '../common/components/AppBar'
 import Button from '../common/components/Button'
 import StickyFooter from '../common/components/StickyFooter'
@@ -26,7 +27,7 @@ function WarningIcon() {
 function PaycheckPlanDetailPage() {
   const navigate = useNavigate()
   const { planId } = useParams<{ planId: string }>()
-  const { data, isLoading } = useGetRecommendation()
+  const { data, isLoading, error } = useGetRecommendation()
 
   if (isLoading) {
     return (
@@ -44,16 +45,14 @@ function PaycheckPlanDetailPage() {
     )
   }
 
+  if (isAxiosError(error) && error.response?.status === 403) {
+    return <Navigate to="/paycheck-plan/assets" replace />
+  }
+
   // 캐시된 설계안이 있으면 백그라운드 재요청 실패(isError)와 무관하게 그대로 보여준다.
-  // 정말 해당 안이 없을 때만(!plan) 안내한다.
   const plan = data && planId ? findPlan(data, planId) : undefined
   if (!data || !plan) {
-    return (
-      <div className="flex flex-col h-dvh">
-        <AppBar title="설계안" onBack={() => navigate(-1)} />
-        <CenterMessage variant="alert">설계안을 찾을 수 없어요</CenterMessage>
-      </div>
-    )
+    return <Navigate to="/paycheck-plan/plans" replace />
   }
 
   const detail = mapPlanDetail(data, plan)
