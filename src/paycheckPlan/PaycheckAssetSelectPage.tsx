@@ -130,7 +130,7 @@ function PaycheckAssetSelectPage() {
       <AppBar title="월급 만들기" onBack={() => navigate(-1)} rightAction={<HomeButton />} />
       <StepProgress current={1} total={2} />
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-8">
         <h2 className="text-heading font-bold text-ink mb-1">
           어떤 자산으로
           <br />
