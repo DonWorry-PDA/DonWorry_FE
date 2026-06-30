@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import queryClient from '../common/api/queryClient'
 import { clearTokens } from '../common/api/token'
@@ -10,9 +10,6 @@ import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
 import Modal from '../common/components/Modal'
-import useGetMydataInstitutions from './hooks/useGetMydataInstitutions'
-import type { MydataInstitution } from './types/mypage'
-import LOGO_MAP from './utils/institutionLogos'
 
 type LogoutStep = 'idle' | 'confirm' | 'done'
 
@@ -32,13 +29,6 @@ function MypagePage() {
   const { data: profile, isPending: isProfilePending, isError: isProfileError } = useGetProfile()
   const { mutate: logout, isPending: isLoggingOut } = usePostLogout()
   const { data: consultations } = useGetConsultations()
-  const {
-    data: institutions,
-    isPending: isInstitutionsPending,
-    isError: isInstitutionsError,
-  } = useGetMydataInstitutions()
-  const connectedInstitutions = (institutions ?? []).filter((i) => i.connected)
-
   const nextReserved = (consultations ?? [])
     .filter((c) => c.status === 'RESERVED')
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0]
@@ -100,41 +90,20 @@ function MypagePage() {
           </button>
         </div>
 
-        {/* 연결된 계좌 */}
-        <div className="flex items-center justify-between pb-[10px] pt-[18px]">
-          <p className="text-sub font-semibold text-ink-hint">연결된 계좌</p>
-          <button
-            className="flex items-center gap-0.5 py-1 pl-2 text-sub font-semibold text-primary"
-            onClick={() => navigate('/mypage/connect-account')}
-          >
-            + 계좌 더 연결하기
-          </button>
-        </div>
-
-        {isInstitutionsPending ? (
-          <div className="flex gap-4 pb-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex flex-col items-center gap-[7px]">
-                <div className="size-10 rounded-icon animate-pulse bg-surface-muted" />
-                <div className="h-3 w-12 rounded animate-pulse bg-surface-muted" />
-              </div>
-            ))}
+        {/* 계좌 연결 진입 */}
+        <button
+          className="flex w-full items-center gap-3 border-b border-divider py-4"
+          onClick={() => navigate('/mypage/connect-account')}
+        >
+          <div className="size-11 shrink-0 rounded-card bg-primary-tint flex items-center justify-center">
+            <span className="text-card font-bold text-primary leading-none">+</span>
           </div>
-        ) : isInstitutionsError ? (
-          <p className="pb-4 text-sub text-ink-hint">계좌 정보를 불러오지 못했어요</p>
-        ) : connectedInstitutions.length === 0 ? (
-          <p className="pb-4 text-sub text-ink-hint">연결된 계좌가 없어요</p>
-        ) : (
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 [&::-webkit-scrollbar]:hidden">
-            {connectedInstitutions.map((institution) => (
-              <InstitutionChip
-                key={institution.id}
-                institution={institution}
-                onPress={() => navigate('/asset')}
-              />
-            ))}
+          <div className="flex flex-1 min-w-0 flex-col gap-0.5">
+            <p className="text-md font-semibold text-ink text-left">계좌 더 연결하기</p>
+            <p className="text-sub text-ink-sub text-left">빠진 자산이 있다면</p>
           </div>
-        )}
+          <span className="text-lg text-disabled shrink-0">›</span>
+        </button>
 
         {/* 구분선 */}
         <div className="relative -mx-6 h-7">
@@ -245,43 +214,6 @@ function MypagePage() {
         </Modal>
       )}
     </div>
-  )
-}
-
-function InstitutionChip({
-  institution,
-  onPress,
-}: {
-  institution: MydataInstitution
-  onPress: () => void
-}) {
-  const [imgFailed, setImgFailed] = useState(false)
-  const handleError = useCallback(() => setImgFailed(true), [])
-  const logo = LOGO_MAP[institution.id]
-
-  return (
-    <button
-      onClick={onPress}
-      className="flex flex-col items-center gap-[7px] shrink-0 active:opacity-60 transition-opacity"
-    >
-      {logo && !imgFailed ? (
-        <div className="flex size-10 items-center justify-center rounded-icon bg-white overflow-hidden shadow-card">
-          <img src={logo} alt={institution.name} className="size-8 object-contain" onError={handleError} />
-        </div>
-      ) : (
-        <div
-          className="flex size-10 items-center justify-center rounded-icon shadow-card"
-          style={{ background: institution.brandColor }}
-        >
-          <span className="text-caption font-extrabold" style={{ color: institution.labelColor }}>
-            {institution.label}
-          </span>
-        </div>
-      )}
-      <p className="text-caption text-ink-sub w-14 text-center leading-tight line-clamp-2">
-        {institution.name}
-      </p>
-    </button>
   )
 }
 
