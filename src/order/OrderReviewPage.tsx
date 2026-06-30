@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
+import RedirectWithToast from '../common/components/RedirectWithToast'
 import Button from '../common/components/Button'
 import { type BuyItem } from './components/BuyConfirmModal'
 import useGetRecommendation from '../paycheckPlan/hooks/useGetRecommendation'
@@ -37,12 +38,7 @@ function OrderReviewPage() {
 
   const plan = data && planId ? findPlan(data, planId) : undefined
   if (!data || !plan) {
-    return (
-      <div className="flex flex-col h-dvh">
-        <AppBar title="주문 검토" onBack={() => navigate(-1)} />
-        <CenterMessage variant="alert">설계안 정보를 불러올 수 없어요. 이전 화면으로 돌아가 다시 시도해주세요.</CenterMessage>
-      </div>
-    )
+    return <RedirectWithToast to="/paycheck-plan/plans" message="설계안 정보를 찾을 수 없어요" />
   }
 
   const summary = mapExecutionSummary(data, plan)
@@ -52,7 +48,7 @@ function OrderReviewPage() {
   const buyModalItems: BuyItem[] = buyItems.map((item) => ({
     name: item.productName ?? item.name,
     productType: 'ETF',
-    amount: `${item.amount.toLocaleString('ko-KR')}만`,
+    amount: `${(item.amount * 10000).toLocaleString('ko-KR')}`,
     amountWon: item.amount * 10000,
     ticker: item.ticker,
     productId: item.productId,
@@ -95,11 +91,10 @@ function OrderReviewPage() {
                 <ArrowUpIcon />
               </div>
               <div className="flex-1">
-                <p className="text-body font-semibold text-ink">{item.productName ?? item.name}</p>
-                <p className="text-sub text-ink-hint">{item.description}</p>
+                <p className="text-body font-semibold text-ink-hint">{item.productName ?? item.name}</p>
               </div>
               <p className="font-inter text-body font-bold text-ink shrink-0">
-                {item.amount.toLocaleString('ko-KR')}만
+                {(item.amount * 10000).toLocaleString('ko-KR')}원
               </p>
             </div>
           ))}
@@ -113,7 +108,7 @@ function OrderReviewPage() {
           <div className="flex justify-between items-center">
             <p className="text-body text-ink-sub">총 주문액</p>
             <p className="font-inter text-body font-semibold text-ink">
-              {totalAmount.toLocaleString('ko-KR')}만원
+              {(totalAmount * 10000).toLocaleString('ko-KR')}원
             </p>
           </div>
           <div className="flex justify-between items-center">

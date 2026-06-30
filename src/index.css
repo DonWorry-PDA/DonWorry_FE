@@ -151,6 +151,7 @@ html.large {
     min-width: 360px;
     max-width: 480px;
     min-height: 100dvh;
+    overflow: hidden;
     margin: 0 auto;
     background-color: white;
     box-shadow: 0 5px 20px 0 rgb(0, 0, 0, 0.1);

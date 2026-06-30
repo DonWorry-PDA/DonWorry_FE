@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getAccessToken, getRefreshToken, setAccessToken, clearTokens } from './token'
-import queryClient from './queryClient'
+import { dispatchAuthFailure } from './authEvents'
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -28,16 +28,30 @@ const refreshAccessToken = () => {
     })
 }
 
+const redirectToLogin = () => {
+  clearTokens()
+  dispatchAuthFailure()
+}
+
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401) {
+      // 이미 retry한 요청이 또 401 → 세션 만료, 로그인으로
+      if (originalRequest._retry) {
+        redirectToLogin()
+        return Promise.reject(error)
+      }
+
       originalRequest._retry = true
 
       const refreshToken = getRefreshToken()
-      if (!refreshToken) return Promise.reject(error)
+      if (!refreshToken) {
+        redirectToLogin()
+        return Promise.reject(error)
+      }
 
       try {
         if (!refreshPromise) {
@@ -50,9 +64,7 @@ client.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${accessToken}`
         return client(originalRequest)
       } catch {
-        clearTokens()
-        queryClient.clear()
-        window.location.href = '/login'
+        redirectToLogin()
       }
     }
 

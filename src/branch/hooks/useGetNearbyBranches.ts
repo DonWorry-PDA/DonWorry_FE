@@ -8,10 +8,12 @@ type Params = {
   lng?: number
   institution: Institution
   limit?: number
+  /** 진입점이 한 기관만 보여줄 때, 반대 기관 조회를 끄는 용도. 기본 true. */
+  enabled?: boolean
 }
 
-/** 좌표가 준비됐을 때만 근처 영업점을 조회한다(거리 오름차순으로 내려옴). */
-const useGetNearbyBranches = ({ lat, lng, institution, limit = 20 }: Params) =>
+/** 좌표가 준비됐고 enabled일 때만 근처 영업점을 조회한다(거리 오름차순으로 내려옴). */
+const useGetNearbyBranches = ({ lat, lng, institution, limit = 20, enabled = true }: Params) =>
   useQuery({
     queryKey: ['branches', 'nearby', institution, lat, lng, limit],
     queryFn: () =>
@@ -20,7 +22,7 @@ const useGetNearbyBranches = ({ lat, lng, institution, limit = 20 }: Params) =>
           params: { lat, lng, institution, limit },
         })
         .then((res) => res.data.data),
-    enabled: lat != null && lng != null,
+    enabled: enabled && lat != null && lng != null,
   })
 
 export default useGetNearbyBranches

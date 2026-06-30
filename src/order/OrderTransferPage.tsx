@@ -261,7 +261,7 @@ function OrderTransferPage() {
                         )}
                       </span>
                       <div className="flex-1">
-                        <p className="text-body font-semibold text-ink">
+                        <p className="text-body font-semibold text-ink-hint">
                           {account.institutionName} {accountLabel(account)}
                         </p>
                         <p className="text-sub text-ink-hint">{maskNumber(account.accountNumber)}</p>
