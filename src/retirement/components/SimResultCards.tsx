@@ -140,12 +140,9 @@ function SimResultCards({ result }: { result: SimResult }) {
     <div className="px-5 pb-2">
       <CoverageGauge pct={coverageRatePct} status={status} />
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <MetricCard label="월 부족액">
-          <span className="font-inter text-card font-bold text-ink">
-            {monthlyShortfallKrw === 0 ? '없음' : formatKrw(monthlyShortfallKrw)}
-          </span>
-        </MetricCard>
+      <CashflowBreakdown result={result} />
+
+      <div className="mt-3">
         <MetricCard label="생활비 지속 가능 기간">
           <span className="font-inter text-card font-bold text-ink">{durationText}</span>
         </MetricCard>
@@ -154,6 +151,70 @@ function SimResultCards({ result }: { result: SimResult }) {
       <div className="mt-3 flex justify-end">
         <Badge tone={badgeTone[status]}>{statusLabel[status]}</Badge>
       </div>
+    </div>
+  )
+}
+
+// 월 수입 구성(연금 + 투자수익)과 생활비 대비를 보여줘 게이지가 왜 그 %인지 설명
+function CashflowBreakdown({ result }: { result: SimResult }) {
+  const {
+    monthlyPensionKrw,
+    monthlyInvestmentIncomeKrw,
+    monthlyIncomeKrw,
+    monthlyLivingKrw,
+    monthlyShortfallKrw,
+  } = result
+  const pensionPct = monthlyIncomeKrw > 0 ? (monthlyPensionKrw / monthlyIncomeKrw) * 100 : 0
+  const investPct = monthlyIncomeKrw > 0 ? (monthlyInvestmentIncomeKrw / monthlyIncomeKrw) * 100 : 0
+
+  return (
+    <div className="mt-5">
+      <p className="mb-2 text-sub font-semibold text-ink-hint">월 현금흐름</p>
+      {/* 수입 구성 막대 (연금 + 투자수익) */}
+      <div className="mb-3 flex h-2.5 overflow-hidden rounded-full bg-track" aria-hidden="true">
+        <div className="bg-primary" style={{ width: `${pensionPct}%` }} />
+        <div className="bg-primary-muted" style={{ width: `${investPct}%` }} />
+      </div>
+      <div className="rounded-card-lg bg-surface px-4 py-3">
+        <CashflowRow dotClass="bg-primary" label="연금" value={monthlyPensionKrw} />
+        <CashflowRow dotClass="bg-primary-muted" label="투자수익" value={monthlyInvestmentIncomeKrw} sign="+" />
+        <div className="my-2 border-t border-divider" />
+        <CashflowRow label="월 수입" value={monthlyIncomeKrw} bold />
+        <CashflowRow label="월 생활비" value={monthlyLivingKrw} sign="−" />
+        <div className="my-2 border-t border-divider" />
+        {monthlyShortfallKrw > 0 ? (
+          <CashflowRow label="월 부족액" value={monthlyShortfallKrw} bold valueClass="text-danger" />
+        ) : (
+          <div className="flex items-center justify-between py-0.5">
+            <span className="text-body font-bold text-ink">충당 상태</span>
+            <span className="text-body font-bold text-success">생활비 충당</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+interface CashflowRowProps {
+  label: string
+  value: number
+  sign?: string
+  bold?: boolean
+  dotClass?: string
+  valueClass?: string
+}
+
+function CashflowRow({ label, value, sign = '', bold = false, dotClass, valueClass }: CashflowRowProps) {
+  return (
+    <div className="flex items-center justify-between py-0.5">
+      <span className="flex items-center gap-1.5">
+        {dotClass && <span className={`size-2 shrink-0 rounded-full ${dotClass}`} aria-hidden="true" />}
+        <span className={bold ? 'text-body font-bold text-ink' : 'text-body text-ink-sub'}>{label}</span>
+      </span>
+      <span className={`font-inter text-body ${bold ? 'font-bold' : 'font-semibold'} ${valueClass ?? 'text-ink'}`}>
+        {sign}
+        {formatKrw(value)}
+      </span>
     </div>
   )
 }

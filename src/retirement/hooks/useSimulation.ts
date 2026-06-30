@@ -7,7 +7,16 @@ export function computeSimulation(
   inflationRatePct: number,
 ): SimResult {
   if (params.monthlyLivingKrw <= 0) {
-    return { coverageRatePct: 0, monthlyShortfallKrw: 0, coverableMonths: 0, status: 'danger' }
+    return {
+      coverageRatePct: 0,
+      monthlyShortfallKrw: 0,
+      coverableMonths: 0,
+      status: 'danger',
+      monthlyIncomeKrw: 0,
+      monthlyInvestmentIncomeKrw: 0,
+      monthlyPensionKrw: params.monthlyPensionKrw,
+      monthlyLivingKrw: params.monthlyLivingKrw,
+    }
   }
 
   const monthlyReturn = returnRatePct / 100 / 12
@@ -43,7 +52,16 @@ export function computeSimulation(
   const status: SimStatus =
     coverageRatePct >= 80 ? 'stable' : coverageRatePct >= 50 ? 'warning' : 'danger'
 
-  return { coverageRatePct, monthlyShortfallKrw, coverableMonths, status }
+  return {
+    coverageRatePct,
+    monthlyShortfallKrw,
+    coverableMonths,
+    status,
+    monthlyIncomeKrw: Math.round(totalMonthlyIncome),
+    monthlyInvestmentIncomeKrw: Math.round(monthlyInvestmentIncome),
+    monthlyPensionKrw: params.monthlyPensionKrw,
+    monthlyLivingKrw: params.monthlyLivingKrw,
+  }
 }
 
 function useSimulation(
