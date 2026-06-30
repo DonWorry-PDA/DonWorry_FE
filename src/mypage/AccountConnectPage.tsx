@@ -154,9 +154,13 @@ function AccountConnectPage() {
                 />
                 <div className="flex flex-1 min-w-0 flex-col gap-0.5">
                   <p className="text-body font-bold text-ink">{inst.name}</p>
-                  <p className="text-caption font-medium text-ink-hint">
-                    {inst.accountNumbers?.join(' · ')} 연동 중
-                  </p>
+                  {inst.accountNumbers && inst.accountNumbers.length > 0 ? (
+                    inst.accountNumbers.map((num, i) => (
+                      <p key={i} className="text-caption font-medium text-ink-hint">{num} 연동 중</p>
+                    ))
+                  ) : (
+                    <p className="text-caption font-medium text-ink-hint">연동 중</p>
+                  )}
                 </div>
                 <span className="bg-success-bg text-success text-caption font-bold px-[9px] py-[3px] rounded-badge shrink-0">
                   연결됨
