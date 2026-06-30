@@ -12,16 +12,17 @@ interface Props {
 
 function Step4Living({ onNext, onPrev }: Props) {
   const { answers, updateAnswers } = useOnboarding()
-  const [living, setLiving] = useState<string>(answers.monthlyLiving?.toString() ?? '220')
-  const [medical, setMedical] = useState<string>(answers.monthlyMedical?.toString() ?? '50')
+  const [living, setLiving] = useState<string>(answers.monthlyLiving?.toString() ?? '')
+  const [medical, setMedical] = useState<string>(answers.monthlyMedical?.toString() ?? '')
 
   const livingNum = parseInt(living, 10) || 0
-  // const shortfall = livingNum - MOCK_MONTHLY_INCOME_MAN
+  const medicalNum = parseInt(medical, 10) || 0
+  const isValid = livingNum > 0 && medicalNum > 0
 
   function handleNext() {
     updateAnswers({
-      monthlyLiving: livingNum || null,
-      monthlyMedical: parseInt(medical, 10) || null,
+      monthlyLiving: livingNum,
+      monthlyMedical: medicalNum,
     })
     onNext()
   }
@@ -34,7 +35,10 @@ function Step4Living({ onNext, onPrev }: Props) {
         </button>
       </div>
 
-      <OnboardingProgressBar current={4} total={6} />
+      <OnboardingProgressBar
+            current={answers.situation === 'preparing' ? 3 : 4}
+            total={answers.situation === 'preparing' ? 3 : 4}
+          />
 
       <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading text-ink font-bold">
@@ -51,8 +55,9 @@ function Step4Living({ onNext, onPrev }: Props) {
                 type="number"
                 value={living}
                 onChange={(e) => setLiving(e.target.value)}
-                className="font-inter text-display text-ink w-24 bg-transparent font-semibold outline-none"
-                min={0}
+                placeholder="직접 입력"
+                className="font-inter text-display text-ink w-36 bg-transparent font-semibold outline-none placeholder:text-[1rem] placeholder:text-ink-hint"
+                min={1}
               />
               <span className="text-body text-ink">만 원</span>
             </div>
@@ -65,8 +70,9 @@ function Step4Living({ onNext, onPrev }: Props) {
                 type="number"
                 value={medical}
                 onChange={(e) => setMedical(e.target.value)}
-                className="font-inter text-display text-ink w-24 bg-transparent font-semibold outline-none"
-                min={0}
+                placeholder="직접 입력"
+                className="font-inter text-display text-ink w-36 bg-transparent font-semibold outline-none placeholder:text-[1rem] placeholder:text-ink-hint"
+                min={1}
               />
               <span className="text-body text-ink">만 원</span>
             </div>
@@ -99,7 +105,8 @@ function Step4Living({ onNext, onPrev }: Props) {
         <button
           type="button"
           onClick={handleNext}
-          className="rounded-btn bg-primary text-btn w-full py-4 font-bold text-white"
+          disabled={!isValid}
+          className="rounded-btn bg-primary text-btn w-full py-4 font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           다음
         </button>

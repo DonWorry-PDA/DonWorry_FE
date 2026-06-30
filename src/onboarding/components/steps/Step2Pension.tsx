@@ -27,7 +27,7 @@ function Step2Pension({ onNext, onPrev }: Props) {
         </button>
       </div>
 
-      <OnboardingProgressBar current={2} total={6} />
+      <OnboardingProgressBar current={2} total={4} />
 
       <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">

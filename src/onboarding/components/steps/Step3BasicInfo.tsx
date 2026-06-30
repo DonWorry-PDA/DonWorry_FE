@@ -1,24 +1,152 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { BackArrowIc } from '../../../common/assets/icons'
 import OnboardingProgressBar from '../OnboardingProgressBar'
 import { useOnboarding } from '../../contexts/OnboardingContext'
+import BottomSheet from '../../../common/components/BottomSheet'
+
+const CURRENT_YEAR = new Date().getFullYear()
+const MIN_AGE = 19
+const BIRTH_YEARS = Array.from(
+  { length: CURRENT_YEAR - MIN_AGE - 1930 },
+  (_, i) => CURRENT_YEAR - MIN_AGE - i,
+)
+const RETIRED_YEARS = Array.from({ length: CURRENT_YEAR - 1959 }, (_, i) => CURRENT_YEAR - i)
 
 interface Props {
   onNext: () => void
   onPrev: () => void
 }
 
+interface YearPickerFieldProps {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  years: number[]
+  suffix: string
+  placeholder?: string
+}
+
+function YearPickerField({
+  label,
+  value,
+  onChange,
+  years,
+  suffix,
+  placeholder = '선택하세요',
+}: YearPickerFieldProps) {
+  const [open, setOpen] = useState(false)
+  const selectedRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        selectedRef.current?.scrollIntoView({ block: 'center', behavior: 'instant' })
+      }, 50)
+    }
+  }, [open])
+
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <p className="text-sub text-ink-sub">{label}</p>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={`flex h-[3.375rem] w-full items-center justify-between rounded-card border bg-white px-[1.0625rem] transition-colors ${
+            open ? 'border-primary' : 'border-line'
+          }`}
+        >
+          {value ? (
+            <span className="font-inter text-display font-semibold text-ink">
+              {value}{suffix}
+            </span>
+          ) : (
+            <span className="text-md text-ink-hint">{placeholder}</span>
+          )}
+          <svg
+            className={`shrink-0 text-ink-hint transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            width={20}
+            height={20}
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 8l5 5 5-5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <BottomSheet open={open} onClose={() => setOpen(false)}>
+        <p className="px-5 pb-2 pt-3 text-sub font-bold text-ink">{label}</p>
+        <div className="max-h-[min(50vh,18rem)] overflow-y-auto">
+          {years.map((year) => {
+            const yearStr = String(year)
+            const isSelected = yearStr === value
+            return (
+              <button
+                key={yearStr}
+                ref={isSelected ? selectedRef : undefined}
+                type="button"
+                onClick={() => {
+                  onChange(yearStr)
+                  setOpen(false)
+                }}
+                className={`flex w-full items-center justify-between px-5 py-[0.9375rem] text-left transition-colors ${
+                  isSelected ? 'bg-primary-tint' : 'active:bg-surface'
+                }`}
+              >
+                <span
+                  className={`font-inter text-md font-semibold ${
+                    isSelected ? 'text-primary' : 'text-ink'
+                  }`}
+                >
+                  {year}{suffix}
+                </span>
+                {isSelected && (
+                  <svg width={18} height={18} viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                    <path
+                      d="M3 9l4.5 4.5L15 5"
+                      stroke="#0046FF"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </button>
+            )
+          })}
+        </div>
+        <div className="h-10" />
+      </BottomSheet>
+    </>
+  )
+}
+
 function Step3BasicInfo({ onNext, onPrev }: Props) {
   const { answers, updateAnswers } = useOnboarding()
-  const [age, setAge] = useState<string>(answers.age?.toString() ?? '63')
+  const isRetired = answers.situation === 'retired'
+
+  const [birthYear, setBirthYear] = useState<string>(
+    answers.age != null ? String(CURRENT_YEAR - answers.age) : ''
+  )
   const [retiredYear, setRetiredYear] = useState<string>(
-    answers.retiredYear?.toString() ?? '2024'
+    answers.retiredYear?.toString() ?? ''
   )
 
+  const isValid = !!birthYear && (!isRetired || !!retiredYear)
+
   function handleNext() {
+    const birthYearNum = birthYear ? parseInt(birthYear, 10) : null
     updateAnswers({
-      age: age ? parseInt(age, 10) : null,
-      retiredYear: retiredYear ? parseInt(retiredYear, 10) : null,
+      age: birthYearNum ? CURRENT_YEAR - birthYearNum : null,
+      retiredYear: isRetired && retiredYear ? parseInt(retiredYear, 10) : null,
     })
     onNext()
   }
@@ -31,7 +159,10 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         </button>
       </div>
 
-      <OnboardingProgressBar current={3} total={6} />
+      <OnboardingProgressBar
+            current={answers.situation === 'preparing' ? 2 : 3}
+            total={answers.situation === 'preparing' ? 3 : 4}
+          />
 
       <div className="flex flex-1 min-h-0 flex-col overflow-y-auto px-6 pt-8">
         <h1 className="text-heading font-bold text-ink">기본 정보를 알려주세요</h1>
@@ -40,35 +171,23 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         </p>
 
         <div className="mt-10 flex flex-col gap-8">
-          <div>
-            <p className="mb-2 text-sub text-ink-sub">나이</p>
-            <div className="flex items-baseline gap-2 border-b border-line pb-3">
-              <input
-                type="number"
-                value={age}
-                onChange={e => setAge(e.target.value)}
-                className="w-24 bg-transparent font-inter text-display font-semibold text-ink outline-none"
-                min={1}
-                max={120}
-              />
-              <span className="text-body text-ink">세</span>
-            </div>
-          </div>
+          <YearPickerField
+            label="출생년도"
+            value={birthYear}
+            onChange={setBirthYear}
+            years={BIRTH_YEARS}
+            suffix="년생"
+          />
 
-          <div>
-            <p className="mb-2 text-sub text-ink-sub">은퇴한 시점</p>
-            <div className="flex items-baseline gap-2 border-b border-line pb-3">
-              <input
-                type="number"
-                value={retiredYear}
-                onChange={e => setRetiredYear(e.target.value)}
-                className="w-28 bg-transparent font-inter text-display font-semibold text-ink outline-none"
-                min={1900}
-                max={2100}
-              />
-              <span className="text-body text-ink">년</span>
-            </div>
-          </div>
+          {isRetired && (
+            <YearPickerField
+              label="은퇴한 시점"
+              value={retiredYear}
+              onChange={setRetiredYear}
+              years={RETIRED_YEARS}
+              suffix="년"
+            />
+          )}
         </div>
       </div>
 
@@ -77,7 +196,8 @@ function Step3BasicInfo({ onNext, onPrev }: Props) {
         <button
           type="button"
           onClick={handleNext}
-          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white"
+          disabled={!isValid}
+          className="w-full rounded-btn bg-primary py-4 text-btn font-bold text-white disabled:bg-disabled disabled:text-white"
         >
           다음
         </button>
