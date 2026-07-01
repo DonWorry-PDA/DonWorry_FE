@@ -100,7 +100,7 @@ function AssetLoading({ onNext }: Props) {
               style={{
                 top: '50%',
                 left: '50%',
-                transform: `rotate(${deg}deg) translateX(52px) translateY(-50%)`,
+                transform: `translate(-50%, -50%) rotate(${deg}deg) translateX(52px)`,
               }}
             />
           ))}
