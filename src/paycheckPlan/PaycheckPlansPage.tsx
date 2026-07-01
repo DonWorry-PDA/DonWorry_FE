@@ -23,7 +23,7 @@ function PaycheckPlansPage() {
 
   const handleGoToProfileEdit = () => {
     queryClient.invalidateQueries({ queryKey: ['portfolio', 'recommendation'] })
-    navigate('/mypage/profile-edit')
+    navigate('/mypage/profile-edit', { state: { returnTo: '/paycheck-plan/assets' } })
   }
 
   if (isLoading) {
