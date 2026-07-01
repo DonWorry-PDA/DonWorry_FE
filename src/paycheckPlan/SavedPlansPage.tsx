@@ -30,6 +30,9 @@ function SavedPlansPage() {
         setTargetPlan(null)
         showToast('설계안을 삭제했어요')
       },
+      onError: () => {
+        showToast('삭제에 실패했어요. 잠시 후 다시 시도해 주세요')
+      },
     })
   }
 
