@@ -127,29 +127,39 @@ const fmtCoverage = (rate: number | null) => {
   return c === null ? '충분' : `${c}%`
 }
 
-/** 앞의 두 안을 좌/우로 비교. 안이 2개 미만이면 비교 불가(null). */
+const fmtInc = (v: number) => (v > 0 ? `+${v.toLocaleString('ko-KR')}만원` : '늘지 않음')
+
+// 안정형만 원금 만기 제약(중도해지 제한)이 있고, 시장 하락에도 배당이 흔들리지 않는다.
+const MARKET_DROP_TEXT: Record<BackendPlanType, string> = {
+  STABLE: '월급 그대로',
+  BALANCED: '월급 변동 가능',
+  LIQUIDITY: '월급 변동 가능',
+}
+
+const EARLY_WITHDRAWAL_TEXT: Record<BackendPlanType, string> = {
+  STABLE: '일부 만기 제약',
+  BALANCED: '언제든 가능',
+  LIQUIDITY: '언제든 가능',
+}
+
+/** 응답에 담긴 안 전체(2개 또는 3개)를 비교. 안이 2개 미만이면 비교 불가(null). */
 export const mapComparison = (response: RecommendationResponse): ComparisonTable | null => {
-  if (response.plans.length < 2) return null
-  const [left, right] = response.plans
-  const leftIncome = toManwon(left.monthlyIncome)
-  const rightIncome = toManwon(right.monthlyIncome)
-  const leftInc = toManwon(left.incrementalMonthlyIncome)
-  const rightInc = toManwon(right.incrementalMonthlyIncome)
-  const fmtInc = (v: number) => (v > 0 ? `+${v.toLocaleString('ko-KR')}만원` : '늘지 않음')
+  const { plans } = response
+  if (plans.length < 2) return null
+
+  const incomes = plans.map((p) => toManwon(p.monthlyIncome))
+
   return {
-    leftPlanId: TYPE_MAP[left.type],
-    rightPlanId: TYPE_MAP[right.type],
-    leftPlanName: left.displayName,
-    rightPlanName: right.displayName,
+    columns: plans.map((p) => ({ planId: TYPE_MAP[p.type], planName: p.displayName })),
     rows: [
-      { label: '늘어나는 월급', left: fmtInc(leftInc), right: fmtInc(rightInc) }, // BE (순증분, 핵심)
-      { label: '전체 월수입', left: `${leftIncome.toLocaleString('ko-KR')}만원`, right: `${rightIncome.toLocaleString('ko-KR')}만원` }, // BE (국민연금+배당 포함 N)
-      { label: '생활비 충당', left: fmtCoverage(left.alphaCoverageRate), right: fmtCoverage(right.alphaCoverageRate) }, // BE
+      { label: '늘어나는 월급', values: plans.map((p) => fmtInc(toManwon(p.incrementalMonthlyIncome))) }, // BE (순증분, 핵심)
+      { label: '전체 월수입', values: incomes.map((v) => `${v.toLocaleString('ko-KR')}만원`) }, // BE (국민연금+배당 포함 N)
+      { label: '생활비 충당', values: plans.map((p) => fmtCoverage(p.alphaCoverageRate)) }, // BE
       // ── 이하 BE 미제공 — static placeholder (TODO: BE 확장/협의) ──
-      { label: '세후 실수령', left: `${Math.round(leftIncome * 0.96).toLocaleString('ko-KR')}만원`, right: `${Math.round(rightIncome * 0.96).toLocaleString('ko-KR')}만원` },
-      { label: '시장이 10% 내리면', left: '월급 그대로', right: '월급 변동 가능' },
-      { label: '중도 해지', left: '일부 만기 제약', right: '언제든 가능' },
-      { label: '수수료 (연)', left: '협의 예정', right: '협의 예정' },
+      { label: '세후 실수령', values: incomes.map((v) => `${Math.round(v * 0.96).toLocaleString('ko-KR')}만원`) },
+      { label: '시장이 10% 내리면', values: plans.map((p) => MARKET_DROP_TEXT[p.type]) },
+      { label: '중도 해지', values: plans.map((p) => EARLY_WITHDRAWAL_TEXT[p.type]) },
+      { label: '수수료 (연)', values: plans.map(() => '협의 예정') },
     ],
     notice: COMPARE_NOTICE,
   }
