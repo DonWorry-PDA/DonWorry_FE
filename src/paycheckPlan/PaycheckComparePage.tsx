@@ -7,15 +7,22 @@ import InfoBox from '../common/components/InfoBox'
 import CenterMessage from './components/CenterMessage'
 import useGetRecommendation from './hooks/useGetRecommendation'
 import { mapComparison, toManwon, Q3_LABELS } from './utils/planMapper'
+import { NavHomeIc } from '../common/assets/icons'
 
 function PaycheckComparePage() {
   const navigate = useNavigate()
   const { data, isLoading, isError, error } = useGetRecommendation()
 
+  const homeAction = (
+    <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+      <NavHomeIc width={22} height={22} />
+    </button>
+  )
+
   if (isLoading) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
+        <AppBar title="설계안 비교" onBack={() => navigate(-1)} rightAction={homeAction} />
         <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
           <div className="mb-4 h-10 animate-pulse rounded-card bg-surface-muted" />
           <div className="flex flex-col gap-0">
@@ -35,7 +42,7 @@ function PaycheckComparePage() {
   if (isError) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
+        <AppBar title="설계안 비교" onBack={() => navigate(-1)} rightAction={homeAction} />
         <CenterMessage variant="alert">설계안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</CenterMessage>
       </div>
     )
@@ -45,7 +52,7 @@ function PaycheckComparePage() {
   if (!comparison) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
+        <AppBar title="설계안 비교" onBack={() => navigate(-1)} rightAction={homeAction} />
         <CenterMessage>비교할 설계안이 충분하지 않아요</CenterMessage>
       </div>
     )
@@ -57,7 +64,7 @@ function PaycheckComparePage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title="설계안 비교" onBack={() => navigate(-1)} />
+      <AppBar title="설계안 비교" onBack={() => navigate(-1)} rightAction={homeAction} />
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-4">
         <p className="text-body text-ink-sub mb-6">

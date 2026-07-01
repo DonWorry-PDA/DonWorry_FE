@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppBar from '../common/components/AppBar'
 import InfoBox from '../common/components/InfoBox'
+import { NavHomeIc } from '../common/assets/icons'
 import type { SavedPlanResponse } from './types/savedPlan'
 import { toManwon } from './utils/planMapper'
 
@@ -25,10 +26,16 @@ function SavedPlanDetailPage() {
   const { state } = useLocation()
   const plan = state?.plan as SavedPlanResponse | undefined
 
+  const homeAction = (
+    <button type="button" onClick={() => navigate('/home')} aria-label="홈으로" className="text-ink-sub">
+      <NavHomeIc width={22} height={22} />
+    </button>
+  )
+
   if (!plan) {
     return (
       <div className="flex flex-col h-dvh">
-        <AppBar title="저장한 설계안" onBack={() => navigate(-1)} />
+        <AppBar title="저장한 설계안" onBack={() => navigate(-1)} rightAction={homeAction} />
         <div className="flex flex-col items-center justify-center flex-1 gap-2">
           <p className="text-body text-ink-sub">설계안 정보를 불러올 수 없어요</p>
         </div>
@@ -47,7 +54,7 @@ function SavedPlanDetailPage() {
 
   return (
     <div className="flex flex-col h-dvh">
-      <AppBar title={planName} onBack={() => navigate(-1)} />
+      <AppBar title={planName} onBack={() => navigate(-1)} rightAction={homeAction} />
 
       <div className="flex-1 min-h-0 overflow-y-auto">
         {/* 헤더 카드 */}
