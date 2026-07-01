@@ -140,7 +140,7 @@ function PaycheckPlanStatusPage() {
                   navigate(
                     opt.route,
                     opt.action === 'INCREASE_LIVING_COST'
-                      ? { state: { returnTo: '/paycheck-plan/assets' } }
+                      ? { state: { returnTo: '/paycheck-plan/assets', livingCostOnly: true } }
                       : undefined,
                   )
                 }
