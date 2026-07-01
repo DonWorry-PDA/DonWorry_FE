@@ -6,7 +6,7 @@ import usePostLogout from './hooks/usePostLogout'
 import useGetProfile from './hooks/useGetProfile'
 import { useGetConsultations } from './hooks/consultation'
 import { formatScheduledAt } from './utils/consultation'
-import { NotificationIc, NotificationItemIc } from '../common/assets/icons'
+import { NotificationIc } from '../common/assets/icons'
 import Toggle from '../common/components/Toggle'
 import BottomNav from '../common/components/BottomNav'
 import Modal from '../common/components/Modal'
@@ -65,7 +65,7 @@ function MypagePage() {
         {/* 프로필 */}
         <div className="flex items-center gap-[14px] border-b border-line py-[19px] pt-2">
           <div className="bg-primary-tint flex size-[54px] shrink-0 items-center justify-center rounded-full">
-            <NotificationItemIc className="text-primary" width={24} height={29} />
+            <img src="/logos/sol-mark.svg" alt="신한" width={32} height={32} />
           </div>
           <div className="flex flex-1 min-w-0 flex-col gap-[3px]">
             {isProfilePending ? (

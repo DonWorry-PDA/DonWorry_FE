@@ -140,6 +140,17 @@ function PaycheckPlanDetailPage() {
       </div>
 
       <StickyFooter>
+        <button
+          type="button"
+          className="mb-3 w-full text-center text-sub text-ink-hint"
+          onClick={() =>
+            navigate('/paycheck-plan/consult/branch', {
+              state: { context: 'SALARY_PLAN', planId, institution: 'SHINHAN_SECURITIES' },
+            })
+          }
+        >
+          전문가와 같이 보기
+        </button>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/paycheck-plan/execute', { state: { planId } })}>
             진행하기

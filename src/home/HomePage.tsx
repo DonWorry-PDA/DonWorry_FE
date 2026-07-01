@@ -203,7 +203,7 @@ function HomeStabilityCtaContent({ data }: { data: HomeStabilityData }) {
 
 function HomePage() {
   const navigate = useNavigate()
-  const { hub, realtimeTotalAsset, realtimeAllocation, isLoading, refetch } = useRealtimeAssetHub()
+  const { hub, realtimeTotalAsset, realtimeAllocation, isLive, isLoading, refetch } = useRealtimeAssetHub()
   const { data: unreadCount = 0 } = useGetNotificationUnreadCount()
   const allMenus = hub ? buildMenus(hub) : []
   const visibleSolCards = SOL_CARDS.filter((card) => allMenus.some((menu) => menu.key === card.key))
@@ -328,6 +328,7 @@ function HomePage() {
                   changeAmount={asset.changeAmount}
                   changeDirection={asset.changeDirection}
                   segments={asset.segments}
+                  isLive={isLive}
                   onAnalysisClick={() => navigate('/asset', { state: { from: 'home' } })}
                 />
               </div>
