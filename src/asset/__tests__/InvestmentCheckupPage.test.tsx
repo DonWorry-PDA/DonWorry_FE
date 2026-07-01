@@ -163,6 +163,25 @@ describe('InvestmentCheckupPage 성장 블록', () => {
     expect(screen.getByText('월 41,600원 유입')).toBeInTheDocument()
   })
 
+  it('월 유입이 있는 역할은 유입액과 역할 설명(note)을 둘 다 노출한다', () => {
+    mockData({
+      cashflowAssetRatio: 50,
+      totalAsset: 60_000_000,
+      roles: baseRoles,
+      growthAsset: null,
+    })
+    render(<InvestmentCheckupPage />)
+
+    // CASHFLOW: 유입액 줄과 note 줄이 함께 보인다(유입액이 note를 대체하지 않음).
+    expect(screen.getByText('월 87,500원 유입')).toBeInTheDocument()
+    expect(screen.getByText('매달 배당·이자가 들어오는 돈')).toBeInTheDocument()
+    // GROWTH도 마찬가지로 유입액 + note 병기.
+    expect(screen.getByText('월 41,600원 유입')).toBeInTheDocument()
+    expect(
+      screen.getByText('자본차익을 노리는 돈 (배당이 나오면 함께 표시돼요)'),
+    ).toBeInTheDocument()
+  })
+
   it('1만원 미만 월 배당도 원 단위로 노출한다(0만원으로 사라지지 않음)', () => {
     mockData({
       cashflowAssetRatio: 50,

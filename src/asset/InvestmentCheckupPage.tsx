@@ -149,10 +149,13 @@ function InvestmentCheckupPage() {
                       {role.label}
                       <span className="text-caption text-ink-hint ml-1.5 font-normal">{role.ratio}%</span>
                     </p>
+                    {role.monthlyCashflow > 0 && (
+                      <p className="text-caption text-ink-sub mt-0.5 font-medium">
+                        {`월 ${formatWon(role.monthlyCashflow)} 유입`}
+                      </p>
+                    )}
                     <p className="text-caption text-ink-hint mt-0.5">
-                      {role.monthlyCashflow > 0
-                        ? `월 ${formatWon(role.monthlyCashflow)} 유입`
-                        : (NOTE_OVERRIDE[role.role] ?? role.note)}
+                      {NOTE_OVERRIDE[role.role] ?? role.note}
                     </p>
                   </div>
                   <span className="text-md text-ink shrink-0 font-bold">{formatWon(role.amount)}</span>
