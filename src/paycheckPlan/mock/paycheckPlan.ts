@@ -266,7 +266,6 @@ export const mockExecutionSummary: ExecutionSummary = {
       amount: 1000,
     },
   ],
-  estimatedFee: 12,
   notice: '주문은 장중에 시장가로 체결돼요. 지금은 거래 시간이라 바로 진행됩니다.',
 }
 
