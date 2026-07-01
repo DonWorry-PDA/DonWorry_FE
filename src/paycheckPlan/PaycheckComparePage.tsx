@@ -152,7 +152,7 @@ function PaycheckComparePage() {
               className="min-w-0 px-2 truncate"
               onClick={() => navigate(`/paycheck-plan/plans/${col.planId}`)}
             >
-              {col.planName}
+              {columns.length >= 3 ? col.planName : `${col.planName} 보기`}
             </Button>
           ))}
         </div>
