@@ -123,6 +123,17 @@ function PaycheckComparePage() {
       </div>
 
       <StickyFooter>
+        <button
+          type="button"
+          className="mb-3 w-full text-center text-sub text-ink-hint"
+          onClick={() =>
+            navigate('/paycheck-plan/consult/branch', {
+              state: { context: 'SALARY_PLAN', institution: 'SHINHAN_SECURITIES' },
+            })
+          }
+        >
+          전문가와 같이 보기
+        </button>
         <div className="grid grid-cols-2 gap-3">
           <Button
             variant="outline"
