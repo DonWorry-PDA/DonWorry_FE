@@ -1,4 +1,5 @@
 import type { NotificationGroup, NotificationItem } from '../types/notification'
+import resolveNotificationRoute from './resolveNotificationRoute'
 
 function getGroupLabel(createdAt: string): string {
   const now = new Date()
@@ -24,7 +25,7 @@ function groupNotifications(items: NotificationItem[]): NotificationGroup[] {
       title: item.title,
       subtitle: item.content || undefined,
       isUnread: !item.read,
-      linkTarget: item.linkTarget || undefined,
+      linkTarget: resolveNotificationRoute(item.notificationType),
       createdAt: item.createdAt,
       notificationType: item.notificationType,
     })
