@@ -7,6 +7,7 @@ type Props = {
   changeAmount: number | null
   changeDirection: 'UP' | 'DOWN' | 'FLAT'
   segments: AssetSegment[]
+  isLive?: boolean
   onAnalysisClick?: () => void
 }
 
@@ -105,7 +106,7 @@ function DonutChart({ segments }: { segments: AssetSegment[] }) {
   )
 }
 
-function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, onAnalysisClick }: Props) {
+function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, isLive, onAnalysisClick }: Props) {
   const sortedSegments = [...segments].sort((a, b) => b.pct - a.pct)
 
   const amountStr = formatWon(totalAmountKrw)
@@ -125,7 +126,15 @@ function AssetCard({ totalAmountKrw, changeAmount, changeDirection, segments, on
       {/* Header: 총자산 + 자세히 보기 버튼 */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-[5px]">
-          <p className="text-sub text-white/75">총자산</p>
+          <div className="flex items-center gap-[5px]">
+            <p className="text-sub text-white/75">총자산</p>
+            {isLive && (
+              <span className="flex items-center gap-1 rounded-badge bg-white/15 px-1.5 py-[1px] text-caption font-bold text-white/90">
+                <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-success" />
+                장중
+              </span>
+            )}
+          </div>
           <p className={`font-inter ${amountSizeClass} font-bold text-white whitespace-nowrap tracking-tight`}>
             {amountStr}
           </p>
