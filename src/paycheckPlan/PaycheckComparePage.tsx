@@ -58,9 +58,10 @@ function PaycheckComparePage() {
     )
   }
 
-  const { leftPlanId, rightPlanId, leftPlanName, rightPlanName, rows, notice } = comparison
+  const { columns, rows, notice } = comparison
   const q3Scenarios = data?.q3Scenarios ?? []
   const q3Title = data?.q3ReferenceLabel
+  const gridColsClass = columns.length >= 3 ? 'grid-cols-[1fr_1fr_1fr_1fr]' : 'grid-cols-[1fr_1fr_1fr]'
 
   return (
     <div className="flex flex-col h-dvh">
@@ -73,21 +74,30 @@ function PaycheckComparePage() {
         </p>
 
         {/* 헤더 행 */}
-        <div className="grid grid-cols-[1fr_1fr_1fr] mb-1">
+        <div className={`grid ${gridColsClass} mb-1`}>
           <div />
-          <p className="text-sub font-semibold text-primary text-center">{leftPlanName}</p>
-          <p className="text-sub font-semibold text-ink-sub text-center">{rightPlanName}</p>
+          {columns.map((col, i) => (
+            <p
+              key={col.planId}
+              className={`text-sub font-semibold text-center ${i === 0 ? 'text-primary' : 'text-ink-sub'}`}
+            >
+              {col.planName}
+            </p>
+          ))}
         </div>
 
         {/* 비교 행 */}
         {rows.map((row) => (
           <div
             key={row.label}
-            className="grid grid-cols-[1fr_1fr_1fr] items-center py-3.5 border-t border-divider"
+            className={`grid ${gridColsClass} items-center py-3.5 border-t border-divider`}
           >
             <p className="text-sub text-ink-hint pr-2">{row.label}</p>
-            <p className="text-body font-semibold text-ink text-center">{row.left}</p>
-            <p className="text-body font-semibold text-ink text-center">{row.right}</p>
+            {row.values.map((value, i) => (
+              <p key={columns[i].planId} className="text-body font-semibold text-ink text-center">
+                {value}
+              </p>
+            ))}
           </div>
         ))}
 
@@ -134,20 +144,17 @@ function PaycheckComparePage() {
         >
           전문가와 같이 보기
         </button>
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            className="min-w-0 px-2 truncate"
-            onClick={() => navigate(`/paycheck-plan/plans/${leftPlanId}`)}
-          >
-            {leftPlanName} 보기
-          </Button>
-          <Button
-            className="min-w-0 px-2 truncate"
-            onClick={() => navigate(`/paycheck-plan/plans/${rightPlanId}`)}
-          >
-            {rightPlanName} 보기
-          </Button>
+        <div className={`grid ${columns.length >= 3 ? 'grid-cols-3 gap-2' : 'grid-cols-2 gap-3'}`}>
+          {columns.map((col, i) => (
+            <Button
+              key={col.planId}
+              variant={i === columns.length - 1 ? 'primary' : 'outline'}
+              className="min-w-0 px-2 truncate"
+              onClick={() => navigate(`/paycheck-plan/plans/${col.planId}`)}
+            >
+              {col.planName}
+            </Button>
+          ))}
         </div>
       </StickyFooter>
     </div>

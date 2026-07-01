@@ -82,20 +82,20 @@ export type Plan = {
   lockedReason?: string
 }
 
+export type ComparisonColumn = {
+  planId: string
+  planName: string
+}
+
 export type ComparisonRow = {
   label: string
-  left: string
-  right: string
-  leftTone?: 'default' | 'warning' | 'success'
-  rightTone?: 'default' | 'warning' | 'success'
+  values: string[]
+  tones?: Array<'default' | 'warning' | 'success'>
   isBadge?: boolean
 }
 
 export type ComparisonTable = {
-  leftPlanId: string
-  rightPlanId: string
-  leftPlanName: string
-  rightPlanName: string
+  columns: ComparisonColumn[] // 안 개수만큼(2개 또는 3개)
   rows: ComparisonRow[]
   notice: string
 }
