@@ -81,7 +81,7 @@ function SavedPlansPage() {
                 )}
               </div>
 
-              <div className="flex gap-2 pt-1 border-t border-divider">
+              <div className="flex gap-2 pt-1">
                 <button
                   className="flex-1 h-10 rounded-btn border border-line text-sub font-semibold text-danger"
                   onClick={() => setTargetPlan(plan)}

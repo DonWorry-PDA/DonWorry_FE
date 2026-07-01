@@ -12,7 +12,9 @@ type PensionStatus = '수령 전' | '수령 중'
 function ProfileEditPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
+  const locationState = location.state as { returnTo?: string; livingCostOnly?: boolean } | null
+  const returnTo = locationState?.returnTo
+  const livingCostOnly = locationState?.livingCostOnly === true
   const { data: profile } = useGetProfile()
   const { mutate: patchProfile, isPending } = usePatchProfile()
 
@@ -76,9 +78,19 @@ function ProfileEditPage() {
         {/* 타이틀 */}
         <div className="px-6 pt-2 pb-[1.125rem]">
           <h2 className="text-heading font-extrabold text-ink leading-[1.43] tracking-[-0.025em] mb-[0.5625rem]">
-            내 정보를 바꾸면
-            <br />
-            월급·안정도가 다시 계산돼요
+            {livingCostOnly ? (
+              <>
+                목표 생활비를 바꾸면
+                <br />
+                월급 설계가 다시 계산돼요
+              </>
+            ) : (
+              <>
+                내 정보를 바꾸면
+                <br />
+                월급·안정도가 다시 계산돼요
+              </>
+            )}
           </h2>
           <p className="text-sub text-ink-hint">
             온보딩에서 입력한 내용을 언제든 수정할 수 있어요.
@@ -87,86 +99,90 @@ function ProfileEditPage() {
 
         {/* 폼 */}
         <div className="flex flex-col gap-[1.125rem] px-6 pb-6">
-          {/* 이름 (읽기 전용) */}
-          <div className="flex flex-col gap-2">
-            <span className="text-sub font-semibold text-ink-sub">이름</span>
-            <div className="flex h-[3.375rem] w-full items-center rounded-card border border-line bg-surface px-[1.0625rem]">
-              <span className="truncate text-md font-semibold text-ink-sub">{profile?.name ?? ''}</span>
-            </div>
-          </div>
+          {!livingCostOnly && (
+            <>
+              {/* 이름 (읽기 전용) */}
+              <div className="flex flex-col gap-2">
+                <span className="text-sub font-semibold text-ink-sub">이름</span>
+                <div className="flex h-[3.375rem] w-full items-center rounded-card border border-line bg-surface px-[1.0625rem]">
+                  <span className="truncate text-md font-semibold text-ink-sub">{profile?.name ?? ''}</span>
+                </div>
+              </div>
 
-          {/* 나이 */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sub font-semibold text-ink-sub">나이</label>
-            <div className="relative">
-              <input
-                type="number"
-                inputMode="numeric"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className="h-[3.375rem] w-full rounded-card border border-line bg-white pl-[1.0625rem] pr-[2.9375rem] text-md font-extrabold text-ink text-right outline-none focus:border-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-md font-bold text-ink-hint">
-                세
-              </span>
-            </div>
-          </div>
+              {/* 나이 */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sub font-semibold text-ink-sub">나이</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    className="h-[3.375rem] w-full rounded-card border border-line bg-white pl-[1.0625rem] pr-[2.9375rem] text-md font-extrabold text-ink text-right outline-none focus:border-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-md font-bold text-ink-hint">
+                    세
+                  </span>
+                </div>
+              </div>
 
-          {/* 은퇴 여부 */}
-          <div className="flex flex-col gap-[0.4375rem]">
-            <label className="text-sub font-semibold text-ink-sub">은퇴 여부</label>
-            <div className="flex gap-1 rounded-card bg-surface-muted p-1">
-              {(['은퇴 전', '은퇴 후'] as RetirementStatus[]).map((status) => {
-                const isSelected = retirementStatus === status
-                return (
-                  <button
-                    key={status}
-                    type="button"
-                    onClick={() => setRetirementStatus(status)}
-                    className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
-                      isSelected
-                        ? 'bg-white font-bold text-primary shadow-[0px_1px_2px_rgba(0,0,0,0.10)]'
-                        : 'font-semibold text-ink-sub'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                )
-              })}
-            </div>
-            <p className="text-caption leading-[1.6] text-[#b0b8c1]">
-              {retirementStatus === '은퇴 전'
-                ? '은퇴 전 상태예요. 목표 시점까지 자산을 불려 생활비를 만드는 계획을 세워드려요.'
-                : '은퇴 후 상태예요. 보유한 자산으로 매달 생활비를 만드는 계획을 세워드려요.'}
-            </p>
-          </div>
+              {/* 은퇴 여부 */}
+              <div className="flex flex-col gap-[0.4375rem]">
+                <label className="text-sub font-semibold text-ink-sub">은퇴 여부</label>
+                <div className="flex gap-1 rounded-card bg-surface-muted p-1">
+                  {(['은퇴 전', '은퇴 후'] as RetirementStatus[]).map((status) => {
+                    const isSelected = retirementStatus === status
+                    return (
+                      <button
+                        key={status}
+                        type="button"
+                        onClick={() => setRetirementStatus(status)}
+                        className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
+                          isSelected
+                            ? 'bg-white font-bold text-primary shadow-[0px_1px_2px_rgba(0,0,0,0.10)]'
+                            : 'font-semibold text-ink-sub'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-caption leading-[1.6] text-[#b0b8c1]">
+                  {retirementStatus === '은퇴 전'
+                    ? '은퇴 전 상태예요. 목표 시점까지 자산을 불려 생활비를 만드는 계획을 세워드려요.'
+                    : '은퇴 후 상태예요. 보유한 자산으로 매달 생활비를 만드는 계획을 세워드려요.'}
+                </p>
+              </div>
 
-          {/* 연금 수령 여부 */}
-          <div className="flex flex-col gap-[0.4375rem]">
-            <label className="text-sub font-semibold text-ink-sub">연금 수령 여부</label>
-            <div className="flex gap-1 rounded-card bg-surface-muted p-1">
-              {(['수령 전', '수령 중'] as PensionStatus[]).map((status) => {
-                const isSelected = pensionStatus === status
-                return (
-                  <button
-                    key={status}
-                    type="button"
-                    onClick={() => setPensionStatus(status)}
-                    className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
-                      isSelected
-                        ? 'bg-white font-bold text-primary shadow-[0px_1px_2px_rgba(0,0,0,0.10)]'
-                        : 'font-semibold text-ink-sub'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                )
-              })}
-            </div>
-            <p className="text-caption leading-[1.6] text-[#b0b8c1]">
-              국민연금·개인연금 등 현재 수령 중인 연금이 있으면 '수령 중'을 선택해주세요.
-            </p>
-          </div>
+              {/* 연금 수령 여부 */}
+              <div className="flex flex-col gap-[0.4375rem]">
+                <label className="text-sub font-semibold text-ink-sub">연금 수령 여부</label>
+                <div className="flex gap-1 rounded-card bg-surface-muted p-1">
+                  {(['수령 전', '수령 중'] as PensionStatus[]).map((status) => {
+                    const isSelected = pensionStatus === status
+                    return (
+                      <button
+                        key={status}
+                        type="button"
+                        onClick={() => setPensionStatus(status)}
+                        className={`flex h-[2.875rem] flex-1 items-center justify-center rounded-icon text-md transition-all ${
+                          isSelected
+                            ? 'bg-white font-bold text-primary shadow-[0px_1px_2px_rgba(0,0,0,0.10)]'
+                            : 'font-semibold text-ink-sub'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-caption leading-[1.6] text-[#b0b8c1]">
+                  국민연금·개인연금 등 현재 수령 중인 연금이 있으면 '수령 중'을 선택해주세요.
+                </p>
+              </div>
+            </>
+          )}
 
           {/* 매달 만들 월급 */}
           <div className="flex flex-col gap-[0.4375rem]">

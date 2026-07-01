@@ -109,10 +109,7 @@ function PaycheckExecutePage() {
     return <RedirectWithToast to="/paycheck-plan/plans" message="설계안을 먼저 선택해주세요" />
   }
 
-  const summary = {
-    ...mapExecutionSummary(data, plan),
-    estimatedFee: 0, // TODO: BE 미제공
-  }
+  const summary = mapExecutionSummary(data, plan)
 
   return (
     <div className="flex flex-col h-dvh">
@@ -189,11 +186,6 @@ function PaycheckExecutePage() {
               )}
             </button>
           ))}
-        </div>
-
-        <div className="flex items-center justify-between py-3 border-t border-divider mb-4">
-          <p className="text-body text-ink-sub">예상 수수료·세금</p>
-          <p className="font-inter text-body font-medium text-ink">약 {summary.estimatedFee}만원</p>
         </div>
 
         <InfoBox className="mb-6">{summary.notice}</InfoBox>

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { formatWon } from '../../../common/utils/formatKrw'
 import { useOnboarding } from '../../contexts/OnboardingContext'
 import AssetConnectedDetail from './AssetConnectedDetail'
 import CheckBadge from '../../../common/components/CheckBadge'
@@ -19,7 +18,6 @@ function AssetResult() {
   const institutionsLabel = connectResult
     ? `${connectResult.connectedInstitutions}개 기관 연결`
     : '자산 연결 완료'
-  const totalAsset = connectResult?.assetSummary.totalAsset ?? null
 
   return (
     <div className="flex h-dvh flex-col bg-white">
@@ -45,15 +43,6 @@ function AssetResult() {
             </div>
           </div>
         </button>
-
-        {totalAsset != null && (
-          <div className="mt-4 w-full rounded-card bg-surface p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-body text-ink-sub">연결된 총자산</span>
-              <span className="font-inter text-card font-bold text-ink">{formatWon(totalAsset)}</span>
-            </div>
-          </div>
-        )}
 
         <p className="mt-4 text-center text-sub text-ink-sub">
           이제 생활비 충당 상태를 함께 살펴볼게요.

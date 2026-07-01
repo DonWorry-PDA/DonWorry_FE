@@ -86,7 +86,9 @@ describe('PaycheckPlanStatusPage 재진입 안내', () => {
     renderWith({ emphasis: 'INCREASE_LIVING_COST', options: GUIDANCE_OPTIONS })
 
     fireEvent.click(screen.getByRole('button', { name: '목표 생활비 올리기' }))
-    expect(mockNavigate).toHaveBeenCalledWith('/mypage/profile-edit')
+    expect(mockNavigate).toHaveBeenCalledWith('/mypage/profile-edit', {
+      state: { returnTo: '/paycheck-plan/assets', livingCostOnly: true },
+    })
 
     fireEvent.click(screen.getByRole('button', { name: '다시 설문하고 재설계' }))
     expect(mockNavigate).toHaveBeenCalledWith('/survey')

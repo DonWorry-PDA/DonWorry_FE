@@ -185,11 +185,11 @@ const mapExecutionItems = (plan: RecommendationPlan): ExecutionItem[] =>
     productName: h.productName,
   }))
 
-/** 실행 요약 화면용 매핑. estimatedFee는 BE 미제공 — 호출부에서 static으로 주입한다. */
+/** 실행 요약 화면용 매핑. */
 export const mapExecutionSummary = (
   response: RecommendationResponse,
   plan: RecommendationPlan,
-): Omit<ExecutionSummary, 'estimatedFee'> => ({
+): ExecutionSummary => ({
   planName: plan.displayName,
   planType: TYPE_MAP[plan.type],
   coverageFrom: Math.round(response.currentCoverageRate),

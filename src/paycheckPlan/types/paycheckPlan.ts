@@ -144,7 +144,6 @@ export type ExecutionSummary = {
   cashflowFrom: number
   cashflowTo: number
   items: ExecutionItem[]
-  estimatedFee: number
   notice: string
 }
 
