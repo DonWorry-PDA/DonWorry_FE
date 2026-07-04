@@ -92,6 +92,7 @@ describe('OrderTransferPage', () => {
     expect(screen.getByText('출금 계좌 선택')).toBeInTheDocument()
     expect(screen.queryByText('예금')).not.toBeInTheDocument()
     expect(screen.queryByText('********4444')).not.toBeInTheDocument()
+    expect(screen.queryByText('********3333')).not.toBeInTheDocument()
     expect(screen.getByText(/입출금/)).toBeInTheDocument()
     expect(screen.getByText('********5555')).toBeInTheDocument()
   })

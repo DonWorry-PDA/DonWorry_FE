@@ -9,6 +9,7 @@ import usePostTransfer from './hooks/usePostTransfer'
 import { MydataAccount } from './types/account'
 
 const EMPTY_ITEMS: BuyItem[] = []
+const NON_TRANSFERABLE_ACCOUNT_TYPES = ['BROKERAGE', 'DEPOSIT'] as const
 
 // 표시 가능한 계좌번호만 반환. 목업 식별자(MOCK-*-…)·빈값은 표시하지 않음(null).
 function displayAccountNumber(accountNumber: string | null): string | null {
@@ -42,13 +43,16 @@ function OrderTransferPage() {
   const timerDoneRef = useRef(false)
   const apiDoneRef = useRef(false)
 
-  const brokerage = accounts?.find((a) => a.accountType === 'BROKERAGE')
+  const brokerage = accounts?.find((a) => a.accountType === NON_TRANSFERABLE_ACCOUNT_TYPES[0])
   const brokerageBalance = brokerage?.depositBalance ?? 0
   const shortfall = Math.max(totalAmountWon - brokerageBalance, 0)
   const isEnough = shortfall === 0
 
   const sourceAccounts = (accounts ?? []).filter(
-    (a) => !['BROKERAGE', 'DEPOSIT'].includes(a.accountType) && a.depositBalance > 0,
+    (a) =>
+      !NON_TRANSFERABLE_ACCOUNT_TYPES.includes(
+        a.accountType as (typeof NON_TRANSFERABLE_ACCOUNT_TYPES)[number],
+      ) && a.depositBalance > 0,
   )
 
   const selectedAccounts = sourceAccounts.filter((a) => selectedIds.has(a.accountId))
