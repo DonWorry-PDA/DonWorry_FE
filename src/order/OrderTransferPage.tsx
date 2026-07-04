@@ -48,7 +48,7 @@ function OrderTransferPage() {
   const isEnough = shortfall === 0
 
   const sourceAccounts = (accounts ?? []).filter(
-    (a) => a.accountType !== 'BROKERAGE' && a.depositBalance > 0,
+    (a) => !['BROKERAGE', 'DEPOSIT'].includes(a.accountType) && a.depositBalance > 0,
   )
 
   const selectedAccounts = sourceAccounts.filter((a) => selectedIds.has(a.accountId))
